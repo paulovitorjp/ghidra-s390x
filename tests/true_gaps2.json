@@ -1,0 +1,828 @@
+[
+ {
+  "label": "T0171",
+  "bytes": "CAB9F280",
+  "hlasm": "LOCRE",
+  "spec": "LOCRE",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "B9F280CA",
+  "fixed_decoded": "LOCRE"
+ },
+ {
+  "label": "T0196",
+  "bytes": "0032EB9E0301",
+  "hlasm": "LOCFHR",
+  "spec": "LOCFHRNLE",
+  "rewrite": "LOCFHRNLE->LOCFHR mask=3",
+  "detail": "NODECODE",
+  "fixed_bytes": "32EB9E030100",
+  "fixed_decoded": "LTER"
+ },
+ {
+  "label": "T0242",
+  "bytes": "0EB16334512F",
+  "hlasm": "LOC",
+  "spec": "LOCLH",
+  "rewrite": "LOCLH->LOC mask=6",
+  "detail": "NODECODE",
+  "fixed_bytes": "34512F0EB163",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T0290",
+  "bytes": "0EB19334512F",
+  "hlasm": "STOC",
+  "spec": "STOCNLH",
+  "rewrite": "STOCNLH->STOC mask=9",
+  "detail": "NODECODE",
+  "fixed_bytes": "34512F0EB193",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T0305",
+  "bytes": "0056AEB19334",
+  "hlasm": "STOCG",
+  "spec": "STOCGNLH",
+  "rewrite": "STOCGNLH->STOCG mask=9",
+  "detail": "NODECODE",
+  "fixed_bytes": "56AEB1933400",
+  "fixed_decoded": "O"
+ },
+ {
+  "label": "T0343",
+  "bytes": "64EEC1312340",
+  "hlasm": "LOCHI",
+  "spec": "LOCHINLE",
+  "rewrite": "LOCHINLE->LOCHI mask=3",
+  "detail": "NODECODE",
+  "fixed_bytes": "31234064EEC1",
+  "fixed_decoded": "LNER"
+ },
+ {
+  "label": "T0344",
+  "bytes": "654EC1412340",
+  "hlasm": "LOCHIL",
+  "spec": "LOCHIL",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "4EC141234065",
+  "fixed_decoded": "CVD_12"
+ },
+ {
+  "label": "T0346",
+  "bytes": "0EC161234004",
+  "hlasm": "LOCHI",
+  "spec": "LOCHILH",
+  "rewrite": "LOCHILH->LOCHI mask=6",
+  "detail": "NODECODE",
+  "fixed_bytes": "2340040EC161",
+  "fixed_decoded": "LCDR"
+ },
+ {
+  "label": "T0367",
+  "bytes": "EEC1C1234004",
+  "hlasm": "LOCGHI",
+  "spec": "LOCGHILE",
+  "rewrite": "LOCGHILE->LOCGHI mask=12",
+  "detail": "NODECODE",
+  "fixed_bytes": "234004EEC1C1",
+  "fixed_decoded": "LCDR"
+ },
+ {
+  "label": "T0512",
+  "bytes": "00000000",
+  "hlasm": "TRTO",
+  "spec": "TRTO",
+  "rewrite": null,
+  "detail": "NODECODE"
+ },
+ {
+  "label": "T0577",
+  "bytes": "02A800000000",
+  "hlasm": "FIXBR",
+  "spec": "FIXBR",
+  "rewrite": null,
+  "detail": "NODECODE"
+ },
+ {
+  "label": "T0704",
+  "bytes": "A8000000",
+  "hlasm": "LEXR",
+  "spec": "LEXR",
+  "rewrite": null,
+  "detail": "NODECODE"
+ },
+ {
+  "label": "T0806",
+  "bytes": "0020EB1C3345",
+  "hlasm": "CLMY",
+  "spec": "CLMY_12",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "20EB1C334500",
+  "fixed_decoded": "LPDR"
+ },
+ {
+  "label": "T0822",
+  "bytes": "080EB0C33451",
+  "hlasm": "STMY",
+  "spec": "STMY_0_12",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "3451080EB0C3",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T0837",
+  "bytes": "000DAEB1B334",
+  "hlasm": "STMY",
+  "spec": "STMY_1_11",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "0DAEB1B33400",
+  "fixed_decoded": "basr"
+ },
+ {
+  "label": "T0872",
+  "bytes": "CEB3E3345129",
+  "hlasm": "STMY",
+  "spec": "STMY_3_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "345129CEB3E3",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T0873",
+  "bytes": "01B2EB3F3345",
+  "hlasm": "STMY",
+  "spec": "STMY_3_15",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "3F334501B2EB",
+  "fixed_decoded": "SUR"
+ },
+ {
+  "label": "T0936",
+  "bytes": "0032CEB7E334",
+  "hlasm": "STMY",
+  "spec": "STMY_7_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "32CEB7E33400",
+  "fixed_decoded": "LTER"
+ },
+ {
+  "label": "T0952",
+  "bytes": "038CEB8E3345",
+  "hlasm": "STMY",
+  "spec": "STMY_8_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "8CEB8E334503",
+  "fixed_decoded": "SRDL_14"
+ },
+ {
+  "label": "T1022",
+  "bytes": "00530EBD4334",
+  "hlasm": "STMY",
+  "spec": "STMY_13_4",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "BD433400530E",
+  "fixed_decoded": "CLM_3"
+ },
+ {
+  "label": "T1098",
+  "bytes": "006B80E0",
+  "hlasm": "MVCL",
+  "spec": "MVCL_0_0",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "6B80E000",
+  "fixed_decoded": "SD"
+ },
+ {
+  "label": "T1153",
+  "bytes": "007260EC",
+  "hlasm": "MVCL",
+  "spec": "MVCL_12_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "60EC0072",
+  "fixed_decoded": "STD"
+ },
+ {
+  "label": "T1189",
+  "bytes": "E0F6",
+  "hlasm": "CLCL",
+  "spec": "CLCL_6_6",
+  "rewrite": null,
+  "detail": "NODECODE"
+ },
+ {
+  "label": "T1214",
+  "bytes": "001C0FC8",
+  "hlasm": "CLCL",
+  "spec": "CLCL_12_8",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "1C0FC800",
+  "fixed_decoded": "MR_0"
+ },
+ {
+  "label": "T1281",
+  "bytes": "000A20B3",
+  "hlasm": "BSM",
+  "spec": "bsm_3_7",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "0A20B300",
+  "fixed_decoded": "svc"
+ },
+ {
+  "label": "T1297",
+  "bytes": "C20B",
+  "hlasm": "BSM",
+  "spec": "bsm_4_7",
+  "rewrite": null,
+  "detail": "NODECODE"
+ },
+ {
+  "label": "T1315",
+  "bytes": "E60B",
+  "hlasm": "BSM",
+  "spec": "bsm_5_9",
+  "rewrite": null,
+  "detail": "NODECODE"
+ },
+ {
+  "label": "T1400",
+  "bytes": "01900BAE",
+  "hlasm": "BSM",
+  "spec": "bsm_10_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "900BAE01",
+  "fixed_decoded": "STM_0_11"
+ },
+ {
+  "label": "T1490",
+  "bytes": "002440C0",
+  "hlasm": "BASSM",
+  "spec": "bassm_0_8",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "2440C000",
+  "fixed_decoded": "HDR"
+ },
+ {
+  "label": "T1539",
+  "bytes": "002A60C3",
+  "hlasm": "BASSM",
+  "spec": "bassm_3_9",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "2A60C300",
+  "fixed_decoded": "ADR"
+ },
+ {
+  "label": "T1566",
+  "bytes": "002DC0C5",
+  "hlasm": "BASSM",
+  "spec": "bassm_5_4",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "2DC0C500",
+  "fixed_decoded": "DDR"
+ },
+ {
+  "label": "T1612",
+  "bytes": "00180C82",
+  "hlasm": "BASSM",
+  "spec": "bassm_8_2",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "180C8200",
+  "fixed_decoded": "LR"
+ },
+ {
+  "label": "T1704",
+  "bytes": "00D00CDE",
+  "hlasm": "BASSM",
+  "spec": "bassm_13_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "D00CDE00",
+  "fixed_decoded": "TRTR"
+ },
+ {
+  "label": "T1735",
+  "bytes": "0010E0CF",
+  "hlasm": "BASSM",
+  "spec": "bassm_15_13",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "10E0CF00",
+  "fixed_decoded": "LPR"
+ },
+ {
+  "label": "T1781",
+  "bytes": "C05122B0",
+  "hlasm": "LAE",
+  "spec": "lae_2_11",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "5122B0C0",
+  "fixed_decoded": "lae_2_11"
+ },
+ {
+  "label": "T1820",
+  "bytes": "0025C5152201",
+  "hlasm": "LAE",
+  "spec": "lae_5_2",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "25C515220100",
+  "fixed_decoded": "LDXR"
+ },
+ {
+  "label": "T1839",
+  "bytes": "A8516250",
+  "hlasm": "LAE",
+  "spec": "lae_6_5",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "516250A8",
+  "fixed_decoded": "lae_6_5"
+ },
+ {
+  "label": "T1896",
+  "bytes": "C5192E01",
+  "hlasm": "LAE",
+  "spec": "lae_9_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "192E01C5",
+  "fixed_decoded": "CR"
+ },
+ {
+  "label": "T2016",
+  "bytes": "03E9A163",
+  "hlasm": "LAM",
+  "spec": "lam_1_6",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "E9A16303",
+  "fixed_decoded": "PKA"
+ },
+ {
+  "label": "T2049",
+  "bytes": "C29A3730",
+  "hlasm": "LAM",
+  "spec": "lam_3_7",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "9A3730C2",
+  "fixed_decoded": "lam_3_7"
+ },
+ {
+  "label": "T2064",
+  "bytes": "FE9A4630",
+  "hlasm": "LAM",
+  "spec": "lam_4_6",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "9A4630FE",
+  "fixed_decoded": "lam_4_6"
+ },
+ {
+  "label": "T2232",
+  "bytes": "9E9AEE30",
+  "hlasm": "LAM",
+  "spec": "lam_14_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "9AEE309E",
+  "fixed_decoded": "lam_14_14"
+ },
+ {
+  "label": "T2318",
+  "bytes": "F69B4430",
+  "hlasm": "STAM",
+  "spec": "stam_4_4",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "9B4430F6",
+  "fixed_decoded": "stam_4_4"
+ },
+ {
+  "label": "T2334",
+  "bytes": "5369B543",
+  "hlasm": "STAM",
+  "spec": "stam_5_4",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "69B54353",
+  "fixed_decoded": "CD"
+ },
+ {
+  "label": "T2413",
+  "bytes": "0329BA33",
+  "hlasm": "STAM",
+  "spec": "stam_10_3",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "29BA3303",
+  "fixed_decoded": "CDR"
+ },
+ {
+  "label": "T2440",
+  "bytes": "9E9BBE30",
+  "hlasm": "STAM",
+  "spec": "stam_11_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "9BBE309E",
+  "fixed_decoded": "stam_11_14"
+ },
+ {
+  "label": "T2600",
+  "bytes": "C983F301",
+  "hlasm": "LM",
+  "spec": "LM_3_15",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "83F301C9",
+  "fixed_decoded": "diagnose"
+ },
+ {
+  "label": "T2636",
+  "bytes": "C9863301",
+  "hlasm": "LM",
+  "spec": "LM_6_3",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "863301C9",
+  "fixed_decoded": "bxh"
+ },
+ {
+  "label": "T2640",
+  "bytes": "003DC9867301",
+  "hlasm": "LM",
+  "spec": "LM_6_7",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "3DC986730100",
+  "fixed_decoded": "DER"
+ },
+ {
+  "label": "T2696",
+  "bytes": "004BC989F301",
+  "hlasm": "LM",
+  "spec": "LM_9_15",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "4BC989F30100",
+  "fixed_decoded": "SH"
+ },
+ {
+  "label": "T2710",
+  "bytes": "F498AD30",
+  "hlasm": "LM",
+  "spec": "LM_10_13",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "98AD30F4",
+  "fixed_decoded": "LM_10_13"
+ },
+ {
+  "label": "T2800",
+  "bytes": "C9007301",
+  "hlasm": "STM",
+  "spec": "STM_0_7",
+  "rewrite": null,
+  "detail": "NODECODE"
+ },
+ {
+  "label": "T2816",
+  "bytes": "03E90173",
+  "hlasm": "STM",
+  "spec": "STM_1_7",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "E9017303",
+  "fixed_decoded": "PKA"
+ },
+ {
+  "label": "T2864",
+  "bytes": "FE904730",
+  "hlasm": "STM",
+  "spec": "STM_4_7",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "904730FE",
+  "fixed_decoded": "STM_4_7"
+ },
+ {
+  "label": "T3141",
+  "bytes": "AEB5C3345120",
+  "hlasm": "LMG",
+  "spec": "LMG_5_12",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "345120AEB5C3",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T3206",
+  "bytes": "00020EB9D334",
+  "hlasm": "LMG",
+  "spec": "LMG_9_13",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "D33400020EB9",
+  "fixed_decoded": "MVZ"
+ },
+ {
+  "label": "T3233",
+  "bytes": "00C2EBB83345",
+  "hlasm": "LMG",
+  "spec": "LMG_11_8",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "334500C2EBB8",
+  "fixed_decoded": "LCER"
+ },
+ {
+  "label": "T3235",
+  "bytes": "EEBBA3345120",
+  "hlasm": "LMG",
+  "spec": "LMG_11_10",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "345120EEBBA3",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T3251",
+  "bytes": "EEBCA3345120",
+  "hlasm": "LMG",
+  "spec": "LMG_12_10",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "345120EEBCA3",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T3255",
+  "bytes": "0146EBCE3345",
+  "hlasm": "LMG",
+  "spec": "LMG_12_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "46EBCE334501",
+  "fixed_decoded": "bct"
+ },
+ {
+  "label": "T3302",
+  "bytes": "00260EBFD334",
+  "hlasm": "LMG",
+  "spec": "LMG_15_13",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "260EBFD33400",
+  "fixed_decoded": "MXR"
+ },
+ {
+  "label": "T3319",
+  "bytes": "C6EB0E334512",
+  "hlasm": "STMG",
+  "spec": "STMG_0_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "334512C6EB0E",
+  "fixed_decoded": "LCER"
+ },
+ {
+  "label": "T3352",
+  "bytes": "038CEB2F3345",
+  "hlasm": "STMG",
+  "spec": "STMG_2_15",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "8CEB2F334503",
+  "fixed_decoded": "SRDL_14"
+ },
+ {
+  "label": "T3461",
+  "bytes": "AEB9C3345122",
+  "hlasm": "STMG",
+  "spec": "STMG_9_12",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "345122AEB9C3",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T3504",
+  "bytes": "CEBC73345122",
+  "hlasm": "STMG",
+  "spec": "STMG_12_7",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "345122CEBC73",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T3520",
+  "bytes": "CEBD73345122",
+  "hlasm": "STMG",
+  "spec": "STMG_13_7",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "BD73345122CE",
+  "fixed_decoded": "CLM_3"
+ },
+ {
+  "label": "T3573",
+  "bytes": "008BAEB0C334",
+  "hlasm": "LMH",
+  "spec": "LMH_0_12",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "8BAEB0C33400",
+  "fixed_decoded": "SLA"
+ },
+ {
+  "label": "T3606",
+  "bytes": "00020EB2D334",
+  "hlasm": "LMH",
+  "spec": "LMH_2_13",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "D33400020EB2",
+  "fixed_decoded": "MVZ"
+ },
+ {
+  "label": "T3622",
+  "bytes": "0080EB3D3345",
+  "hlasm": "LMH",
+  "spec": "LMH_3_13",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "80EB3D334500",
+  "fixed_decoded": "ssm"
+ },
+ {
+  "label": "T3673",
+  "bytes": "01B2EB703345",
+  "hlasm": "LMH",
+  "spec": "LMH_7_0",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "70334501B2EB",
+  "fixed_decoded": "STE"
+ },
+ {
+  "label": "T3719",
+  "bytes": "C6EB9E334512",
+  "hlasm": "LMH",
+  "spec": "LMH_9_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "334512C6EB9E",
+  "fixed_decoded": "LCER"
+ },
+ {
+  "label": "T3861",
+  "bytes": "AEB2C3345122",
+  "hlasm": "STMH",
+  "spec": "STMH_2_12",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "345122AEB2C3",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T3941",
+  "bytes": "AEB7C3345122",
+  "hlasm": "STMH",
+  "spec": "STMH_7_12",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "345122AEB7C3",
+  "fixed_decoded": "HER"
+ },
+ {
+  "label": "T3942",
+  "bytes": "0800EB7D3345",
+  "hlasm": "STMH",
+  "spec": "STMH_7_13",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "7D33450800EB",
+  "fixed_decoded": "DE"
+ },
+ {
+  "label": "T3977",
+  "bytes": "08D2EBA03345",
+  "hlasm": "STMH",
+  "spec": "STMH_10_0",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "D2EBA0334508",
+  "fixed_decoded": "MVC"
+ },
+ {
+  "label": "T3990",
+  "bytes": "00920EBAD334",
+  "hlasm": "STMH",
+  "spec": "STMH_10_13",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "920EBAD33400",
+  "fixed_decoded": "MVI"
+ },
+ {
+  "label": "T4005",
+  "bytes": "001AEBBC3345",
+  "hlasm": "STMH",
+  "spec": "STMH_11_12",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "1AEBBC334500",
+  "fixed_decoded": "AR"
+ },
+ {
+  "label": "T4035",
+  "bytes": "EEBDA3345122",
+  "hlasm": "STMH",
+  "spec": "STMH_13_10",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "BDA3345122EE",
+  "fixed_decoded": "CLM_3"
+ },
+ {
+  "label": "T4051",
+  "bytes": "EEBEA3345122",
+  "hlasm": "STMH",
+  "spec": "STMH_14_10",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "BEA3345122EE",
+  "fixed_decoded": "STCM"
+ },
+ {
+  "label": "T4055",
+  "bytes": "0146EBEE3345",
+  "hlasm": "STMH",
+  "spec": "STMH_14_14",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "46EBEE334501",
+  "fixed_decoded": "bct"
+ },
+ {
+  "label": "T4141",
+  "bytes": "02B8E3023345",
+  "hlasm": "MLG",
+  "spec": "MLG_0",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "334502B8E302",
+  "fixed_decoded": "LCER"
+ },
+ {
+  "label": "T4194",
+  "bytes": "0039E0000000",
+  "hlasm": "DLR",
+  "spec": "DLR_odd",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "39E000000000",
+  "fixed_decoded": "CER"
+ },
+ {
+  "label": "T4198",
+  "bytes": "B4E362334512",
+  "hlasm": "DLG",
+  "spec": "DLG_6",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "334512B4E362",
+  "fixed_decoded": "LCER"
+ },
+ {
+  "label": "T4328",
+  "bytes": "0064CE712300",
+  "hlasm": "VSF",
+  "spec": "vsf",
+  "rewrite": null,
+  "detail": "NODECODE",
+  "fixed_bytes": "7123000064CE",
+  "fixed_decoded": "MS"
+ }
+]

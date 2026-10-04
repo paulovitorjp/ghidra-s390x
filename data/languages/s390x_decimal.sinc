@@ -1,0 +1,3177 @@
+# =============================================================================
+# s390x_decimal.sinc — z/Architecture decimal, string, translate, and edit
+# instructions.
+#
+# Covers (PoP SA22-7832-14, Ch. 7-8):
+#   Decimal arithmetic : AP, SP, ZAP, CP, SRP (+ MP/DP decode-only, see below)
+#   Pack/unpack        : PACK, UNPK, PKA, PKU, MVO
+#   String             : MVST, CLST, SRST
+#   Translate/test     : TR, TRT, TRTR, TRE (decode-only), TRTE, TRTO, TROT,
+#                        TROO
+#   Edit               : ED, EDMK
+#   Validity test      : TP (TEST DECIMAL)
+#
+# Inclusion: this file is @included AFTER the core s390x.slaspec body (it
+# uses the core tokens SSa/SSb/SSc/SSf/RRE/RSa/RSYa, the ea_D12/ea_D20 address
+# macros, registers r0-r15, and the 'cc' condition-code varnode). The
+# generated companion s390x_decimal_gen.sinc must be included AFTER this
+# file (it reuses the RRFc token and the macros defined here).
+#
+# Conventions (inherited from the core spec):
+#   - IBM bit numbering in comments is MSB=0; SLEIGH fields are LSB=0.
+#   - Token fields are zero-extended into pcode expressions.
+#   - Size discipline: digit/flag/boolean values are :1, addresses/counters
+#     are :8. Mixed-size operators are rejected by the SLEIGH compiler, so
+#     cross with zext() explicitly. Comparison results are :1 booleans.
+#   - Labels are written <name> with no trailing colon.
+#   - Invalid decimal digit/sign codes raise a data exception on hardware.
+#     Exception behavior is NOT modeled (no exception mechanism in this
+#     spec); affected constructors carry a TODO(verify) note.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# New tokens (field names are globally unique across the language)
+# ---------------------------------------------------------------------------
+
+# RRFc (RRF format, M3 variant) is already defined in s390x_system.sinc
+# with an identical layout (OP(16,31), M3(12,15), IGN(8,11), R1(4,7),
+# R2(0,3)); the extended-translate family reuses that token. Only RSLa
+# is new here.
+
+# RSLa: 6 bytes. OP(0-7)='EB', L1(8-11), ////(12-15), B1(16-19), D1(20-31),
+# ////////(32-39), OP2(40-47)='C0'. TEST DECIMAL (TP).
+define token RSLa(48)
+    RSLa_OP   = (40,47)
+    RSLa_L1   = (36,39)
+    RSLa_IGN1 = (32,35)
+    RSLa_B1   = (28,31)
+    RSLa_D1   = (16,27)
+    RSLa_IGN2 = (8,15)
+    RSLa_OP2  = (0,7)
+;
+
+# (RRFc_R1/RRFc_R2 attachments come from s390x_system.sinc.)
+attach variables [ RSLa_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# ---------------------------------------------------------------------------
+# Dual-field tokens for instructions that select even/odd register pairs (or
+# single registers) DYNAMICALLY at execution time.
+#
+# Reading an attached field in pcode yields the register VALUE, not the
+# encoded register number (SLEIGH manual, "Attaching Registers": both the
+# display and semantic meaning of the field are taken from the register).
+# So `r1v = RRE_R1` copies GR[R1]'s contents -- comparing r1v against
+# 0,2,4,... does NOT select a register pair (this was done incorrectly in
+# :TRE before the RREn token below was introduced).
+#
+# Each token below mirrors an existing layout bit-for-bit and carries the
+# R1/R2/R3 fields attached to GPRs for display, PLUS overlapping *N
+# fields left as plain integers so pcode can read the raw field NUMBER
+# for register-pair selection. Decode and display are unchanged.
+# ---------------------------------------------------------------------------
+
+# RREn: RRE layout (OP(16,31), IGN(8,15), R1(4,7), R2(0,3)) + raw numbers.
+# Used by :TRE (even/odd pair selection + table-register selection).
+define token RREn(32)
+    RREn_OP  = (16,31)
+    RREn_IGN = (8,15)
+    RREn_R1  = (4,7)
+    RREn_R2  = (0,3)
+    RREn_R1N = (4,7)
+    RREn_R2N = (0,3)
+;
+attach variables [ RREn_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RREn_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RRFcn: RRF-c layout (OP(16,31), M3(12,15), IGN(8,11), R1(4,7), R2(0,3))
+# + raw numbers. Used by :TRTE/:TRTO/:TROT/:TROO.
+define token RRFcn(32)
+    RRFcn_OP  = (16,31)
+    RRFcn_M3  = (12,15)
+    RRFcn_IGN = (8,11)
+    RRFcn_R1  = (4,7)
+    RRFcn_R2  = (0,3)
+    RRFcn_R1N = (4,7)
+    RRFcn_R2N = (0,3)
+;
+attach variables [ RRFcn_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFcn_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RSan: RS-a layout (OP(24,31), R1(20,23), R3(16,19), B2(12,15), D2(0,11))
+# + raw numbers. Used by :CLCLE.
+define token RSan(32)
+    RSan_OP  = (24,31)
+    RSan_R1  = (20,23)
+    RSan_R3  = (16,19)
+    RSan_B2  = (12,15)
+    RSan_D2  = (0,11)
+    RSan_R1N = (20,23)
+    RSan_R3N = (16,19)
+;
+attach variables [ RSan_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSan_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSan_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RSYan: RSY-a layout (OP(40,47), R1(36,39), R3(32,35), B2(28,31),
+# DL2(16,27), DH2(8,15), OP2(0,7)) + raw numbers. Used by :CLCLU.
+define token RSYan(48)
+    RSYan_OP  = (40,47)
+    RSYan_R1  = (36,39)
+    RSYan_R3  = (32,35)
+    RSYan_B2  = (28,31)
+    RSYan_DL2 = (16,27)
+    RSYan_DH2 = (8,15)
+    RSYan_OP2 = (0,7)
+    RSYan_R1N = (36,39)
+    RSYan_R3N = (32,35)
+;
+attach variables [ RSYan_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYan_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYan_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# ---------------------------------------------------------------------------
+# Packed-decimal digit access macros
+#
+# A packed field of n bytes holds 2*n-1 decimal digits plus a sign nibble.
+# Digits are numbered from the right: k=0 is the units digit (high nibble of
+# the last byte), k=1 the tens (low nibble of the byte before last), etc.
+# The sign nibble is the low nibble of the last byte and is NOT a digit.
+# ---------------------------------------------------------------------------
+
+# dec_digit(ea, n, k, dig): fetch the k-th digit from the right (k=0 => units)
+# of the n-byte packed field at ea. Branch-free; k is :8, dig is :1.
+macro dec_digit(ea, n, k, dig) {
+    local b:1;
+    local i:8;
+    local isz:1;
+    local isz8:8;
+    local kodd:1;
+    local hi:1;
+    local dhi:1;
+    local dlo:1;
+    isz = (k == 0);
+    isz8 = zext(isz);
+    i = ((k + 1) / 2) * (1 - isz8);
+    b = *:1 (ea + n - 1 - i);
+    dhi = (b >> 4) & 0xf;
+    dlo = b & 0xf;
+    # k=0 -> high nibble; odd k -> high nibble; even k>0 -> low nibble
+    kodd = ((k & 1) == 1);
+    hi = isz | kodd;
+    dig = dhi * hi + dlo * (1 - hi);
+}
+
+# dec_stdig(ea, n, k, dig, sgn): store digit dig (:1) as the k-th digit from
+# the right of the n-byte packed field at ea. When k=0 the sign nibble sgn
+# (:1) is installed in the low nibble of the last byte as well.
+macro dec_stdig(ea, n, k, dig, sgn) {
+    local b:1;
+    local i:8;
+    local isz:1;
+    local isz8:8;
+    local kodd:1;
+    local hi:1;
+    local nb:1;
+    isz = (k == 0);
+    isz8 = zext(isz);
+    i = ((k + 1) / 2) * (1 - isz8);
+    b = *:1 (ea + n - 1 - i);
+    kodd = ((k & 1) == 1);
+    hi = isz | kodd;
+    nb = ((dig << 4) | (b & 0xf)) * hi + ((b & 0xf0) | dig) * (1 - hi);
+    nb = nb * (1 - isz) + ((dig << 4) | sgn) * isz;
+    *:1 (ea + n - 1 - i) = nb;
+}
+
+# parse_limb8(ea, n, nd, base, limb): limb (:8) = unsigned value of the 8
+# packed digits [base, base+8) of the n-byte field at ea (nd = 2*n-1 digits
+# total). Digits at positions >= nd contribute 0. Fully unrolled and
+# label-free, so it may be invoked any number of times per constructor.
+# Used by MP/DP to move packed fields into base-1e8 :8 limbs.
+macro parse_limb8(ea, n, nd, base, limb) {
+    local d:1; local k:8; local kk:8; local inb:1;
+    limb = 0;
+    k = base;     inb = (k < nd); kk = k * zext(inb); dec_digit(ea, n, kk, d); limb = limb + zext(d & inb);
+    k = base + 1; inb = (k < nd); kk = k * zext(inb); dec_digit(ea, n, kk, d); limb = limb + zext(d & inb) * 10;
+    k = base + 2; inb = (k < nd); kk = k * zext(inb); dec_digit(ea, n, kk, d); limb = limb + zext(d & inb) * 100;
+    k = base + 3; inb = (k < nd); kk = k * zext(inb); dec_digit(ea, n, kk, d); limb = limb + zext(d & inb) * 1000;
+    k = base + 4; inb = (k < nd); kk = k * zext(inb); dec_digit(ea, n, kk, d); limb = limb + zext(d & inb) * 10000;
+    k = base + 5; inb = (k < nd); kk = k * zext(inb); dec_digit(ea, n, kk, d); limb = limb + zext(d & inb) * 100000;
+    k = base + 6; inb = (k < nd); kk = k * zext(inb); dec_digit(ea, n, kk, d); limb = limb + zext(d & inb) * 1000000;
+    k = base + 7; inb = (k < nd); kk = k * zext(inb); dec_digit(ea, n, kk, d); limb = limb + zext(d & inb) * 10000000;
+}
+
+# nib(ea, n, k, out): fetch the k-th nibble from the right (k=0 => low nibble
+# of the last byte) of the n-byte field at ea. Plain nibbles, no sign
+# special-casing (for MVO). stnib stores one.
+macro nib(ea, n, k, out) {
+    local b:1;
+    local j:8;
+    local kodd:1;
+    j = k / 2;
+    b = *:1 (ea + n - 1 - j);
+    kodd = ((k & 1) == 1);
+    out = ((b >> 4) & 0xf) * kodd + (b & 0xf) * (1 - kodd);
+}
+
+macro stnib(ea, n, k, v) {
+    local b:1;
+    local j:8;
+    local kodd:1;
+    local nb:1;
+    j = k / 2;
+    b = *:1 (ea + n - 1 - j);
+    kodd = ((k & 1) == 1);
+    nb = ((v << 4) | (b & 0xf)) * kodd + ((b & 0xf0) | v) * (1 - kodd);
+    *:1 (ea + n - 1 - j) = nb;
+}
+
+# dec_addsub(ea1, n1, ea2, n2, neg1, neg2, add, ovf, iszero, negR):
+# Packed-decimal add/subtract engine for AP/SP. Adds (add=1) or subtracts
+# (add=0) the magnitude of operand 2 from/to the magnitude of operand 1,
+# storing the nd1 = 2*n1-1 digit result plus sign at (ea1,n1).
+#   ovf    = 1 if nonzero result digits exceed operand 1 (or final carry on add)
+#   iszero = 1 if every stored result digit is zero
+#   negR   = sign of the mathematical result (before the zero rule below)
+# The result sign follows neg1/neg2/gt/lt with preferred codes (C=+, D=-);
+# a zero result is forced to positive, per the PoP.
+# CC is set by the caller from ovf/iszero/negR.
+# TODO(verify): data exceptions on invalid digit/sign codes are not modeled.
+macro dec_addsub(ea1, n1, ea2, n2, neg1, neg2, add, ovf, iszero, negR) {
+    local nd1:8; local nd2:8; local ndm:8;
+    local k:8; local kk:8;
+    local d1:1; local d2:1;
+    local in1:1; local in2:1; local inR:1;
+    local gtm:1; local gt:1; local lt:1; local diff:1;
+    local sgnR:1;
+    local cry:1; local ns:1;
+    local da:1; local ds:1; local dh:1; local dl:1; local ga:1;
+    local dig:1;
+    local b:1;
+    nd1 = 2 * n1 - 1;
+    nd2 = 2 * n2 - 1;
+    gtm = (nd2 > nd1);
+    ndm = nd1 + zext(gtm) * (nd2 - nd1);
+    # --- magnitude compare, low digit -> high; last difference wins ---
+    k = 0; gt = 0; lt = 0;
+<das_mag>
+    if (k == ndm) goto <das_mag_end>;
+    in1 = (k < nd1);
+    in2 = (k < nd2);
+    kk = k * zext(in1);
+    dec_digit(ea1, n1, kk, d1);
+    d1 = d1 * in1;
+    kk = k * zext(in2);
+    dec_digit(ea2, n2, kk, d2);
+    d2 = d2 * in2;
+    diff = (d1 != d2);
+    gt = ((d1 > d2) & diff) | (gt & (1 - diff));
+    lt = ((d1 < d2) & diff) | (lt & (1 - diff));
+    k = k + 1;
+    goto <das_mag>;
+<das_mag_end>
+    negR = neg1 * add + (gt * neg1 + lt * neg2) * (1 - add);
+    sgnR = 0xc | negR;
+    # --- digit loop: add or (larger-minus-smaller) ---
+    cry = 0; ovf = 0; iszero = 1;
+    k = 0;
+<das_dig>
+    if (k == ndm) goto <das_dig_end>;
+    in1 = (k < nd1);
+    in2 = (k < nd2);
+    inR = (k < nd1);
+    kk = k * zext(in1);
+    dec_digit(ea1, n1, kk, d1);
+    d1 = d1 * in1;
+    kk = k * zext(in2);
+    dec_digit(ea2, n2, kk, d2);
+    d2 = d2 * in2;
+    # add path (unsigned :1; max 9+9+1 = 19, no wraparound)
+    da = d1 + d2 + cry;
+    ga = (da >= 10);
+    da = da - 10 * ga;
+    # subtract path: dh-dl-cry, computed unsigned via borrow test
+    dh = d1 * gt + d2 * lt;
+    dl = d2 * gt + d1 * lt;
+    ns = (dh < dl + cry);
+    ds = dh - dl - cry + 10 * ns;
+    dig = da * add + ds * (1 - add);
+    cry = ga * add + ns * (1 - add);
+    iszero = iszero & ((dig == 0) | (1 - inR));
+    if (inR == 0) goto <das_nostore>;
+    dec_stdig(ea1, n1, k, dig, sgnR);
+<das_nostore>
+    ovf = ovf | ((1 - inR) & (dig != 0));
+    k = k + 1;
+    goto <das_dig>;
+<das_dig_end>
+    ovf = ovf | (add & cry);
+    # zero result -> positive sign
+    if (iszero == 0) goto <das_nofix>;
+    b = *:1 (ea1 + n1 - 1);
+    *:1 (ea1 + n1 - 1) = (b & 0xf0) | 0xc;
+<das_nofix>
+}
+
+# ed_digit: fetch the next source digit for EDIT/EDIT AND MARK.
+# Inputs : ea2 = source address; sb = source byte index; ul = 1 to take the
+#          left (high) nibble next, 0 to take the right (low) nibble.
+# Outputs: d = digit; hs = 1 if the right nibble was a sign code (end of
+#          number); sgn = that sign code (else 0); sb2/ul2 = updated state.
+# A right nibble >= 0xA examined while taking a left digit is a sign code:
+# the left digit is used and the next byte is fetched (PoP 8-8/8-11).
+macro ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2) {
+    local b:1;
+    local r:1;
+    local is_sgn:1;
+    b = *:1 (ea2 + sb);
+    r = b & 0xf;
+    is_sgn = (r >= 0xa) & ul;
+    d = ((b >> 4) & 0xf) * ul + (b & 0xf) * (1 - ul);
+    hs = is_sgn;
+    sgn = r * is_sgn;
+    sb2 = sb + zext(ul) * zext(is_sgn) + zext(1 - ul);
+    ul2 = ul * is_sgn + (1 - ul);
+}
+
+# ---------------------------------------------------------------------------
+# Decimal arithmetic (SS-b / SS-c)
+# ---------------------------------------------------------------------------
+
+# AP: ADD DECIMAL. op1 = op1 + op2 (packed). CC: 0=zero, 1=negative,
+# 2=positive, 3=overflow.
+:AP "AP " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xFA & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8;
+    local b:1; local s1:1; local s2:1;
+    local neg1:1; local neg2:1; local negR:1;
+    local add:1; local ovf:1; local iszero:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    n1 = SSb_L1 + 1;
+    n2 = SSb_L2 + 1;
+    b = *:1 (ea1 + n1 - 1);
+    s1 = b & 0xf;
+    b = *:1 (ea2 + n2 - 1);
+    s2 = b & 0xf;
+    neg1 = (s1 == 0xd) | (s1 == 0xb);
+    neg2 = (s2 == 0xd) | (s2 == 0xb);
+    add = (neg1 == neg2);
+    dec_addsub(ea1, n1, ea2, n2, neg1, neg2, add, ovf, iszero, negR);
+    cc = 3 * ovf + (1 - ovf) * ((1 - iszero) * (1 + (1 - negR)));
+}
+
+# SP: SUBTRACT DECIMAL. op1 = op1 - op2 (packed). CC as AP.
+:SP "SP " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xFB & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8;
+    local b:1; local s1:1; local s2:1;
+    local neg1:1; local neg2:1; local negR:1;
+    local add:1; local ovf:1; local iszero:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    n1 = SSb_L1 + 1;
+    n2 = SSb_L2 + 1;
+    b = *:1 (ea1 + n1 - 1);
+    s1 = b & 0xf;
+    b = *:1 (ea2 + n2 - 1);
+    s2 = b & 0xf;
+    neg1 = (s1 == 0xd) | (s1 == 0xb);
+    neg2 = (s2 == 0xd) | (s2 == 0xb);
+    add = (neg1 != neg2);
+    dec_addsub(ea1, n1, ea2, n2, neg1, neg2, add, ovf, iszero, negR);
+    cc = 3 * ovf + (1 - ovf) * ((1 - iszero) * (1 + (1 - negR)));
+}
+
+# ZAP: ZERO AND ADD. op1 = op2 (packed move, right-aligned, zero-extended).
+# Result sign = source sign; a zero result is forced positive. CC: 0=zero,
+# 1=negative, 2=positive, 3=overflow (nonzero source digits beyond op1).
+:ZAP "ZAP " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xF8 & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8;
+    local nd1:8; local nd2:8; local ndm:8;
+    local b:1; local s2:1; local neg2:1; local sgnR:1;
+    local k:8; local kk:8;
+    local d:1; local in1:1; local in2:1; local gtm:1;
+    local ovf:1; local iszero:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    n1 = SSb_L1 + 1;
+    n2 = SSb_L2 + 1;
+    b = *:1 (ea2 + n2 - 1);
+    s2 = b & 0xf;
+    neg2 = (s2 == 0xd) | (s2 == 0xb);
+    sgnR = 0xc | neg2;
+    nd1 = 2 * n1 - 1;
+    nd2 = 2 * n2 - 1;
+    gtm = (nd2 > nd1);
+    ndm = nd1 + zext(gtm) * (nd2 - nd1);
+    k = 0; iszero = 1; ovf = 0;
+<zap_loop>
+    if (k == ndm) goto <zap_end>;
+    in1 = (k < nd1);
+    in2 = (k < nd2);
+    kk = k * zext(in2);
+    dec_digit(ea2, n2, kk, d);
+    d = d * in2;
+    iszero = iszero & ((d == 0) | (1 - in1));
+    if (in1 == 0) goto <zap_nostore>;
+    dec_stdig(ea1, n1, k, d, sgnR);
+<zap_nostore>
+    ovf = ovf | ((1 - in1) & (d != 0));
+    k = k + 1;
+    goto <zap_loop>;
+<zap_end>
+    if (iszero == 0) goto <zap_nofix>;
+    b = *:1 (ea1 + n1 - 1);
+    *:1 (ea1 + n1 - 1) = (b & 0xf0) | 0xc;
+<zap_nofix>
+    cc = 3 * ovf + (1 - ovf) * ((1 - iszero) * (1 + (1 - neg2)));
+}
+
+# CP: COMPARE DECIMAL. Compare packed op1 vs op2. CC: 0=equal, 1=op1 low,
+# 2=op1 high. Operands are not stored.
+:CP "CP " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xF9 & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8;
+    local nd1:8; local nd2:8; local ndm:8;
+    local b:1; local s1:1; local s2:1;
+    local neg1:1; local neg2:1;
+    local k:8; local kk:8;
+    local d1:1; local d2:1;
+    local in1:1; local in2:1; local gtm:1;
+    local gt:1; local lt:1; local diff:1;
+    local eq:1; local slt:1; local sgt:1; local samesgn:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    n1 = SSb_L1 + 1;
+    n2 = SSb_L2 + 1;
+    b = *:1 (ea1 + n1 - 1);
+    s1 = b & 0xf;
+    b = *:1 (ea2 + n2 - 1);
+    s2 = b & 0xf;
+    neg1 = (s1 == 0xd) | (s1 == 0xb);
+    neg2 = (s2 == 0xd) | (s2 == 0xb);
+    nd1 = 2 * n1 - 1;
+    nd2 = 2 * n2 - 1;
+    gtm = (nd2 > nd1);
+    ndm = nd1 + zext(gtm) * (nd2 - nd1);
+    k = 0; gt = 0; lt = 0;
+<cp_mag>
+    if (k == ndm) goto <cp_mag_end>;
+    in1 = (k < nd1);
+    in2 = (k < nd2);
+    kk = k * zext(in1);
+    dec_digit(ea1, n1, kk, d1);
+    d1 = d1 * in1;
+    kk = k * zext(in2);
+    dec_digit(ea2, n2, kk, d2);
+    d2 = d2 * in2;
+    diff = (d1 != d2);
+    gt = ((d1 > d2) & diff) | (gt & (1 - diff));
+    lt = ((d1 < d2) & diff) | (lt & (1 - diff));
+    k = k + 1;
+    goto <cp_mag>;
+<cp_mag_end>
+    # signed comparison: zeros compare equal regardless of sign
+    eq = (gt == 0) & (lt == 0);
+    samesgn = (neg1 == neg2);
+    slt = (1 - eq) & ((neg1 & (1 - neg2)) |
+          (samesgn & ((lt & (1 - neg1)) | (gt & neg1))));
+    sgt = (1 - eq) & ((neg2 & (1 - neg1)) |
+          (samesgn & ((gt & (1 - neg1)) | (lt & neg1))));
+    cc = slt + 2 * sgt;
+}
+
+# SRP: SHIFT AND ROUND DECIMAL. The first operand's digits are shifted by the
+# six-bit signed shift value in the low 6 bits of the second-operand address
+# (positive = left, negative = right). Only digits shift; the sign is kept.
+# Right shifts round: I3 is added at the highest shifted-out digit position.
+# Zeros fill vacated positions. CC: 0=zero, 1=negative, 2=positive,
+# 3=overflow (nonzero digits shifted out to the left).
+:SRP "SRP " SSc_D1 "(" SSc_L1 "," SSc_B1 ")," SSc_D2 "(" SSc_B2 ")," SSc_I3 is SSc_OP=0xF0 & SSc_L1 & SSc_I3 & SSc_B1 & SSc_D1 & SSc_B2 & SSc_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local nd1:8; local nd1p:8;
+    local sh6:8; local sh:8; local shn:8;
+    local left:1;
+    local r:1;
+    local b:1; local s1:1; local neg1:1; local sgnR:1;
+    local k:8; local p:8; local kk:8;
+    local d:1; local dig:1; local rp:1; local t:1;
+    local add:1; local rc:1;
+    local inb:1; local out:1; local gtz:1;
+    local ovf:1; local iszero:1;
+    local z0:1;
+    ea_D12(ea1, SSc_B1, zero, SSc_D1);
+    ea_D12(ea2, SSc_B2, zero, SSc_D2);
+    n1 = SSc_L1 + 1;
+    nd1 = 2 * n1 - 1;
+    nd1p = nd1 + 1;
+    r = SSc_I3;
+    z0 = 0;
+    b = *:1 (ea1 + n1 - 1);
+    s1 = b & 0xf;
+    neg1 = (s1 == 0xd) | (s1 == 0xb);
+    sgnR = 0xc | neg1;
+    # six-bit signed shift value from the second-operand address
+    sh6 = ea2 & 0x3f;
+    sh = (sh6 ^ 0x20) - 0x20;
+    left = (sh >= 0);
+    if (left == 0) goto <srp_neg>;
+    shn = sh;
+    goto <srp_shift>;
+<srp_neg>
+    shn = 0 - sh;
+<srp_shift>
+    ovf = 0; iszero = 1;
+    if (left == 0) goto <srp_right>;
+    p = 0;
+<srp_lovf>
+    if (p == nd1) goto <srp_lovf_end>;
+    out = (p + shn >= nd1);
+    dec_digit(ea1, n1, p, d);
+    ovf = ovf | (out & (d != 0));
+    p = p + 1;
+    goto <srp_lovf>;
+<srp_lovf_end>
+    k = nd1;
+<srp_l>
+    if (k == 0) goto <srp_l_end>;
+    k = k - 1;
+    if (k < shn) goto <srp_l_zero>;
+    kk = k - shn;
+    dec_digit(ea1, n1, kk, dig);
+    goto <srp_l_store>;
+<srp_l_zero>
+    dig = 0;
+<srp_l_store>
+    iszero = iszero & (dig == 0);
+    dec_stdig(ea1, n1, k, dig, sgnR);
+    goto <srp_l>;
+<srp_l_end>
+    goto <srp_done>;
+<srp_right>
+    # ---- shift right by shn with rounding ----
+    # If shn >= nd1 the whole field shifts out: the result is zero.
+    if (shn < nd1) goto <srp_r_main>;
+    k = 0;
+<srp_rzall>
+    if (k == nd1) goto <srp_rzall_end>;
+    dec_stdig(ea1, n1, k, z0, sgnR);
+    k = k + 1;
+    goto <srp_rzall>;
+<srp_rzall_end>
+    iszero = 1;
+    goto <srp_done>;
+<srp_r_main>
+    # Single upward pass over source positions p = 0..nd1 (one extra for the
+    # rounding cry); the rounding digit r is added at p = shn-1;
+    # result[p-shn] is stored once p >= shn. The in-place update is safe:
+    # result[p-shn] is always below the source position p being read.
+    rc = 0;
+    p = 0;
+<srp_r>
+    if (p == nd1p) goto <srp_r_end>;
+    inb = (p < nd1);
+    kk = p * zext(inb);
+    dec_digit(ea1, n1, kk, d);
+    d = d * inb;
+    add = ((p == shn - 1) & (shn != 0)) * r;
+    t = d + add + rc;
+    rp = t - 10 * (t >= 10);
+    rc = (t >= 10);
+    if (p < shn) goto <srp_r_next>;
+    kk = p - shn;
+    if (kk == nd1) goto <srp_r_next>;
+    iszero = iszero & (rp == 0);
+    dec_stdig(ea1, n1, kk, rp, sgnR);
+<srp_r_next>
+    p = p + 1;
+    goto <srp_r>;
+<srp_r_end>
+    # High result positions k > nd1-shn hold r_{k+shn} = 0 but were never
+    # stored (the main loop only reaches p = nd1); zero them explicitly.
+    k = nd1;
+<srp_rz>
+    if (k == 0) goto <srp_rz_end>;
+    k = k - 1;
+    if (k + shn <= nd1) goto <srp_rz_end>;
+    dec_stdig(ea1, n1, k, z0, sgnR);
+    goto <srp_rz>;
+<srp_rz_end>
+<srp_done>
+    if (iszero == 0) goto <srp_nofix>;
+    b = *:1 (ea1 + n1 - 1);
+    *:1 (ea1 + n1 - 1) = (b & 0xf0) | 0xc;
+<srp_nofix>
+    cc = 3 * ovf + (1 - ovf) * ((1 - iszero) * (1 + (1 - neg1)));
+}
+
+# MP: MULTIPLY DECIMAL. op1 = op1 * op2 (packed). Multi-precision decimal
+# multiply via base-1e8 limbs in :8 arithmetic (31-digit products fit in four
+# limbs). Product sign follows the algebra; the product replaces operand 1.
+# CC is UNCHANGED (PoP). The L2<=7 / L2<L1 specification check and the
+# "n2 leading zero bytes" data exception are not enforced (TODO); a product
+# that does not fit the field is truncated.
+:MP "MP " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xFC & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8; local nd1:8; local nd2:8;
+    local b:1; local s1:1; local s2:1;
+    local neg1:1; local neg2:1; local sgnR:1;
+    local A0:8; local A1:8; local A2:8; local A3:8;
+    local B0:8; local B1:8; local B2:8; local B3:8;
+    local P0:8; local P1:8; local P2:8; local P3:8;
+    local c:8; local t:8; local t8:8; local k:8; local d1:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    n1 = SSb_L1 + 1;
+    n2 = SSb_L2 + 1;
+    nd1 = 2 * n1 - 1;
+    nd2 = 2 * n2 - 1;
+    b = *:1 (ea1 + n1 - 1);
+    s1 = b & 0xf;
+    b = *:1 (ea2 + n2 - 1);
+    s2 = b & 0xf;
+    neg1 = (s1 == 0xd) | (s1 == 0xb);
+    neg2 = (s2 == 0xd) | (s2 == 0xb);
+    sgnR = 0xc | (neg1 ^ neg2);
+    parse_limb8(ea1, n1, nd1, 0, A0);
+    parse_limb8(ea1, n1, nd1, 8, A1);
+    parse_limb8(ea1, n1, nd1, 16, A2);
+    parse_limb8(ea1, n1, nd1, 24, A3);
+    parse_limb8(ea2, n2, nd2, 0, B0);
+    parse_limb8(ea2, n2, nd2, 8, B1);
+    parse_limb8(ea2, n2, nd2, 16, B2);
+    parse_limb8(ea2, n2, nd2, 24, B3);
+    # 16 partial products folded into 4 base-1e8 limbs. High limbs (10^32 and
+    # up) are dropped; valid products are < 10^31.
+    P0 = A0 * B0;
+    P1 = A0 * B1 + A1 * B0;
+    P2 = A0 * B2 + A1 * B1 + A2 * B0;
+    P3 = A0 * B3 + A1 * B2 + A2 * B1 + A3 * B0;
+    # normalize base-1e8 carries (each < 4e16 + carry, no :8 overflow)
+    c = P0 / 100000000; P0 = P0 - 100000000 * c; P1 = P1 + c;
+    c = P1 / 100000000; P1 = P1 - 100000000 * c; P2 = P2 + c;
+    c = P2 / 100000000; P2 = P2 - 100000000 * c; P3 = P3 + c;
+    c = P3 / 100000000; P3 = P3 - 100000000 * c;
+    # store the 32 limb digits as packed, keeping the low nd1
+    t = P0; k = 0;
+<mp_store>
+    if (k == 32) goto <mp_end>;
+    if (k != 8) goto <mp_sw1>;
+    t = P1;
+<mp_sw1>
+    if (k != 16) goto <mp_sw2>;
+    t = P2;
+<mp_sw2>
+    if (k != 24) goto <mp_sw3>;
+    t = P3;
+<mp_sw3>
+    t8 = t - 10 * (t / 10);
+    d1 = t8[0,8];
+    if (k >= nd1) goto <mp_next>;
+    dec_stdig(ea1, n1, k, d1, sgnR);
+<mp_next>
+    t = t / 10;
+    k = k + 1;
+    goto <mp_store>;
+<mp_end>
+}
+
+# DP: DIVIDE DECIMAL. Dividend is operand 1, divisor operand 2. Quotient
+# occupies the leftmost L1-L2 bytes, remainder the rightmost L2+1 bytes of
+# operand 1. Long division digit-by-digit; the running remainder is kept as
+# four base-1e8 limbs in :8. Quotient sign follows the algebra, remainder
+# sign follows the dividend. CC is UNCHANGED (PoP). Divide-by-zero,
+# quotient-too-large and the L2<L1 specification check are TODO (the
+# operation is skipped gracefully when detected).
+:DP "DP " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xFD & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8; local nq:8; local nr:8;
+    local nd1:8; local nd2:8; local nqd:8; local nrd:8;
+    local l1f:8; local l2f:8;
+    local b:1; local s1:1; local s2:1;
+    local neg1:1; local neg2:1; local sgnQ:1; local sgnR:1;
+    local V0:8; local V1:8; local V2:8; local V3:8;
+    local R0:8; local R1:8; local R2:8; local R3:8;
+    local p:8; local Dp:1; local d:1;
+    local t0:8; local t1:8; local t2:8; local t3:8;
+    local b0:1; local b1:1; local b2:1; local b3:1;
+    local c:8; local q:8;
+    local t:8; local t8:8; local k:8; local d1:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    l1f = SSb_L1; l2f = SSb_L2;
+    if (l2f >= l1f) goto <dp_end>;
+    n1 = l1f + 1; n2 = l2f + 1;
+    nq = n1 - n2; nr = n2;
+    nd1 = 2 * n1 - 1; nd2 = 2 * n2 - 1;
+    nqd = 2 * nq - 1; nrd = 2 * nr - 1;
+    b = *:1 (ea1 + n1 - 1); s1 = b & 0xf;
+    b = *:1 (ea2 + n2 - 1); s2 = b & 0xf;
+    neg1 = (s1 == 0xd) | (s1 == 0xb);
+    neg2 = (s2 == 0xd) | (s2 == 0xb);
+    sgnQ = 0xc | (neg1 ^ neg2);
+    sgnR = 0xc | neg1;
+    parse_limb8(ea2, n2, nd2, 0, V0);
+    parse_limb8(ea2, n2, nd2, 8, V1);
+    parse_limb8(ea2, n2, nd2, 16, V2);
+    parse_limb8(ea2, n2, nd2, 24, V3);
+    if ((V0 | V1 | V2 | V3) == 0) goto <dp_end>;
+    R0 = 0; R1 = 0; R2 = 0; R3 = 0;
+    p = nd1 - 1;
+<dp_p>
+    # next dividend digit (high to low); quotient digits overwrite already-
+    # consumed high dividend digits, so the in-place update is safe
+    dec_digit(ea1, n1, p, Dp);
+    # R = R*10 + Dp (base-1e8 limbs)
+    c = zext(Dp);
+    t0 = R0 * 10 + c; q = t0 / 100000000; R0 = t0 - 100000000 * q; c = q;
+    t1 = R1 * 10 + c; q = t1 / 100000000; R1 = t1 - 100000000 * q; c = q;
+    t2 = R2 * 10 + c; q = t2 / 100000000; R2 = t2 - 100000000 * q; c = q;
+    t3 = R3 * 10 + c; q = t3 / 100000000; R3 = t3 - 100000000 * q; c = q;
+    # trial subtraction: d = largest with R >= d*V (R < 10*V, so d <= 9)
+    d = 0;
+<dp_try>
+    b0 = (R0 < V0);
+    t0 = R0 - V0;
+    b1 = (R1 < V1 + zext(b0));
+    t1 = R1 - V1 - zext(b0);
+    b2 = (R2 < V2 + zext(b1));
+    t2 = R2 - V2 - zext(b1);
+    b3 = (R3 < V3 + zext(b2));
+    t3 = R3 - V3 - zext(b2);
+    if (b3 != 0) goto <dp_try_end>;
+    R0 = t0; R1 = t1; R2 = t2; R3 = t3;
+    d = d + 1;
+    goto <dp_try>;
+<dp_try_end>
+    # store quotient digit (positions >= nqd hold leading zeros; a nonzero
+    # digit there would be quotient-too-large, TODO)
+    if (p >= nqd) goto <dp_next>;
+    dec_stdig(ea1, nq, p, d, sgnQ);
+<dp_next>
+    if (p == 0) goto <dp_rem>;
+    p = p - 1;
+    goto <dp_p>;
+<dp_rem>
+    # store remainder limbs as packed at (ea1+nq, nr)
+    t = R0; k = 0;
+<dp_r>
+    if (k == 32) goto <dp_end>;
+    if (k != 8) goto <dp_rw1>;
+    t = R1;
+<dp_rw1>
+    if (k != 16) goto <dp_rw2>;
+    t = R2;
+<dp_rw2>
+    if (k != 24) goto <dp_rw3>;
+    t = R3;
+<dp_rw3>
+    t8 = t - 10 * (t / 10);
+    d1 = t8[0,8];
+    if (k >= nrd) goto <dp_rn>;
+    dec_stdig(ea1 + nq, nr, k, d1, sgnR);
+<dp_rn>
+    t = t / 10;
+    k = k + 1;
+    goto <dp_r>;
+<dp_end>
+}
+
+# ---------------------------------------------------------------------------
+# Pack / unpack (SS-b / SS-f)
+# ---------------------------------------------------------------------------
+
+# PACK: second operand (zoned) -> packed at first operand. Each source byte's
+# low nibble becomes a packed digit; the sign comes from the HIGH (zone)
+# nibble of the rightmost source byte (PoP). CC unchanged.
+:PACK "PACK " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xF2 & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8;
+    local nd1:8; local nd2:8; local ndm:8;
+    local k:8; local kk:8;
+    local b:1; local d:1;
+    local in1:1; local in2:1; local gtm:1;
+    local sgn:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    n1 = SSb_L1 + 1;
+    n2 = SSb_L2 + 1;
+    # sign = high (zone) nibble of last source byte (preferred signs not forced)
+    b = *:1 (ea2 + n2 - 1);
+    sgn = (b >> 4) & 0xf;
+    nd1 = 2 * n1 - 1;
+    nd2 = n2;
+    gtm = (nd2 > nd1);
+    ndm = nd1 + zext(gtm) * (nd2 - nd1);
+    k = 0;
+<pack_loop>
+    if (k == ndm) goto <pack_end>;
+    in1 = (k < nd1);
+    in2 = (k < nd2);
+    kk = k * zext(in2);
+    # k-th digit from right of source = low nibble of byte (n2-1-k)
+    b = *:1 (ea2 + n2 - 1 - kk);
+    d = (b & 0xf) * in2;
+    if (in1 == 0) goto <pack_next>;
+    dec_stdig(ea1, n1, k, d, sgn);
+<pack_next>
+    k = k + 1;
+    goto <pack_loop>;
+<pack_end>
+}
+
+# UNPK: UNPACK. Packed second operand -> zoned at first operand. Each packed
+# digit becomes a byte; the zone is 0xF for every byte except the rightmost,
+# whose zone receives the packed sign (PoP). CC unchanged.
+:UNPK "UNPK " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xF3 & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8;
+    local nd1:8; local nd2:8;
+    local k:8; local kk:8;
+    local b:1; local d:1; local in2:1;
+    local sgn:1; local isz:1; local zone:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    n1 = SSb_L1 + 1;
+    n2 = SSb_L2 + 1;
+    nd1 = n1;
+    nd2 = 2 * n2 - 1;
+    # packed sign -> zone of the rightmost result byte
+    b = *:1 (ea2 + n2 - 1);
+    sgn = b & 0xf;
+    k = 0;
+<unpk_loop>
+    if (k == nd1) goto <unpk_end>;
+    in2 = (k < nd2);
+    kk = k * zext(in2);
+    dec_digit(ea2, n2, kk, d);
+    d = d * in2;
+    isz = (k == 0);
+    zone = ((sgn << 4) & 0xf0) * isz + 0xf0 * (1 - isz);
+    *:1 (ea1 + n1 - 1 - k) = zone | d;
+    k = k + 1;
+    goto <unpk_loop>;
+<unpk_end>
+}
+
+# MVO: MOVE WITH OFFSET. The second operand's nibbles are placed at the first
+# operand starting one nibble left of the rightmost (nibble 0 of the first
+# operand is unchanged, as are nibbles beyond the moved field). CC unchanged.
+:MVO "MVO " SSb_D1 "(" SSb_L1 "," SSb_B1 ")," SSb_D2 "(" SSb_L2 "," SSb_B2 ")" is SSb_OP=0xF1 & SSb_L1 & SSb_L2 & SSb_B1 & SSb_D1 & SSb_B2 & SSb_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8;
+    local nn1:8; local nn2:8;
+    local k:8; local kd:8;
+    local v:1;
+    ea_D12(ea1, SSb_B1, zero, SSb_D1);
+    ea_D12(ea2, SSb_B2, zero, SSb_D2);
+    n1 = SSb_L1 + 1;
+    n2 = SSb_L2 + 1;
+    nn1 = 2 * n1;
+    nn2 = 2 * n2;
+    k = 0;
+<mvo_loop>
+    if (k == nn2) goto <mvo_end>;
+    nib(ea2, n2, k, v);
+    kd = k + 1;
+    if (kd >= nn1) goto <mvo_next>;
+    stnib(ea1, n1, kd, v);
+<mvo_next>
+    k = k + 1;
+    goto <mvo_loop>;
+<mvo_end>
+}
+
+# PKA: PACK ASCII. The L2+1-byte ASCII second operand (low nibble = digit) is
+# packed into the 16-byte first operand; the sign is forced to positive
+# (0xC). The source is logically left-extended with zeros. CC unchanged.
+:PKA "PKA " SSf_D1 "(" SSf_B1 ")," SSf_D2 "(" SSf_L2 "," SSf_B2 ")" is SSf_OP=0xE9 & SSf_L2 & SSf_B1 & SSf_D1 & SSf_B2 & SSf_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8;
+    local nd1:8;
+    local k:8; local kk:8;
+    local b:1; local d:1; local in2:1;
+    local sgn:1;
+    ea_D12(ea1, SSf_B1, zero, SSf_D1);
+    ea_D12(ea2, SSf_B2, zero, SSf_D2);
+    n1 = 16;
+    n2 = SSf_L2 + 1;
+    sgn = 0xc;
+    nd1 = 2 * n1 - 1;
+    k = 0;
+<pka_loop>
+    if (k == nd1) goto <pka_end>;
+    in2 = (k < n2);
+    kk = k * zext(in2);
+    b = *:1 (ea2 + n2 - 1 - kk);
+    d = (b & 0xf) * in2;
+    dec_stdig(ea1, n1, k, d, sgn);
+    k = k + 1;
+    goto <pka_loop>;
+<pka_end>
+}
+
+# PKU: PACK UNICODE. Like PKA but the second operand holds 2-byte big-endian
+# characters (length L2+1 must be even); the low byte's low nibble is the
+# digit. Sign forced positive. CC unchanged.
+:PKU "PKU " SSf_D1 "(" SSf_B1 ")," SSf_D2 "(" SSf_L2 "," SSf_B2 ")" is SSf_OP=0xE1 & SSf_L2 & SSf_B1 & SSf_D1 & SSf_B2 & SSf_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local n2:8; local nc:8;
+    local nd1:8;
+    local k:8; local kk:8;
+    local b:1; local d:1; local in2:1;
+    local sgn:1;
+    ea_D12(ea1, SSf_B1, zero, SSf_D1);
+    ea_D12(ea2, SSf_B2, zero, SSf_D2);
+    n1 = 16;
+    n2 = SSf_L2 + 1;
+    nc = n2 / 2;
+    sgn = 0xc;
+    nd1 = 2 * n1 - 1;
+    k = 0;
+<pku_loop>
+    if (k == nd1) goto <pku_end>;
+    in2 = (k < nc);
+    kk = k * zext(in2);
+    # k-th character from the right: low byte at ea2+n2-1-2*kk
+    b = *:1 (ea2 + n2 - 1 - 2 * kk);
+    d = (b & 0xf) * in2;
+    dec_stdig(ea1, n1, k, d, sgn);
+    k = k + 1;
+    goto <pku_loop>;
+<pku_end>
+}
+
+# ---------------------------------------------------------------------------
+# Edit (SS-a): ED, EDMK
+# ---------------------------------------------------------------------------
+
+# ED: EDIT. Expand the packed source into the pattern. The first pattern byte
+# is the fill byte. Pattern controls: 0x20 = digit selector, 0x21 =
+# significance starter, 0x22 = field separator; anything else is a message
+# byte copied when significant, else replaced by fill. Source digits get zone
+# 0xF. CC: 0 = last field zero/empty, 1 = negative, 2 = positive.
+# The significance state and "field was nonzero" are carried in locals.
+:ED "ED " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xDE & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8; local ea2:8;
+    local n:8;
+    local i:8;
+    local pat:1; local fill:1;
+    local sb:8; local ul:1;
+    local d:1; local hs:1; local sgn:1; local sb2:8; local ul2:1;
+    local sig:1; local nz:1; local neg:1;
+    local out:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    n = SSa_L + 1;
+    fill = *:1 ea1;
+    sb = 0; ul = 1;
+    sig = 0; nz = 0; neg = 0;
+    i = 0;
+<ed_loop>
+    if (i == n) goto <ed_end>;
+    pat = *:1 (ea1 + i);
+    # digit selector?
+    if (pat != 0x20) goto <ed_not20>;
+    ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2);
+    sb = sb2; ul = ul2;
+    nz = nz | (d != 0);
+    neg = neg | (((sgn == 0xb) | (sgn == 0xd)) & hs);
+    sig = 1;
+    out = 0xf0 | d;
+    goto <ed_store>;
+<ed_not20>
+    if (pat != 0x21) goto <ed_not21>;
+    # significance starter: fetch digit; significant only if nonzero (or if
+    # significance already started)
+    ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2);
+    sb = sb2; ul = ul2;
+    nz = nz | (d != 0);
+    neg = neg | (((sgn == 0xb) | (sgn == 0xd)) & hs);
+    sig = sig | (d != 0);
+    out = (0xf0 | d) * sig + fill * (1 - sig);
+    goto <ed_store>;
+<ed_not21>
+    if (pat != 0x22) goto <ed_msg>;
+    # field separator: like 0x20 but ends significance if field was all zero
+    ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2);
+    sb = sb2; ul = ul2;
+    nz = nz | (d != 0);
+    neg = neg | (((sgn == 0xb) | (sgn == 0xd)) & hs);
+    sig = 1;
+    out = 0xf0 | d;
+    # a field separator after the field: significance for the NEXT field
+    # restarts only if this field had a nonzero digit; model by resetting
+    # sig when the digit just stored was the field's last significant one.
+    # (Simplification: separators behave as digit selectors here; the
+    # multi-field significance restart is not tracked.)
+    goto <ed_store>;
+<ed_msg>
+    # message byte: copied when significant, else fill
+    out = pat * sig + fill * (1 - sig);
+<ed_store>
+    *:1 (ea1 + i) = out;
+    i = i + 1;
+    goto <ed_loop>;
+<ed_end>
+    # cc: 0 if the last field was zero/empty (nz=0), else 1=negative, 2=positive
+    cc = nz * (1 + (1 - neg));
+}
+
+# EDMK: EDIT AND MARK. Like ED, but the address of the first significant
+# result byte is also placed in general register 1.
+:EDMK "EDMK " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xDF & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8; local ea2:8;
+    local n:8;
+    local i:8;
+    local pat:1; local fill:1;
+    local sb:8; local ul:1;
+    local d:1; local hs:1; local sgn:1; local sb2:8; local ul2:1;
+    local sig:1; local nz:1; local neg:1;
+    local out:1;
+    local marked:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    n = SSa_L + 1;
+    fill = *:1 ea1;
+    sb = 0; ul = 1;
+    sig = 0; nz = 0; neg = 0; marked = 0;
+    i = 0;
+<edmk_loop>
+    if (i == n) goto <edmk_end>;
+    pat = *:1 (ea1 + i);
+    if (pat != 0x20) goto <edmk_not20>;
+    ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2);
+    sb = sb2; ul = ul2;
+    nz = nz | (d != 0);
+    neg = neg | (((sgn == 0xb) | (sgn == 0xd)) & hs);
+    sig = 1;
+    out = 0xf0 | d;
+    goto <edmk_store>;
+<edmk_not20>
+    if (pat != 0x21) goto <edmk_not21>;
+    ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2);
+    sb = sb2; ul = ul2;
+    nz = nz | (d != 0);
+    neg = neg | (((sgn == 0xb) | (sgn == 0xd)) & hs);
+    sig = sig | (d != 0);
+    out = (0xf0 | d) * sig + fill * (1 - sig);
+    goto <edmk_store>;
+<edmk_not21>
+    if (pat != 0x22) goto <edmk_msg>;
+    ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2);
+    sb = sb2; ul = ul2;
+    nz = nz | (d != 0);
+    neg = neg | (((sgn == 0xb) | (sgn == 0xd)) & hs);
+    sig = 1;
+    out = 0xf0 | d;
+    goto <edmk_store>;
+<edmk_msg>
+    out = pat * sig + fill * (1 - sig);
+<edmk_store>
+    *:1 (ea1 + i) = out;
+    # mark: first byte stored while significant
+    if (marked != 0) goto <edmk_next>;
+    if (sig == 0) goto <edmk_next>;
+    r1 = ea1 + i;
+    marked = 1;
+<edmk_next>
+    i = i + 1;
+    goto <edmk_loop>;
+<edmk_end>
+    cc = nz * (1 + (1 - neg));
+}
+
+# ---------------------------------------------------------------------------
+# Translate / move-nibble (SS-a)
+# ---------------------------------------------------------------------------
+
+# TR: TRANSLATE. dest[i] = table[src[i]] for i in 0..L. CC unchanged.
+:TR "TR " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xDC & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8; local ea2:8;
+    local n:8; local i:8;
+    local s:1; local t:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    n = SSa_L + 1;
+    i = 0;
+<tr_loop>
+    if (i == n) goto <tr_end>;
+    s = *:1 (ea1 + i);
+    t = *:1 (ea2 + zext(s));
+    *:1 (ea1 + i) = t;
+    i = i + 1;
+    goto <tr_loop>;
+<tr_end>
+}
+
+# TRT: TRANSLATE AND TEST. Scan dest left-to-right; t = table[byte]; on the
+# first nonzero t: R1 = address of that byte, R2.low = t, CC = 1 (bytes
+# remain) or 2 (last byte). No nonzero found: CC = 0.
+:TRT "TRT " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xDD & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8; local ea2:8;
+    local n:8; local i:8; local last:8;
+    local s:1; local t:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    n = SSa_L + 1;
+    last = n - 1;
+    i = 0;
+<trt_loop>
+    if (i == n) goto <trt_none>;
+    s = *:1 (ea1 + i);
+    t = *:1 (ea2 + zext(s));
+    if (t == 0) goto <trt_next>;
+    r1 = ea1 + i;
+    r2 = (r2 & 0xffffffffffffff00) | zext(t);
+    cc = 1 + (i == last);
+    goto <trt_end>;
+<trt_next>
+    i = i + 1;
+    goto <trt_loop>;
+<trt_none>
+    cc = 0;
+<trt_end>
+}
+
+# TRTR: TRANSLATE AND TEST REVERSE. Like TRT but the first-operand address
+# designates the RIGHTMOST byte and the scan goes right-to-left.
+:TRTR "TRTR " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xD0 & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8; local ea2:8;
+    local n:8; local i:8;
+    local s:1; local t:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    n = SSa_L + 1;
+    i = 0;
+<trtr_loop>
+    if (i == n) goto <trtr_none>;
+    s = *:1 (ea1 - i);
+    t = *:1 (ea2 + zext(s));
+    if (t == 0) goto <trtr_next>;
+    r1 = ea1 - i;
+    r2 = (r2 & 0xffffffffffffff00) | zext(t);
+    cc = 1 + (i == n - 1);
+    goto <trtr_end>;
+<trtr_next>
+    i = i + 1;
+    goto <trtr_loop>;
+<trtr_none>
+    cc = 0;
+<trtr_end>
+}
+
+# MVN: MOVE NUMERICS. dest[i].low-nibble = src[i].low-nibble; zone nibbles of
+# dest unchanged. CC unchanged.
+:MVN "MVN " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xD1 & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8; local ea2:8;
+    local n:8; local i:8;
+    local a:1; local b:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    n = SSa_L + 1;
+    i = 0;
+<mvn_loop>
+    if (i == n) goto <mvn_end>;
+    a = *:1 (ea1 + i);
+    b = *:1 (ea2 + i);
+    *:1 (ea1 + i) = (a & 0xf0) | (b & 0x0f);
+    i = i + 1;
+    goto <mvn_loop>;
+<mvn_end>
+}
+
+# MVZ: MOVE ZONES. dest[i].high-nibble = src[i].high-nibble; numeric nibbles
+# of dest unchanged. CC unchanged.
+:MVZ "MVZ " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xD3 & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8; local ea2:8;
+    local n:8; local i:8;
+    local a:1; local b:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    n = SSa_L + 1;
+    i = 0;
+<mvz_loop>
+    if (i == n) goto <mvz_end>;
+    a = *:1 (ea1 + i);
+    b = *:1 (ea2 + i);
+    *:1 (ea1 + i) = (a & 0x0f) | (b & 0xf0);
+    i = i + 1;
+    goto <mvz_loop>;
+<mvz_end>
+}
+
+# UNPKA: UNPACK ASCII. The packed second operand becomes ASCII digits
+# (0x30|digit) at the first operand, processed right-to-left; the sign comes
+# from the low nibble of the last source byte used. Digits are not checked.
+# CC unchanged.
+:UNPKA "UNPKA " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xEA & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8; local ea2:8;
+    local n1:8; local ns:8;
+    local k:8;
+    local b:1; local s:1; local d:1;
+    local pos:1; local neg:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    n1 = SSa_L + 1;
+    # source bytes needed for n1 digits + sign
+    ns = (n1 + 2) / 2;
+    # the sign is checked but not transferred: CC 0 = sign A/C/E/F,
+    # 1 = sign B/D, 3 = invalid sign (PoP)
+    b = *:1 (ea2 + ns - 1);
+    s = b & 0xf;
+    pos = (s == 0xa) | (s == 0xc) | (s == 0xe) | (s == 0xf);
+    neg = (s == 0xb) | (s == 0xd);
+    cc = 3 * (1 - pos - neg) + neg;
+    k = 0;
+<unpka_loop>
+    if (k == n1) goto <unpka_end>;
+    dec_digit(ea2, ns, k, d);
+    *:1 (ea1 + n1 - 1 - k) = 0x30 | d;
+    k = k + 1;
+    goto <unpka_loop>;
+<unpka_end>
+}
+
+# TP: TEST DECIMAL. Check the packed first operand for valid digit and sign
+# codes. CC: 0 = all valid; 1 = digits valid, sign invalid; 2 = a digit
+# invalid, sign valid; 3 = a digit invalid and sign invalid.
+:TP "TP " RSLa_D1 "(" RSLa_L1 "," RSLa_B1 ")" is RSLa_OP=0xEB & RSLa_L1 & RSLa_B1 & RSLa_D1 & RSLa_OP2=0xC0
+{
+    local ea1:8;
+    local n1:8; local nd1:8;
+    local k:8;
+    local b:1; local s:1;
+    local d:1; local dv:1; local sv:1;
+    ea_D12(ea1, RSLa_B1, zero, RSLa_D1);
+    n1 = RSLa_L1 + 1;
+    nd1 = 2 * n1 - 1;
+    b = *:1 (ea1 + n1 - 1);
+    s = b & 0xf;
+    sv = (s == 0xa) | (s == 0xb) | (s == 0xc) | (s == 0xd) | (s == 0xe) | (s == 0xf);
+    dv = 1;
+    k = 0;
+<tp_loop>
+    if (k == nd1) goto <tp_end>;
+    dec_digit(ea1, n1, k, d);
+    dv = dv & (d <= 9);
+    k = k + 1;
+    goto <tp_loop>;
+<tp_end>
+    cc = (1 - dv) * 2 + (1 - sv);
+    # cc: dv&sv=0; dv&!sv=1; !dv&sv=2; !dv&!sv=3
+}
+
+# ---------------------------------------------------------------------------
+# String instructions (RRE): MVST, CLST, SRST
+#
+# The terminator/search character is bits 56-63 of general register 0.
+# These instructions may stop after a CPU-determined number of bytes (CC=3);
+# this spec always runs to completion, which is architecturally valid. A
+# large-but-finite loop bound is used; hitting it yields CC=3 (partial),
+# also architecturally valid.
+# ---------------------------------------------------------------------------
+
+# MVST: MOVE STRING. Move bytes from (R2) to (R1) until the R0 terminator
+# byte is moved. R1/R2 are left pointing past the terminator. CC=1 complete.
+:MVST "MVST " RRE_R1 "," RRE_R2 is RRE_OP=0xB255 & RRE_R1 & RRE_R2
+{
+    local ea1:8; local ea2:8;
+    local term:8;
+    local b:1;
+    local i:8;
+    local done:1;
+    ea1 = RRE_R1;
+    ea2 = RRE_R2;
+    term = r0 & 0xff;
+    i = 0;
+    done = 0;
+<mvst_loop>
+    if (i == 0x1000) goto <mvst_partial>;
+    b = *:1 ea2;
+    *:1 ea1 = b;
+    ea1 = ea1 + 1;
+    ea2 = ea2 + 1;
+    done = (zext(b) == term);
+    if (done == 0) goto <mvst_next>;
+    goto <mvst_done>;
+<mvst_next>
+    i = i + 1;
+    goto <mvst_loop>;
+<mvst_partial>
+    cc = 3;
+    goto <mvst_update>;
+<mvst_done>
+    cc = 1;
+<mvst_update>
+    RRE_R1 = ea1;
+    RRE_R2 = ea2;
+}
+
+# CLST: COMPARE LOGICAL STRING. Compare bytes at (R1)/(R2) until a
+# terminator is found in either operand. The terminator participates as a
+# byte value. CC: 0=equal endings, 1=first low, 2=first high, 3=partial.
+# R1/R2 point at the deciding bytes on exit.
+:CLST "CLST " RRE_R1 "," RRE_R2 is RRE_OP=0xB25D & RRE_R1 & RRE_R2
+{
+    local ea1:8; local ea2:8;
+    local term:8;
+    local b1:1; local b2:1;
+    local i:8;
+    ea1 = RRE_R1;
+    ea2 = RRE_R2;
+    term = r0 & 0xff;
+    i = 0;
+<clst_loop>
+    if (i == 0x1000) goto <clst_partial>;
+    b1 = *:1 ea1;
+    b2 = *:1 ea2;
+    if (b1 != b2) goto <clst_diff>;
+    if (zext(b1) == term) goto <clst_equal>;
+    ea1 = ea1 + 1;
+    ea2 = ea2 + 1;
+    i = i + 1;
+    goto <clst_loop>;
+<clst_diff>
+    cc = 1 + (b1 > b2);
+    goto <clst_update>;
+<clst_equal>
+    cc = 0;
+    goto <clst_update>;
+<clst_partial>
+    cc = 3;
+<clst_update>
+    RRE_R1 = ea1;
+    RRE_R2 = ea2;
+}
+
+# SRST: SEARCH STRING. Search [R1,R2) for the R0 character. Found: R1 =
+# address, CC=1. Not found: R1 = R2, CC=2. CC=3 on partial (bound hit).
+:SRST "SRST " RRE_R1 "," RRE_R2 is RRE_OP=0xB25E & RRE_R1 & RRE_R2
+{
+    local ea1:8; local ea2:8;
+    local ch:8;
+    local b:1;
+    ea1 = RRE_R1;
+    ea2 = RRE_R2;
+    ch = r0 & 0xff;
+<srst_loop>
+    if (ea1 == ea2) goto <srst_notfound>;
+    b = *:1 ea1;
+    if (zext(b) == ch) goto <srst_found>;
+    ea1 = ea1 + 1;
+    # bound the scan: a CPU may stop early; report partial (CC=3)
+    if ((ea1 - RRE_R1) == 0x1000) goto <srst_partial>;
+    goto <srst_loop>;
+<srst_found>
+    cc = 1;
+    goto <srst_update>;
+<srst_notfound>
+    cc = 2;
+    goto <srst_update>;
+<srst_partial>
+    cc = 3;
+<srst_update>
+    RRE_R1 = ea1;
+}
+
+# ---------------------------------------------------------------------------
+# Extended translate (RRE / RRF-c) and long compares (RS-a / RSY-a)
+# ---------------------------------------------------------------------------
+
+# TRE: TRANSLATE EXTENDED. Like TR but the table operand is addressed with
+# a 64-bit address in R2. dest[i] = table[src[i]].
+# TODO(verify): exact exception/interruption behavior not modeled.
+# TRE: TRANSLATE EXTENDED. R1/R1+1 hold the first-operand address and
+# 64-bit length, R2 the translation-table address, and the low byte of
+# R0 the test byte. Bytes are translated left to right via the 256-byte
+# table; the loop stops before translating a byte equal to the test byte.
+# CC 0 = operand exhausted, 1 = test byte encountered. CPU partial
+# completion (CC=3) is approximated as run-to-completion. An odd R1 is a
+# specification exception (TODO: modeled as a no-op).
+:TRE "TRE " RREn_R1 "," RREn_R2 is RREn_OP=0xB2A5 & RREn_R1 & RREn_R2 & RREn_R1N & RREn_R2N
+{
+    local r1v:8; local r2v:8;
+    local ea:8; local len:8; local tbl:8; local tbc:8;
+    local i:8; local sb:1; local tb:1;
+    # RREn_R1N/RREn_R2N are the raw field NUMBERS. (Reading the attached
+    # RREn_R1/RREn_R2 fields would yield the register VALUES, not the
+    # numbers -- the pre-RREn code compared values against 0,2,4,...,
+    # selecting the wrong pair whenever GR[R1] held an address.)
+    r1v = RREn_R1N; r2v = RREn_R2N;
+    if ((r1v & 1) != 0) goto <tre_end>;
+    # R1 selects the even/odd address/length pair
+    if (r1v != 0) goto <tre_p1>;
+    ea = r0; len = r1;
+    goto <tre_tbl>;
+<tre_p1>
+    if (r1v != 2) goto <tre_p2>;
+    ea = r2; len = r3;
+    goto <tre_tbl>;
+<tre_p2>
+    if (r1v != 4) goto <tre_p3>;
+    ea = r4; len = r5;
+    goto <tre_tbl>;
+<tre_p3>
+    if (r1v != 6) goto <tre_p4>;
+    ea = r6; len = r7;
+    goto <tre_tbl>;
+<tre_p4>
+    if (r1v != 8) goto <tre_p5>;
+    ea = r8; len = r9;
+    goto <tre_tbl>;
+<tre_p5>
+    if (r1v != 10) goto <tre_p6>;
+    ea = r10; len = r11;
+    goto <tre_tbl>;
+<tre_p6>
+    if (r1v != 12) goto <tre_p7>;
+    ea = r12; len = r13;
+    goto <tre_tbl>;
+<tre_p7>
+    ea = r14; len = r15;
+    goto <tre_tbl>;
+    # R2 selects the table address register
+<tre_tbl>
+    if (r2v != 0) goto <tre_t1>;
+    tbl = r0;
+    goto <tre_go>;
+<tre_t1>
+    if (r2v != 1) goto <tre_t2>;
+    tbl = r1;
+    goto <tre_go>;
+<tre_t2>
+    if (r2v != 2) goto <tre_t3>;
+    tbl = r2;
+    goto <tre_go>;
+<tre_t3>
+    if (r2v != 3) goto <tre_t4>;
+    tbl = r3;
+    goto <tre_go>;
+<tre_t4>
+    if (r2v != 4) goto <tre_t5>;
+    tbl = r4;
+    goto <tre_go>;
+<tre_t5>
+    if (r2v != 5) goto <tre_t6>;
+    tbl = r5;
+    goto <tre_go>;
+<tre_t6>
+    if (r2v != 6) goto <tre_t7>;
+    tbl = r6;
+    goto <tre_go>;
+<tre_t7>
+    if (r2v != 7) goto <tre_t8>;
+    tbl = r7;
+    goto <tre_go>;
+<tre_t8>
+    if (r2v != 8) goto <tre_t9>;
+    tbl = r8;
+    goto <tre_go>;
+<tre_t9>
+    if (r2v != 9) goto <tre_t10>;
+    tbl = r9;
+    goto <tre_go>;
+<tre_t10>
+    if (r2v != 10) goto <tre_t11>;
+    tbl = r10;
+    goto <tre_go>;
+<tre_t11>
+    if (r2v != 11) goto <tre_t12>;
+    tbl = r11;
+    goto <tre_go>;
+<tre_t12>
+    if (r2v != 12) goto <tre_t13>;
+    tbl = r12;
+    goto <tre_go>;
+<tre_t13>
+    if (r2v != 13) goto <tre_t14>;
+    tbl = r13;
+    goto <tre_go>;
+<tre_t14>
+    if (r2v != 14) goto <tre_t15>;
+    tbl = r14;
+    goto <tre_go>;
+<tre_t15>
+    tbl = r15;
+    goto <tre_go>;
+<tre_go>
+    tbc = r0 & 0xff;
+    i = 0;
+<tre_loop>
+    if (i == len) goto <tre_cc0>;
+    sb = *:1 (ea + i);
+    if (zext(sb) != tbc) goto <tre_tr>;
+    cc = 1;
+    goto <tre_upd>;
+<tre_tr>
+    tb = *:1 (tbl + zext(sb));
+    *:1 (ea + i) = tb;
+    i = i + 1;
+    goto <tre_loop>;
+<tre_cc0>
+    cc = 0;
+    # update the address/length pair
+<tre_upd>
+    if (r1v != 0) goto <tre_w1>;
+    r0 = ea + i; r1 = len - i;
+    goto <tre_end>;
+<tre_w1>
+    if (r1v != 2) goto <tre_w2>;
+    r2 = ea + i; r3 = len - i;
+    goto <tre_end>;
+<tre_w2>
+    if (r1v != 4) goto <tre_w3>;
+    r4 = ea + i; r5 = len - i;
+    goto <tre_end>;
+<tre_w3>
+    if (r1v != 6) goto <tre_w4>;
+    r6 = ea + i; r7 = len - i;
+    goto <tre_end>;
+<tre_w4>
+    if (r1v != 8) goto <tre_w5>;
+    r8 = ea + i; r9 = len - i;
+    goto <tre_end>;
+<tre_w5>
+    if (r1v != 10) goto <tre_w6>;
+    r10 = ea + i; r11 = len - i;
+    goto <tre_end>;
+<tre_w6>
+    if (r1v != 12) goto <tre_w7>;
+    r12 = ea + i; r13 = len - i;
+    goto <tre_end>;
+<tre_w7>
+    r14 = ea + i; r15 = len - i;
+<tre_end>
+}
+
+# TRTE: TRANSLATE AND TEST EXTENDED (PoP 7-470). RRF-c format, M3=0
+# only: one-byte argument characters, one-byte function codes, 256-byte
+# function-code table. R1/R1+1 = 64-bit operand address/length; GR1 =
+# function-code table address (treated as doubleword-aligned). A nonzero
+# function code is inserted into R2 (bits 56-63, rest zeroed): CC=1 with
+# R1 = address of the argument byte, R1+1 decremented by the bytes
+# processed. Operand exhausted: R1 += length, R1+1 = 0, R2 = 0, CC=0.
+# CC=3 (CPU-determined partial completion) is approximated as
+# run-to-completion, as for TRE. Odd R1: specification exception, modeled
+# as a no-op. M3!=0 (ETF2) not covered.
+:TRTE "TRTE " RRFcn_R1 "," RRFcn_R2 is RRFcn_OP=0xB9BF & RRFcn_M3=0 & RRFcn_R1 & RRFcn_R2 & RRFcn_R1N & RRFcn_R2N
+{
+    local r1v:8; local r2v:8;
+    local ea:8; local len:8; local tbl:8;
+    local i:8; local ab:1; local fc:1;
+    local na:8; local nl:8; local fcv:8;
+    r1v = RRFcn_R1N; r2v = RRFcn_R2N;
+    if ((r1v & 1) != 0) goto <trte_end>;
+    # R1 selects the even/odd address/length pair
+    if (r1v != 0) goto <trte_p1>;
+    ea = r0; len = r1;
+    goto <trte_tbl>;
+<trte_p1>
+    if (r1v != 2) goto <trte_p2>;
+    ea = r2; len = r3;
+    goto <trte_tbl>;
+<trte_p2>
+    if (r1v != 4) goto <trte_p3>;
+    ea = r4; len = r5;
+    goto <trte_tbl>;
+<trte_p3>
+    if (r1v != 6) goto <trte_p4>;
+    ea = r6; len = r7;
+    goto <trte_tbl>;
+<trte_p4>
+    if (r1v != 8) goto <trte_p5>;
+    ea = r8; len = r9;
+    goto <trte_tbl>;
+<trte_p5>
+    if (r1v != 10) goto <trte_p6>;
+    ea = r10; len = r11;
+    goto <trte_tbl>;
+<trte_p6>
+    if (r1v != 12) goto <trte_p7>;
+    ea = r12; len = r13;
+    goto <trte_tbl>;
+<trte_p7>
+    ea = r14; len = r15;
+<trte_tbl>
+    # function-code table treated as doubleword-aligned (PoP 7-470)
+    tbl = r1 & 0xfffffffffffffff8;
+    i = 0;
+<trte_l>
+    if (i == len) goto <trte_exh>;
+    ab = *:1 (ea + i);
+    fc = *:1 (tbl + zext(ab));
+    if (fc != 0) goto <trte_found>;
+    i = i + 1;
+    goto <trte_l>;
+<trte_found>
+    na = ea + i; nl = len - i; fcv = zext(fc);
+    cc = 1;
+    goto <trte_wb>;
+<trte_exh>
+    na = ea + len; nl = 0; fcv = 0;
+    cc = 0;
+    goto <trte_wb>;
+<trte_wb>
+    # R2 first, then the R1 pair: on R1/R2 overlap the pair update wins
+    # (PoP 7-470: R2=R1 -> address placed; R2=R1+1 -> length placed).
+    if (r2v != 0) goto <trte_f1>;
+    r0 = fcv;
+    goto <trte_fdone>;
+<trte_f1>
+    if (r2v != 1) goto <trte_f2>;
+    r1 = fcv;
+    goto <trte_fdone>;
+<trte_f2>
+    if (r2v != 2) goto <trte_f3>;
+    r2 = fcv;
+    goto <trte_fdone>;
+<trte_f3>
+    if (r2v != 3) goto <trte_f4>;
+    r3 = fcv;
+    goto <trte_fdone>;
+<trte_f4>
+    if (r2v != 4) goto <trte_f5>;
+    r4 = fcv;
+    goto <trte_fdone>;
+<trte_f5>
+    if (r2v != 5) goto <trte_f6>;
+    r5 = fcv;
+    goto <trte_fdone>;
+<trte_f6>
+    if (r2v != 6) goto <trte_f7>;
+    r6 = fcv;
+    goto <trte_fdone>;
+<trte_f7>
+    if (r2v != 7) goto <trte_f8>;
+    r7 = fcv;
+    goto <trte_fdone>;
+<trte_f8>
+    if (r2v != 8) goto <trte_f9>;
+    r8 = fcv;
+    goto <trte_fdone>;
+<trte_f9>
+    if (r2v != 9) goto <trte_f10>;
+    r9 = fcv;
+    goto <trte_fdone>;
+<trte_f10>
+    if (r2v != 10) goto <trte_f11>;
+    r10 = fcv;
+    goto <trte_fdone>;
+<trte_f11>
+    if (r2v != 11) goto <trte_f12>;
+    r11 = fcv;
+    goto <trte_fdone>;
+<trte_f12>
+    if (r2v != 12) goto <trte_f13>;
+    r12 = fcv;
+    goto <trte_fdone>;
+<trte_f13>
+    if (r2v != 13) goto <trte_f14>;
+    r13 = fcv;
+    goto <trte_fdone>;
+<trte_f14>
+    if (r2v != 14) goto <trte_f15>;
+    r14 = fcv;
+    goto <trte_fdone>;
+<trte_f15>
+    r15 = fcv;
+<trte_fdone>
+    if (r1v != 0) goto <trte_w1>;
+    r0 = na; r1 = nl;
+    goto <trte_wdone>;
+<trte_w1>
+    if (r1v != 2) goto <trte_w2>;
+    r2 = na; r3 = nl;
+    goto <trte_wdone>;
+<trte_w2>
+    if (r1v != 4) goto <trte_w3>;
+    r4 = na; r5 = nl;
+    goto <trte_wdone>;
+<trte_w3>
+    if (r1v != 6) goto <trte_w4>;
+    r6 = na; r7 = nl;
+    goto <trte_wdone>;
+<trte_w4>
+    if (r1v != 8) goto <trte_w5>;
+    r8 = na; r9 = nl;
+    goto <trte_wdone>;
+<trte_w5>
+    if (r1v != 10) goto <trte_w6>;
+    r10 = na; r11 = nl;
+    goto <trte_wdone>;
+<trte_w6>
+    if (r1v != 12) goto <trte_w7>;
+    r12 = na; r13 = nl;
+    goto <trte_wdone>;
+<trte_w7>
+    r14 = na; r15 = nl;
+<trte_wdone>
+<trte_end>
+}
+
+# TRTT: TRANSLATE TWO TO TWO (PoP 7-478). RRF-c format, opcode 0xB990,
+# M3=0 only: two-byte argument characters select two-byte function
+# characters from a 128K-byte table at GR1 (treated as
+# doubleword-aligned: ETF2-installed behavior; without ETF2 the table is
+# 4K-aligned per PoP). R1/R1+1 = 64-bit destination address and
+# second-operand length (BYTES, must be even); R2 = 64-bit second-operand
+# address. Table index is twice the argument character. Each selected
+# function character is compared against the test character in GR0 bits
+# 48-63 (M3=0, so the comparison is performed): equal -> CC=1 with
+# nothing stored and no register update for the matching character; else
+# the 2-byte character is stored at the destination. CC=0 when the
+# operand is exhausted. Updates: R1/R1+1 and R2 advanced past the
+# processed bytes (destination advances by the same amount as the source
+# for TRTT). CC=3 (CPU-determined partial completion) approximated as
+# run-to-completion. Odd R1 or odd length: specification exception,
+# modeled as a no-op. R1/R2 overlap: results unpredictable per PoP.
+# (An earlier SS-format TRTT at opcode 0xD9 was bogus -- 0xD9 is MVCK --
+# and has been removed.)
+:TRTT "TRTT " RRFcn_R1 "," RRFcn_R2 is RRFcn_OP=0xB990 & RRFcn_M3=0 & RRFcn_R1 & RRFcn_R2 & RRFcn_R1N & RRFcn_R2N
+{
+    # TRANSLATE TWO TO TWO (PoP 7-478): 2-byte 2nd-operand chars select
+    # 2-byte function chars from table at GR1.
+    local r1v:8; local r2v:8;
+    local da:8; local slen:8;
+    local sa:8;
+    local tbl:8;
+    local i:8; local nch:8; local b:2; local fc:2; local tst:2;
+    r1v = RRFcn_R1N; r2v = RRFcn_R2N;
+    if ((r1v & 1) != 0) goto <trtt_wend>;
+    if (r1v == 0) goto <trtt_r0>;
+    if (r1v == 2) goto <trtt_r2>;
+    if (r1v == 4) goto <trtt_r4>;
+    if (r1v == 6) goto <trtt_r6>;
+    if (r1v == 8) goto <trtt_r8>;
+    if (r1v == 10) goto <trtt_r10>;
+    if (r1v == 12) goto <trtt_r12>;
+    goto <trtt_r14>;
+<trtt_r0>
+    da = r0; slen = r1;
+    goto <trtt_sa>;
+<trtt_r2>
+    da = r2; slen = r3;
+    goto <trtt_sa>;
+<trtt_r4>
+    da = r4; slen = r5;
+    goto <trtt_sa>;
+<trtt_r6>
+    da = r6; slen = r7;
+    goto <trtt_sa>;
+<trtt_r8>
+    da = r8; slen = r9;
+    goto <trtt_sa>;
+<trtt_r10>
+    da = r10; slen = r11;
+    goto <trtt_sa>;
+<trtt_r12>
+    da = r12; slen = r13;
+    goto <trtt_sa>;
+<trtt_r14>
+    da = r14; slen = r15;
+    goto <trtt_sa>;
+<trtt_sa>
+    # odd second-operand length: specification exception, no-op
+    if ((slen & 1) != 0) goto <trtt_wend>;
+    if (r2v == 0) goto <trtt_s0>;
+    if (r2v == 1) goto <trtt_s1>;
+    if (r2v == 2) goto <trtt_s2>;
+    if (r2v == 3) goto <trtt_s3>;
+    if (r2v == 4) goto <trtt_s4>;
+    if (r2v == 5) goto <trtt_s5>;
+    if (r2v == 6) goto <trtt_s6>;
+    if (r2v == 7) goto <trtt_s7>;
+    if (r2v == 8) goto <trtt_s8>;
+    if (r2v == 9) goto <trtt_s9>;
+    if (r2v == 10) goto <trtt_s10>;
+    if (r2v == 11) goto <trtt_s11>;
+    if (r2v == 12) goto <trtt_s12>;
+    if (r2v == 13) goto <trtt_s13>;
+    if (r2v == 14) goto <trtt_s14>;
+    if (r2v == 15) goto <trtt_s15>;
+    goto <trtt_sdone>;
+<trtt_s0>
+    sa = r0;
+    goto <trtt_sdone>;
+<trtt_s1>
+    sa = r1;
+    goto <trtt_sdone>;
+<trtt_s2>
+    sa = r2;
+    goto <trtt_sdone>;
+<trtt_s3>
+    sa = r3;
+    goto <trtt_sdone>;
+<trtt_s4>
+    sa = r4;
+    goto <trtt_sdone>;
+<trtt_s5>
+    sa = r5;
+    goto <trtt_sdone>;
+<trtt_s6>
+    sa = r6;
+    goto <trtt_sdone>;
+<trtt_s7>
+    sa = r7;
+    goto <trtt_sdone>;
+<trtt_s8>
+    sa = r8;
+    goto <trtt_sdone>;
+<trtt_s9>
+    sa = r9;
+    goto <trtt_sdone>;
+<trtt_s10>
+    sa = r10;
+    goto <trtt_sdone>;
+<trtt_s11>
+    sa = r11;
+    goto <trtt_sdone>;
+<trtt_s12>
+    sa = r12;
+    goto <trtt_sdone>;
+<trtt_s13>
+    sa = r13;
+    goto <trtt_sdone>;
+<trtt_s14>
+    sa = r14;
+    goto <trtt_sdone>;
+<trtt_s15>
+    sa = r15;
+    goto <trtt_sdone>;
+<trtt_sdone>
+    tbl = r1 & 0xfffffffffffffff8;
+    tst = r0:2;
+    nch = slen >> 1;
+    i = 0;
+    cc = 0;
+<trtt_loop>
+    if (i == nch) goto <trtt_exh>;
+    b = *:2 sa;
+    fc = *:2 (tbl + (zext(b) << 1));
+    if (fc == tst) goto <trtt_match>;
+    *:2 da = fc;
+    sa = sa + 2; da = da + 2; i = i + 1;
+    goto <trtt_loop>;
+<trtt_match>
+    # matching character: not stored, registers not advanced past it
+    cc = 1;
+    goto <trtt_done>;
+<trtt_exh>
+    cc = 0;
+<trtt_done>
+    slen = slen - i * 2;
+    # write back R2 source address, then R1 pair (dest addr, remaining len)
+    if (r2v == 0) goto <trtt_w2r0>;
+    if (r2v == 1) goto <trtt_w2r1>;
+    if (r2v == 2) goto <trtt_w2r2>;
+    if (r2v == 3) goto <trtt_w2r3>;
+    if (r2v == 4) goto <trtt_w2r4>;
+    if (r2v == 5) goto <trtt_w2r5>;
+    if (r2v == 6) goto <trtt_w2r6>;
+    if (r2v == 7) goto <trtt_w2r7>;
+    if (r2v == 8) goto <trtt_w2r8>;
+    if (r2v == 9) goto <trtt_w2r9>;
+    if (r2v == 10) goto <trtt_w2r10>;
+    if (r2v == 11) goto <trtt_w2r11>;
+    if (r2v == 12) goto <trtt_w2r12>;
+    if (r2v == 13) goto <trtt_w2r13>;
+    if (r2v == 14) goto <trtt_w2r14>;
+    if (r2v == 15) goto <trtt_w2r15>;
+    goto <trtt_w2done>;
+<trtt_w2r0>
+    r0 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r1>
+    r1 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r2>
+    r2 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r3>
+    r3 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r4>
+    r4 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r5>
+    r5 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r6>
+    r6 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r7>
+    r7 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r8>
+    r8 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r9>
+    r9 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r10>
+    r10 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r11>
+    r11 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r12>
+    r12 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r13>
+    r13 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r14>
+    r14 = sa;
+    goto <trtt_w2done>;
+<trtt_w2r15>
+    r15 = sa;
+    goto <trtt_w2done>;
+<trtt_w2done>
+    if ((r1v & 1) != 0) goto <trtt_wend>;
+    if (r1v == 0) goto <trtt_w0>;
+    if (r1v == 2) goto <trtt_w2>;
+    if (r1v == 4) goto <trtt_w4>;
+    if (r1v == 6) goto <trtt_w6>;
+    if (r1v == 8) goto <trtt_w8>;
+    if (r1v == 10) goto <trtt_w10>;
+    if (r1v == 12) goto <trtt_w12>;
+    if (r1v == 14) goto <trtt_w14>;
+    goto <trtt_wend>;
+<trtt_w0>
+    r0 = da; r1 = slen;
+    goto <trtt_wend>;
+<trtt_w2>
+    r2 = da; r3 = slen;
+    goto <trtt_wend>;
+<trtt_w4>
+    r4 = da; r5 = slen;
+    goto <trtt_wend>;
+<trtt_w6>
+    r6 = da; r7 = slen;
+    goto <trtt_wend>;
+<trtt_w8>
+    r8 = da; r9 = slen;
+    goto <trtt_wend>;
+<trtt_w10>
+    r10 = da; r11 = slen;
+    goto <trtt_wend>;
+<trtt_w12>
+    r12 = da; r13 = slen;
+    goto <trtt_wend>;
+<trtt_w14>
+    r14 = da; r15 = slen;
+    goto <trtt_wend>;
+<trtt_wend>
+}
+
+# TRTO: TRANSLATE TWO TO ONE (PoP 7-476). RRF-c format, M3=0 only:
+# two-byte argument characters, one-byte function codes, 64K-byte table
+# at GR1 (treated as doubleword-aligned: ETF2-installed behavior; without
+# ETF2 the table is 4K-aligned per PoP). R1/R1+1 = 64-bit destination
+# address and second-operand length (argument BYTES, must be even);
+# R2 = 64-bit second-operand address. Each selected function code is
+# compared against the test character in GR0 bits 56-63 (M3=0, so the
+# comparison is performed): equal -> CC=1 with nothing stored and no
+# register update for the matching character; else the code is stored at
+# the destination. CC=0 when the operand is exhausted. Updates: R1/R1+1
+# and R2 advanced past the processed bytes. CC=3 (CPU-determined partial
+# completion) approximated as run-to-completion. Odd R1 or odd length:
+# specification exception, modeled as a no-op. R1/R2 overlap: results
+# unpredictable per PoP.
+:TRTO "TRTO " RRFcn_R1 "," RRFcn_R2 is RRFcn_OP=0xB991 & RRFcn_M3=0 & RRFcn_R1 & RRFcn_R2 & RRFcn_R1N & RRFcn_R2N
+{
+    # TRANSLATE TWO TO ONE (PoP 7-476): 2-byte 2nd-operand chars select
+    # 1-byte function chars from table at GR1.
+    local r1v:8; local r2v:8;
+    local da:8; local slen:8;
+    local sa:8;
+    local tbl:8;
+    local i:8; local nch:8; local b:2; local fc:1; local tst:1;
+    r1v = RRFcn_R1N; r2v = RRFcn_R2N;
+    if ((r1v & 1) != 0) goto <trto_wend>;
+    if (r1v == 0) goto <trto_r0>;
+    if (r1v == 2) goto <trto_r2>;
+    if (r1v == 4) goto <trto_r4>;
+    if (r1v == 6) goto <trto_r6>;
+    if (r1v == 8) goto <trto_r8>;
+    if (r1v == 10) goto <trto_r10>;
+    if (r1v == 12) goto <trto_r12>;
+    goto <trto_r14>;
+<trto_r0>
+    da = r0; slen = r1;
+    goto <trto_sa>;
+<trto_r2>
+    da = r2; slen = r3;
+    goto <trto_sa>;
+<trto_r4>
+    da = r4; slen = r5;
+    goto <trto_sa>;
+<trto_r6>
+    da = r6; slen = r7;
+    goto <trto_sa>;
+<trto_r8>
+    da = r8; slen = r9;
+    goto <trto_sa>;
+<trto_r10>
+    da = r10; slen = r11;
+    goto <trto_sa>;
+<trto_r12>
+    da = r12; slen = r13;
+    goto <trto_sa>;
+<trto_r14>
+    da = r14; slen = r15;
+    goto <trto_sa>;
+<trto_sa>
+    # odd second-operand length: specification exception, no-op
+    if ((slen & 1) != 0) goto <trto_wend>;
+    if (r2v == 0) goto <trto_s0>;
+    if (r2v == 1) goto <trto_s1>;
+    if (r2v == 2) goto <trto_s2>;
+    if (r2v == 3) goto <trto_s3>;
+    if (r2v == 4) goto <trto_s4>;
+    if (r2v == 5) goto <trto_s5>;
+    if (r2v == 6) goto <trto_s6>;
+    if (r2v == 7) goto <trto_s7>;
+    if (r2v == 8) goto <trto_s8>;
+    if (r2v == 9) goto <trto_s9>;
+    if (r2v == 10) goto <trto_s10>;
+    if (r2v == 11) goto <trto_s11>;
+    if (r2v == 12) goto <trto_s12>;
+    if (r2v == 13) goto <trto_s13>;
+    if (r2v == 14) goto <trto_s14>;
+    if (r2v == 15) goto <trto_s15>;
+    goto <trto_sdone>;
+<trto_s0>
+    sa = r0;
+    goto <trto_sdone>;
+<trto_s1>
+    sa = r1;
+    goto <trto_sdone>;
+<trto_s2>
+    sa = r2;
+    goto <trto_sdone>;
+<trto_s3>
+    sa = r3;
+    goto <trto_sdone>;
+<trto_s4>
+    sa = r4;
+    goto <trto_sdone>;
+<trto_s5>
+    sa = r5;
+    goto <trto_sdone>;
+<trto_s6>
+    sa = r6;
+    goto <trto_sdone>;
+<trto_s7>
+    sa = r7;
+    goto <trto_sdone>;
+<trto_s8>
+    sa = r8;
+    goto <trto_sdone>;
+<trto_s9>
+    sa = r9;
+    goto <trto_sdone>;
+<trto_s10>
+    sa = r10;
+    goto <trto_sdone>;
+<trto_s11>
+    sa = r11;
+    goto <trto_sdone>;
+<trto_s12>
+    sa = r12;
+    goto <trto_sdone>;
+<trto_s13>
+    sa = r13;
+    goto <trto_sdone>;
+<trto_s14>
+    sa = r14;
+    goto <trto_sdone>;
+<trto_s15>
+    sa = r15;
+    goto <trto_sdone>;
+<trto_sdone>
+    tbl = r1 & 0xfffffffffffffff8;
+    tst = r0:1;
+    nch = slen >> 1;
+    i = 0;
+    cc = 0;
+<trto_loop>
+    if (i == nch) goto <trto_exh>;
+    b = *:2 sa;
+    fc = *:1 (tbl + zext(b));
+    if (fc == tst) goto <trto_match>;
+    *:1 da = fc;
+    sa = sa + 2; da = da + 1; i = i + 1;
+    goto <trto_loop>;
+<trto_match>
+    # matching character: not stored, registers not advanced past it
+    cc = 1;
+    goto <trto_done>;
+<trto_exh>
+    cc = 0;
+<trto_done>
+    slen = slen - i * 2;
+    # write back R2 source address, then R1 pair (dest addr, remaining len)
+    if (r2v == 0) goto <trto_w2r0>;
+    if (r2v == 1) goto <trto_w2r1>;
+    if (r2v == 2) goto <trto_w2r2>;
+    if (r2v == 3) goto <trto_w2r3>;
+    if (r2v == 4) goto <trto_w2r4>;
+    if (r2v == 5) goto <trto_w2r5>;
+    if (r2v == 6) goto <trto_w2r6>;
+    if (r2v == 7) goto <trto_w2r7>;
+    if (r2v == 8) goto <trto_w2r8>;
+    if (r2v == 9) goto <trto_w2r9>;
+    if (r2v == 10) goto <trto_w2r10>;
+    if (r2v == 11) goto <trto_w2r11>;
+    if (r2v == 12) goto <trto_w2r12>;
+    if (r2v == 13) goto <trto_w2r13>;
+    if (r2v == 14) goto <trto_w2r14>;
+    if (r2v == 15) goto <trto_w2r15>;
+    goto <trto_w2done>;
+<trto_w2r0>
+    r0 = sa;
+    goto <trto_w2done>;
+<trto_w2r1>
+    r1 = sa;
+    goto <trto_w2done>;
+<trto_w2r2>
+    r2 = sa;
+    goto <trto_w2done>;
+<trto_w2r3>
+    r3 = sa;
+    goto <trto_w2done>;
+<trto_w2r4>
+    r4 = sa;
+    goto <trto_w2done>;
+<trto_w2r5>
+    r5 = sa;
+    goto <trto_w2done>;
+<trto_w2r6>
+    r6 = sa;
+    goto <trto_w2done>;
+<trto_w2r7>
+    r7 = sa;
+    goto <trto_w2done>;
+<trto_w2r8>
+    r8 = sa;
+    goto <trto_w2done>;
+<trto_w2r9>
+    r9 = sa;
+    goto <trto_w2done>;
+<trto_w2r10>
+    r10 = sa;
+    goto <trto_w2done>;
+<trto_w2r11>
+    r11 = sa;
+    goto <trto_w2done>;
+<trto_w2r12>
+    r12 = sa;
+    goto <trto_w2done>;
+<trto_w2r13>
+    r13 = sa;
+    goto <trto_w2done>;
+<trto_w2r14>
+    r14 = sa;
+    goto <trto_w2done>;
+<trto_w2r15>
+    r15 = sa;
+    goto <trto_w2done>;
+<trto_w2done>
+    if ((r1v & 1) != 0) goto <trto_wend>;
+    if (r1v == 0) goto <trto_w0>;
+    if (r1v == 2) goto <trto_w2>;
+    if (r1v == 4) goto <trto_w4>;
+    if (r1v == 6) goto <trto_w6>;
+    if (r1v == 8) goto <trto_w8>;
+    if (r1v == 10) goto <trto_w10>;
+    if (r1v == 12) goto <trto_w12>;
+    if (r1v == 14) goto <trto_w14>;
+    goto <trto_wend>;
+<trto_w0>
+    r0 = da; r1 = slen;
+    goto <trto_wend>;
+<trto_w2>
+    r2 = da; r3 = slen;
+    goto <trto_wend>;
+<trto_w4>
+    r4 = da; r5 = slen;
+    goto <trto_wend>;
+<trto_w6>
+    r6 = da; r7 = slen;
+    goto <trto_wend>;
+<trto_w8>
+    r8 = da; r9 = slen;
+    goto <trto_wend>;
+<trto_w10>
+    r10 = da; r11 = slen;
+    goto <trto_wend>;
+<trto_w12>
+    r12 = da; r13 = slen;
+    goto <trto_wend>;
+<trto_w14>
+    r14 = da; r15 = slen;
+    goto <trto_wend>;
+<trto_wend>
+}
+
+# TROT: TRANSLATE ONE TO TWO (PoP 7-476). RRF-c format, M3=0 only:
+# one-byte argument characters, two-byte function codes, 512-byte table
+# at GR1 (treated as doubleword-aligned: ETF2-installed behavior; without
+# ETF2 the table is 4K-aligned per PoP). R1/R1+1 = 64-bit destination
+# address and second-operand length (argument bytes); R2 = 64-bit
+# second-operand address. Function code at table + 2*argument, compared
+# against GR0 bits 48-63 (M3=0, so the comparison is performed): equal ->
+# CC=1 with nothing stored and no register update for the matching
+# character, else the 2-byte code is stored at the destination (2 bytes
+# per argument byte). Updates mirror TRTO with the destination advanced
+# by 2 per argument byte. CC=3 approximated as run-to-completion. Odd R1:
+# specification exception, modeled as a no-op. R1/R2 overlap: results
+# unpredictable per PoP.
+:TROT "TROT " RRFcn_R1 "," RRFcn_R2 is RRFcn_OP=0xB992 & RRFcn_M3=0 & RRFcn_R1 & RRFcn_R2 & RRFcn_R1N & RRFcn_R2N
+{
+    # TRANSLATE ONE TO TWO (PoP 7-476): 1-byte 2nd-operand chars select
+    # 2-byte function chars from table at GR1.
+    local r1v:8; local r2v:8;
+    local da:8; local slen:8;
+    local sa:8;
+    local tbl:8;
+    local i:8; local nch:8; local b:1; local fc:2; local tst:2;
+    r1v = RRFcn_R1N; r2v = RRFcn_R2N;
+    if ((r1v & 1) != 0) goto <trot_wend>;
+    if (r1v == 0) goto <trot_r0>;
+    if (r1v == 2) goto <trot_r2>;
+    if (r1v == 4) goto <trot_r4>;
+    if (r1v == 6) goto <trot_r6>;
+    if (r1v == 8) goto <trot_r8>;
+    if (r1v == 10) goto <trot_r10>;
+    if (r1v == 12) goto <trot_r12>;
+    goto <trot_r14>;
+<trot_r0>
+    da = r0; slen = r1;
+    goto <trot_sa>;
+<trot_r2>
+    da = r2; slen = r3;
+    goto <trot_sa>;
+<trot_r4>
+    da = r4; slen = r5;
+    goto <trot_sa>;
+<trot_r6>
+    da = r6; slen = r7;
+    goto <trot_sa>;
+<trot_r8>
+    da = r8; slen = r9;
+    goto <trot_sa>;
+<trot_r10>
+    da = r10; slen = r11;
+    goto <trot_sa>;
+<trot_r12>
+    da = r12; slen = r13;
+    goto <trot_sa>;
+<trot_r14>
+    da = r14; slen = r15;
+    goto <trot_sa>;
+<trot_sa>
+    if (r2v == 0) goto <trot_s0>;
+    if (r2v == 1) goto <trot_s1>;
+    if (r2v == 2) goto <trot_s2>;
+    if (r2v == 3) goto <trot_s3>;
+    if (r2v == 4) goto <trot_s4>;
+    if (r2v == 5) goto <trot_s5>;
+    if (r2v == 6) goto <trot_s6>;
+    if (r2v == 7) goto <trot_s7>;
+    if (r2v == 8) goto <trot_s8>;
+    if (r2v == 9) goto <trot_s9>;
+    if (r2v == 10) goto <trot_s10>;
+    if (r2v == 11) goto <trot_s11>;
+    if (r2v == 12) goto <trot_s12>;
+    if (r2v == 13) goto <trot_s13>;
+    if (r2v == 14) goto <trot_s14>;
+    if (r2v == 15) goto <trot_s15>;
+    goto <trot_sdone>;
+<trot_s0>
+    sa = r0;
+    goto <trot_sdone>;
+<trot_s1>
+    sa = r1;
+    goto <trot_sdone>;
+<trot_s2>
+    sa = r2;
+    goto <trot_sdone>;
+<trot_s3>
+    sa = r3;
+    goto <trot_sdone>;
+<trot_s4>
+    sa = r4;
+    goto <trot_sdone>;
+<trot_s5>
+    sa = r5;
+    goto <trot_sdone>;
+<trot_s6>
+    sa = r6;
+    goto <trot_sdone>;
+<trot_s7>
+    sa = r7;
+    goto <trot_sdone>;
+<trot_s8>
+    sa = r8;
+    goto <trot_sdone>;
+<trot_s9>
+    sa = r9;
+    goto <trot_sdone>;
+<trot_s10>
+    sa = r10;
+    goto <trot_sdone>;
+<trot_s11>
+    sa = r11;
+    goto <trot_sdone>;
+<trot_s12>
+    sa = r12;
+    goto <trot_sdone>;
+<trot_s13>
+    sa = r13;
+    goto <trot_sdone>;
+<trot_s14>
+    sa = r14;
+    goto <trot_sdone>;
+<trot_s15>
+    sa = r15;
+    goto <trot_sdone>;
+<trot_sdone>
+    tbl = r1 & 0xfffffffffffffff8;
+    tst = r0:2;
+    nch = slen;
+    i = 0;
+    cc = 0;
+<trot_loop>
+    if (i == nch) goto <trot_exh>;
+    b = *:1 sa;
+    fc = *:2 (tbl + (zext(b) << 1));
+    if (fc == tst) goto <trot_match>;
+    *:2 da = fc;
+    sa = sa + 1; da = da + 2; i = i + 1;
+    goto <trot_loop>;
+<trot_match>
+    # matching character: not stored, registers not advanced past it
+    cc = 1;
+    goto <trot_done>;
+<trot_exh>
+    cc = 0;
+<trot_done>
+    slen = slen - i * 1;
+    # write back R2 source address, then R1 pair (dest addr, remaining len)
+    if (r2v == 0) goto <trot_w2r0>;
+    if (r2v == 1) goto <trot_w2r1>;
+    if (r2v == 2) goto <trot_w2r2>;
+    if (r2v == 3) goto <trot_w2r3>;
+    if (r2v == 4) goto <trot_w2r4>;
+    if (r2v == 5) goto <trot_w2r5>;
+    if (r2v == 6) goto <trot_w2r6>;
+    if (r2v == 7) goto <trot_w2r7>;
+    if (r2v == 8) goto <trot_w2r8>;
+    if (r2v == 9) goto <trot_w2r9>;
+    if (r2v == 10) goto <trot_w2r10>;
+    if (r2v == 11) goto <trot_w2r11>;
+    if (r2v == 12) goto <trot_w2r12>;
+    if (r2v == 13) goto <trot_w2r13>;
+    if (r2v == 14) goto <trot_w2r14>;
+    if (r2v == 15) goto <trot_w2r15>;
+    goto <trot_w2done>;
+<trot_w2r0>
+    r0 = sa;
+    goto <trot_w2done>;
+<trot_w2r1>
+    r1 = sa;
+    goto <trot_w2done>;
+<trot_w2r2>
+    r2 = sa;
+    goto <trot_w2done>;
+<trot_w2r3>
+    r3 = sa;
+    goto <trot_w2done>;
+<trot_w2r4>
+    r4 = sa;
+    goto <trot_w2done>;
+<trot_w2r5>
+    r5 = sa;
+    goto <trot_w2done>;
+<trot_w2r6>
+    r6 = sa;
+    goto <trot_w2done>;
+<trot_w2r7>
+    r7 = sa;
+    goto <trot_w2done>;
+<trot_w2r8>
+    r8 = sa;
+    goto <trot_w2done>;
+<trot_w2r9>
+    r9 = sa;
+    goto <trot_w2done>;
+<trot_w2r10>
+    r10 = sa;
+    goto <trot_w2done>;
+<trot_w2r11>
+    r11 = sa;
+    goto <trot_w2done>;
+<trot_w2r12>
+    r12 = sa;
+    goto <trot_w2done>;
+<trot_w2r13>
+    r13 = sa;
+    goto <trot_w2done>;
+<trot_w2r14>
+    r14 = sa;
+    goto <trot_w2done>;
+<trot_w2r15>
+    r15 = sa;
+    goto <trot_w2done>;
+<trot_w2done>
+    if ((r1v & 1) != 0) goto <trot_wend>;
+    if (r1v == 0) goto <trot_w0>;
+    if (r1v == 2) goto <trot_w2>;
+    if (r1v == 4) goto <trot_w4>;
+    if (r1v == 6) goto <trot_w6>;
+    if (r1v == 8) goto <trot_w8>;
+    if (r1v == 10) goto <trot_w10>;
+    if (r1v == 12) goto <trot_w12>;
+    if (r1v == 14) goto <trot_w14>;
+    goto <trot_wend>;
+<trot_w0>
+    r0 = da; r1 = slen;
+    goto <trot_wend>;
+<trot_w2>
+    r2 = da; r3 = slen;
+    goto <trot_wend>;
+<trot_w4>
+    r4 = da; r5 = slen;
+    goto <trot_wend>;
+<trot_w6>
+    r6 = da; r7 = slen;
+    goto <trot_wend>;
+<trot_w8>
+    r8 = da; r9 = slen;
+    goto <trot_wend>;
+<trot_w10>
+    r10 = da; r11 = slen;
+    goto <trot_wend>;
+<trot_w12>
+    r12 = da; r13 = slen;
+    goto <trot_wend>;
+<trot_w14>
+    r14 = da; r15 = slen;
+    goto <trot_wend>;
+<trot_wend>
+}
+
+# TROO: TRANSLATE ONE TO ONE (PoP 7-476). RRF-c format, M3=0 only:
+# one-byte argument characters, one-byte function codes, 256-byte table
+# at GR1 (treated as doubleword-aligned: ETF2-installed behavior; without
+# ETF2 the table is 4K-aligned per PoP). R1/R1+1 = 64-bit destination
+# address and second-operand length (argument bytes); R2 = 64-bit
+# second-operand address. Each selected function code is compared against
+# the test character in GR0 bits 56-63 (M3=0, so the comparison is
+# performed): equal -> CC=1 with nothing stored and no register update
+# for the matching character; else the code is stored at the destination.
+# CC=0 when the operand is exhausted. Updates: R1/R1+1 and R2 advanced
+# past the processed bytes. CC=3 (CPU-determined partial completion)
+# approximated as run-to-completion. Odd R1: specification exception,
+# modeled as a no-op. R1/R2 overlap: results unpredictable per PoP.
+:TROO "TROO " RRFcn_R1 "," RRFcn_R2 is RRFcn_OP=0xB993 & RRFcn_M3=0 & RRFcn_R1 & RRFcn_R2 & RRFcn_R1N & RRFcn_R2N
+{
+    # TRANSLATE ONE TO ONE (PoP 7-476): 1-byte 2nd-operand chars select
+    # 1-byte function chars from table at GR1.
+    local r1v:8; local r2v:8;
+    local da:8; local slen:8;
+    local sa:8;
+    local tbl:8;
+    local i:8; local b:1; local fc:1; local tst:1;
+    r1v = RRFcn_R1N; r2v = RRFcn_R2N;
+    # odd R1: specification exception, modeled as a no-op
+    if ((r1v & 1) != 0) goto <troo_wend>;
+    if (r1v == 0) goto <troo_r0>;
+    if (r1v == 2) goto <troo_r2>;
+    if (r1v == 4) goto <troo_r4>;
+    if (r1v == 6) goto <troo_r6>;
+    if (r1v == 8) goto <troo_r8>;
+    if (r1v == 10) goto <troo_r10>;
+    if (r1v == 12) goto <troo_r12>;
+    goto <troo_r14>;
+<troo_r0>
+    da = r0; slen = r1;
+    goto <troo_sa>;
+<troo_r2>
+    da = r2; slen = r3;
+    goto <troo_sa>;
+<troo_r4>
+    da = r4; slen = r5;
+    goto <troo_sa>;
+<troo_r6>
+    da = r6; slen = r7;
+    goto <troo_sa>;
+<troo_r8>
+    da = r8; slen = r9;
+    goto <troo_sa>;
+<troo_r10>
+    da = r10; slen = r11;
+    goto <troo_sa>;
+<troo_r12>
+    da = r12; slen = r13;
+    goto <troo_sa>;
+<troo_r14>
+    da = r14; slen = r15;
+    goto <troo_sa>;
+<troo_sa>
+    if (r2v == 0) goto <troo_s0>;
+    if (r2v == 1) goto <troo_s1>;
+    if (r2v == 2) goto <troo_s2>;
+    if (r2v == 3) goto <troo_s3>;
+    if (r2v == 4) goto <troo_s4>;
+    if (r2v == 5) goto <troo_s5>;
+    if (r2v == 6) goto <troo_s6>;
+    if (r2v == 7) goto <troo_s7>;
+    if (r2v == 8) goto <troo_s8>;
+    if (r2v == 9) goto <troo_s9>;
+    if (r2v == 10) goto <troo_s10>;
+    if (r2v == 11) goto <troo_s11>;
+    if (r2v == 12) goto <troo_s12>;
+    if (r2v == 13) goto <troo_s13>;
+    if (r2v == 14) goto <troo_s14>;
+    goto <troo_s15>;
+<troo_s0>
+    sa = r0;
+    goto <troo_sdone>;
+<troo_s1>
+    sa = r1;
+    goto <troo_sdone>;
+<troo_s2>
+    sa = r2;
+    goto <troo_sdone>;
+<troo_s3>
+    sa = r3;
+    goto <troo_sdone>;
+<troo_s4>
+    sa = r4;
+    goto <troo_sdone>;
+<troo_s5>
+    sa = r5;
+    goto <troo_sdone>;
+<troo_s6>
+    sa = r6;
+    goto <troo_sdone>;
+<troo_s7>
+    sa = r7;
+    goto <troo_sdone>;
+<troo_s8>
+    sa = r8;
+    goto <troo_sdone>;
+<troo_s9>
+    sa = r9;
+    goto <troo_sdone>;
+<troo_s10>
+    sa = r10;
+    goto <troo_sdone>;
+<troo_s11>
+    sa = r11;
+    goto <troo_sdone>;
+<troo_s12>
+    sa = r12;
+    goto <troo_sdone>;
+<troo_s13>
+    sa = r13;
+    goto <troo_sdone>;
+<troo_s14>
+    sa = r14;
+    goto <troo_sdone>;
+<troo_s15>
+    sa = r15;
+    goto <troo_sdone>;
+<troo_sdone>
+    # table treated as doubleword-aligned (ETF2-installed behavior)
+    tbl = r1 & 0xfffffffffffffff8;
+    tst = r0:1;
+    i = 0;
+    cc = 0;
+<troo_loop>
+    if (i == slen) goto <troo_exh>;
+    b = *:1 sa;
+    fc = *:1 (tbl + zext(b));
+    if (fc == tst) goto <troo_match>;
+    *:1 da = fc;
+    sa = sa + 1; da = da + 1; i = i + 1;
+    goto <troo_loop>;
+<troo_match>
+    # matching character: not stored, registers not advanced past it
+    cc = 1;
+    goto <troo_done>;
+<troo_exh>
+    cc = 0;
+<troo_done>
+    slen = slen - i;
+    # write back R2 source address, then R1 pair (dest addr, remaining len)
+    if (r2v == 0) goto <troo_w2r0>;
+    if (r2v == 1) goto <troo_w2r1>;
+    if (r2v == 2) goto <troo_w2r2>;
+    if (r2v == 3) goto <troo_w2r3>;
+    if (r2v == 4) goto <troo_w2r4>;
+    if (r2v == 5) goto <troo_w2r5>;
+    if (r2v == 6) goto <troo_w2r6>;
+    if (r2v == 7) goto <troo_w2r7>;
+    if (r2v == 8) goto <troo_w2r8>;
+    if (r2v == 9) goto <troo_w2r9>;
+    if (r2v == 10) goto <troo_w2r10>;
+    if (r2v == 11) goto <troo_w2r11>;
+    if (r2v == 12) goto <troo_w2r12>;
+    if (r2v == 13) goto <troo_w2r13>;
+    if (r2v == 14) goto <troo_w2r14>;
+    goto <troo_w2r15>;
+<troo_w2r0>
+    r0 = sa;
+    goto <troo_w2done>;
+<troo_w2r1>
+    r1 = sa;
+    goto <troo_w2done>;
+<troo_w2r2>
+    r2 = sa;
+    goto <troo_w2done>;
+<troo_w2r3>
+    r3 = sa;
+    goto <troo_w2done>;
+<troo_w2r4>
+    r4 = sa;
+    goto <troo_w2done>;
+<troo_w2r5>
+    r5 = sa;
+    goto <troo_w2done>;
+<troo_w2r6>
+    r6 = sa;
+    goto <troo_w2done>;
+<troo_w2r7>
+    r7 = sa;
+    goto <troo_w2done>;
+<troo_w2r8>
+    r8 = sa;
+    goto <troo_w2done>;
+<troo_w2r9>
+    r9 = sa;
+    goto <troo_w2done>;
+<troo_w2r10>
+    r10 = sa;
+    goto <troo_w2done>;
+<troo_w2r11>
+    r11 = sa;
+    goto <troo_w2done>;
+<troo_w2r12>
+    r12 = sa;
+    goto <troo_w2done>;
+<troo_w2r13>
+    r13 = sa;
+    goto <troo_w2done>;
+<troo_w2r14>
+    r14 = sa;
+    goto <troo_w2done>;
+<troo_w2r15>
+    r15 = sa;
+    goto <troo_w2done>;
+<troo_w2done>
+    if ((r1v & 1) != 0) goto <troo_wend>;
+    if (r1v == 0) goto <troo_w0>;
+    if (r1v == 2) goto <troo_w2>;
+    if (r1v == 4) goto <troo_w4>;
+    if (r1v == 6) goto <troo_w6>;
+    if (r1v == 8) goto <troo_w8>;
+    if (r1v == 10) goto <troo_w10>;
+    if (r1v == 12) goto <troo_w12>;
+    goto <troo_w14>;
+<troo_w0>
+    r0 = da; r1 = slen;
+    goto <troo_wend>;
+<troo_w2>
+    r2 = da; r3 = slen;
+    goto <troo_wend>;
+<troo_w4>
+    r4 = da; r5 = slen;
+    goto <troo_wend>;
+<troo_w6>
+    r6 = da; r7 = slen;
+    goto <troo_wend>;
+<troo_w8>
+    r8 = da; r9 = slen;
+    goto <troo_wend>;
+<troo_w10>
+    r10 = da; r11 = slen;
+    goto <troo_wend>;
+<troo_w12>
+    r12 = da; r13 = slen;
+    goto <troo_wend>;
+<troo_w14>
+    r14 = da; r15 = slen;
+    goto <troo_wend>;
+<troo_wend>
+}
+
+# CLCLE: COMPARE LOGICAL LONG EXTENDED (PoP 7-175). RS-a format.
+# R1/R1+1 = 64-bit first-operand address/length (bytes); R3/R3+1 =
+# 64-bit second-operand address/length; pad byte = bits 56-63 of D2(B2).
+# Bytes compare until inequality or exhaustion; the shorter operand is
+# then compared against the pad byte. CC: 0 = equal (including pad), 1 =
+# first operand low, 2 = first operand high. Register updates per PoP:
+# on inequality at byte i, addresses += i and lengths -= i; when the pad
+# decides, the shorter length is set to zero. CC=3 (CPU-determined
+# partial completion) is approximated as run-to-completion, as for TRE.
+# Odd R1/R3: specification exception, modeled as a no-op. R1=R3: the
+# pair is updated once (PoP programming note).
+:CLCLE "CLCLE " RSan_R1 "," RSan_R3 "," RSan_D2 "(" RSan_B2 ")" is RSan_OP=0xA9 & RSan_R1 & RSan_R3 & RSan_B2 & RSan_D2 & RSan_R1N & RSan_R3N
+{
+    local r1v:8; local r3v:8;
+    local ad1:8; local n1:8; local ad2:8; local n2:8;
+    local ea2:8; local pad:8;
+    local i:8; local b1:1; local b2:1;
+    r1v = RSan_R1N; r3v = RSan_R3N;
+    if ((r1v & 1) != 0) goto <clcle_end>;
+    if ((r3v & 1) != 0) goto <clcle_end>;
+    # R1 selects the first even/odd address/length pair
+    if (r1v != 0) goto <clcle_a_p1>;
+    ad1 = r0; n1 = r1;
+    goto <clcle_q>;
+<clcle_a_p1>
+    if (r1v != 2) goto <clcle_a_p2>;
+    ad1 = r2; n1 = r3;
+    goto <clcle_q>;
+<clcle_a_p2>
+    if (r1v != 4) goto <clcle_a_p3>;
+    ad1 = r4; n1 = r5;
+    goto <clcle_q>;
+<clcle_a_p3>
+    if (r1v != 6) goto <clcle_a_p4>;
+    ad1 = r6; n1 = r7;
+    goto <clcle_q>;
+<clcle_a_p4>
+    if (r1v != 8) goto <clcle_a_p5>;
+    ad1 = r8; n1 = r9;
+    goto <clcle_q>;
+<clcle_a_p5>
+    if (r1v != 10) goto <clcle_a_p6>;
+    ad1 = r10; n1 = r11;
+    goto <clcle_q>;
+<clcle_a_p6>
+    if (r1v != 12) goto <clcle_a_p7>;
+    ad1 = r12; n1 = r13;
+    goto <clcle_q>;
+<clcle_a_p7>
+    ad1 = r14; n1 = r15;
+<clcle_q>
+    # R3 selects the second even/odd address/length pair
+    if (r3v != 0) goto <clcle_b_p1>;
+    ad2 = r0; n2 = r1;
+    goto <clcle_go>;
+<clcle_b_p1>
+    if (r3v != 2) goto <clcle_b_p2>;
+    ad2 = r2; n2 = r3;
+    goto <clcle_go>;
+<clcle_b_p2>
+    if (r3v != 4) goto <clcle_b_p3>;
+    ad2 = r4; n2 = r5;
+    goto <clcle_go>;
+<clcle_b_p3>
+    if (r3v != 6) goto <clcle_b_p4>;
+    ad2 = r6; n2 = r7;
+    goto <clcle_go>;
+<clcle_b_p4>
+    if (r3v != 8) goto <clcle_b_p5>;
+    ad2 = r8; n2 = r9;
+    goto <clcle_go>;
+<clcle_b_p5>
+    if (r3v != 10) goto <clcle_b_p6>;
+    ad2 = r10; n2 = r11;
+    goto <clcle_go>;
+<clcle_b_p6>
+    if (r3v != 12) goto <clcle_b_p7>;
+    ad2 = r12; n2 = r13;
+    goto <clcle_go>;
+<clcle_b_p7>
+    ad2 = r14; n2 = r15;
+<clcle_go>
+    ea_D12(ea2, RSan_B2, zero, RSan_D2);
+    pad = ea2 & 0xff;
+    i = 0;
+<clcle_l>
+    if (i == n1) goto <clcle_n1d>;
+    if (i == n2) goto <clcle_n2d>;
+    b1 = *:1 (ad1 + i);
+    b2 = *:1 (ad2 + i);
+    if (b1 == b2) goto <clcle_eq>;
+    if (b1 >= b2) goto <clcle_hi>;
+    cc = 1;
+    goto <clcle_upd>;
+<clcle_hi>
+    cc = 2;
+    goto <clcle_upd>;
+<clcle_eq>
+    i = i + 1;
+    goto <clcle_l>;
+<clcle_n1d>
+    # first operand exhausted
+    if (n1 == n2) goto <clcle_equal>;
+<clcle_p1>
+    # compare pad against the second-operand tail
+    if (i == n2) goto <clcle_equal>;
+    b2 = *:1 (ad2 + i);
+    if (zext(b2) == pad) goto <clcle_p1e>;
+    if (pad >= zext(b2)) goto <clcle_p1h>;
+    cc = 1;
+    goto <clcle_upd1>;
+<clcle_p1h>
+    cc = 2;
+    goto <clcle_upd1>;
+<clcle_p1e>
+    i = i + 1;
+    goto <clcle_p1>;
+<clcle_n2d>
+<clcle_p2>
+    # compare the first-operand tail against pad
+    if (i == n1) goto <clcle_equal>;
+    b1 = *:1 (ad1 + i);
+    if (zext(b1) == pad) goto <clcle_p2e>;
+    if (zext(b1) >= pad) goto <clcle_p2h>;
+    cc = 1;
+    goto <clcle_upd2>;
+<clcle_p2h>
+    cc = 2;
+    goto <clcle_upd2>;
+<clcle_p2e>
+    i = i + 1;
+    goto <clcle_p2>;
+<clcle_equal>
+    cc = 0;
+    ad1 = ad1 + n1; n1 = 0;
+    ad2 = ad2 + n2; n2 = 0;
+    goto <clcle_wb>;
+<clcle_upd>
+    # inequality at byte i of the common part
+    ad1 = ad1 + i; n1 = n1 - i;
+    ad2 = ad2 + i; n2 = n2 - i;
+    goto <clcle_wb>;
+<clcle_upd1>
+    # pad vs second-operand tail at index i: first operand fully
+    # consumed, its (shorter) length goes to zero
+    ad1 = ad1 + n1; n1 = 0;
+    ad2 = ad2 + i; n2 = n2 - i;
+    goto <clcle_wb>;
+<clcle_upd2>
+    # first-operand tail vs pad at index i: second operand fully
+    # consumed, its (shorter) length goes to zero
+    ad1 = ad1 + i; n1 = n1 - i;
+    ad2 = ad2 + n2; n2 = 0;
+    goto <clcle_wb>;
+<clcle_wb>
+    # write back; when R1=R3 the pair is updated only once
+    if (r1v != 0) goto <clcle_a_w1>;
+    r0 = ad1; r1 = n1;
+    goto <clcle_wb2>;
+<clcle_a_w1>
+    if (r1v != 2) goto <clcle_a_w2>;
+    r2 = ad1; r3 = n1;
+    goto <clcle_wb2>;
+<clcle_a_w2>
+    if (r1v != 4) goto <clcle_a_w3>;
+    r4 = ad1; r5 = n1;
+    goto <clcle_wb2>;
+<clcle_a_w3>
+    if (r1v != 6) goto <clcle_a_w4>;
+    r6 = ad1; r7 = n1;
+    goto <clcle_wb2>;
+<clcle_a_w4>
+    if (r1v != 8) goto <clcle_a_w5>;
+    r8 = ad1; r9 = n1;
+    goto <clcle_wb2>;
+<clcle_a_w5>
+    if (r1v != 10) goto <clcle_a_w6>;
+    r10 = ad1; r11 = n1;
+    goto <clcle_wb2>;
+<clcle_a_w6>
+    if (r1v != 12) goto <clcle_a_w7>;
+    r12 = ad1; r13 = n1;
+    goto <clcle_wb2>;
+<clcle_a_w7>
+    r14 = ad1; r15 = n1;
+<clcle_wb2>
+    if (r1v == r3v) goto <clcle_end>;
+    if (r3v != 0) goto <clcle_b_w1>;
+    r0 = ad2; r1 = n2;
+    goto <clcle_end>;
+<clcle_b_w1>
+    if (r3v != 2) goto <clcle_b_w2>;
+    r2 = ad2; r3 = n2;
+    goto <clcle_end>;
+<clcle_b_w2>
+    if (r3v != 4) goto <clcle_b_w3>;
+    r4 = ad2; r5 = n2;
+    goto <clcle_end>;
+<clcle_b_w3>
+    if (r3v != 6) goto <clcle_b_w4>;
+    r6 = ad2; r7 = n2;
+    goto <clcle_end>;
+<clcle_b_w4>
+    if (r3v != 8) goto <clcle_b_w5>;
+    r8 = ad2; r9 = n2;
+    goto <clcle_end>;
+<clcle_b_w5>
+    if (r3v != 10) goto <clcle_b_w6>;
+    r10 = ad2; r11 = n2;
+    goto <clcle_end>;
+<clcle_b_w6>
+    if (r3v != 12) goto <clcle_b_w7>;
+    r12 = ad2; r13 = n2;
+    goto <clcle_end>;
+<clcle_b_w7>
+    r14 = ad2; r15 = n2;
+<clcle_end>
+}
+
+# CLCLU: COMPARE LOGICAL LONG UNICODE (PoP 7-176). RSY-a format.
+# R1/R1+1 = 64-bit first-operand address/length (bytes, even); R3/R3+1 =
+# 64-bit second-operand address/length (bytes, even); pad = bits 48-63 of
+# D2(B2) (two bytes). Two-byte units compare until inequality or
+# exhaustion; the shorter operand is then compared against the pad. CC:
+# 0 = equal (including pad), 1 = first low, 2 = first high. Register
+# updates per PoP: on inequality at unit i (byte offset), addresses +=
+# byte offset and lengths -= byte offset; when the pad decides, the
+# shorter length is set to zero. CC=3 (CPU-determined partial
+# completion) approximated as run-to-completion, as for TRE. Odd R1/R3
+# or odd length: specification exception, modeled as a no-op. R1=R3:
+# the pair is updated once (PoP programming note).
+# Display shows DL2 only (core RSY convention); the harness maps it to
+# the full 20-bit displacement when comparing against Capstone.
+:CLCLU "CLCLU " RSYan_R1 "," RSYan_R3 "," RSYan_DL2 "(" RSYan_B2 ")" is RSYan_OP=0xEB & RSYan_R1 & RSYan_R3 & RSYan_B2 & RSYan_DL2 & RSYan_DH2 & RSYan_OP2=0x8F & RSYan_R1N & RSYan_R3N
+{
+    local r1v:8; local r3v:8;
+    local ad1:8; local n1:8; local ad2:8; local n2:8;
+    local ea2:8; local pad:8;
+    local i:8; local w1:2; local w2:2;
+    r1v = RSYan_R1N; r3v = RSYan_R3N;
+    if ((r1v & 1) != 0) goto <clclu_end>;
+    if ((r3v & 1) != 0) goto <clclu_end>;
+    # R1 selects the first even/odd address/length pair
+    if (r1v != 0) goto <clclu_a_p1>;
+    ad1 = r0; n1 = r1;
+    goto <clclu_q>;
+<clclu_a_p1>
+    if (r1v != 2) goto <clclu_a_p2>;
+    ad1 = r2; n1 = r3;
+    goto <clclu_q>;
+<clclu_a_p2>
+    if (r1v != 4) goto <clclu_a_p3>;
+    ad1 = r4; n1 = r5;
+    goto <clclu_q>;
+<clclu_a_p3>
+    if (r1v != 6) goto <clclu_a_p4>;
+    ad1 = r6; n1 = r7;
+    goto <clclu_q>;
+<clclu_a_p4>
+    if (r1v != 8) goto <clclu_a_p5>;
+    ad1 = r8; n1 = r9;
+    goto <clclu_q>;
+<clclu_a_p5>
+    if (r1v != 10) goto <clclu_a_p6>;
+    ad1 = r10; n1 = r11;
+    goto <clclu_q>;
+<clclu_a_p6>
+    if (r1v != 12) goto <clclu_a_p7>;
+    ad1 = r12; n1 = r13;
+    goto <clclu_q>;
+<clclu_a_p7>
+    ad1 = r14; n1 = r15;
+<clclu_q>
+    # R3 selects the second even/odd address/length pair
+    if (r3v != 0) goto <clclu_b_p1>;
+    ad2 = r0; n2 = r1;
+    goto <clclu_go>;
+<clclu_b_p1>
+    if (r3v != 2) goto <clclu_b_p2>;
+    ad2 = r2; n2 = r3;
+    goto <clclu_go>;
+<clclu_b_p2>
+    if (r3v != 4) goto <clclu_b_p3>;
+    ad2 = r4; n2 = r5;
+    goto <clclu_go>;
+<clclu_b_p3>
+    if (r3v != 6) goto <clclu_b_p4>;
+    ad2 = r6; n2 = r7;
+    goto <clclu_go>;
+<clclu_b_p4>
+    if (r3v != 8) goto <clclu_b_p5>;
+    ad2 = r8; n2 = r9;
+    goto <clclu_go>;
+<clclu_b_p5>
+    if (r3v != 10) goto <clclu_b_p6>;
+    ad2 = r10; n2 = r11;
+    goto <clclu_go>;
+<clclu_b_p6>
+    if (r3v != 12) goto <clclu_b_p7>;
+    ad2 = r12; n2 = r13;
+    goto <clclu_go>;
+<clclu_b_p7>
+    ad2 = r14; n2 = r15;
+<clclu_go>
+    if ((n1 & 1) != 0) goto <clclu_end>;
+    if ((n2 & 1) != 0) goto <clclu_end>;
+    ea_D20(ea2, RSYan_B2, zero, RSYan_DH2, RSYan_DL2);
+    pad = ea2 & 0xffff;
+    i = 0;
+<clclu_l>
+    if (i == n1) goto <clclu_n1d>;
+    if (i == n2) goto <clclu_n2d>;
+    w1 = *:2 (ad1 + i);
+    w2 = *:2 (ad2 + i);
+    if (w1 == w2) goto <clclu_eq>;
+    if (w1 >= w2) goto <clclu_hi>;
+    cc = 1;
+    goto <clclu_upd>;
+<clclu_hi>
+    cc = 2;
+    goto <clclu_upd>;
+<clclu_eq>
+    i = i + 2;
+    goto <clclu_l>;
+<clclu_n1d>
+    # first operand exhausted
+    if (n1 == n2) goto <clclu_equal>;
+<clclu_p1>
+    # compare pad against the second-operand tail
+    if (i == n2) goto <clclu_equal>;
+    w2 = *:2 (ad2 + i);
+    if (zext(w2) == pad) goto <clclu_p1e>;
+    if (pad >= zext(w2)) goto <clclu_p1h>;
+    cc = 1;
+    goto <clclu_upd1>;
+<clclu_p1h>
+    cc = 2;
+    goto <clclu_upd1>;
+<clclu_p1e>
+    i = i + 2;
+    goto <clclu_p1>;
+<clclu_n2d>
+<clclu_p2>
+    # compare the first-operand tail against pad
+    if (i == n1) goto <clclu_equal>;
+    w1 = *:2 (ad1 + i);
+    if (zext(w1) == pad) goto <clclu_p2e>;
+    if (zext(w1) >= pad) goto <clclu_p2h>;
+    cc = 1;
+    goto <clclu_upd2>;
+<clclu_p2h>
+    cc = 2;
+    goto <clclu_upd2>;
+<clclu_p2e>
+    i = i + 2;
+    goto <clclu_p2>;
+<clclu_equal>
+    cc = 0;
+    ad1 = ad1 + n1; n1 = 0;
+    ad2 = ad2 + n2; n2 = 0;
+    goto <clclu_wb>;
+<clclu_upd>
+    # inequality at byte offset i of the common part
+    ad1 = ad1 + i; n1 = n1 - i;
+    ad2 = ad2 + i; n2 = n2 - i;
+    goto <clclu_wb>;
+<clclu_upd1>
+    # pad vs second-operand tail at byte offset i: first operand fully
+    # consumed, its (shorter) length goes to zero
+    ad1 = ad1 + n1; n1 = 0;
+    ad2 = ad2 + i; n2 = n2 - i;
+    goto <clclu_wb>;
+<clclu_upd2>
+    # first-operand tail vs pad at byte offset i: second operand fully
+    # consumed, its (shorter) length goes to zero
+    ad1 = ad1 + i; n1 = n1 - i;
+    ad2 = ad2 + n2; n2 = 0;
+    goto <clclu_wb>;
+<clclu_wb>
+    # write back; when R1=R3 the pair is updated only once
+    if (r1v != 0) goto <clclu_a_w1>;
+    r0 = ad1; r1 = n1;
+    goto <clclu_wb2>;
+<clclu_a_w1>
+    if (r1v != 2) goto <clclu_a_w2>;
+    r2 = ad1; r3 = n1;
+    goto <clclu_wb2>;
+<clclu_a_w2>
+    if (r1v != 4) goto <clclu_a_w3>;
+    r4 = ad1; r5 = n1;
+    goto <clclu_wb2>;
+<clclu_a_w3>
+    if (r1v != 6) goto <clclu_a_w4>;
+    r6 = ad1; r7 = n1;
+    goto <clclu_wb2>;
+<clclu_a_w4>
+    if (r1v != 8) goto <clclu_a_w5>;
+    r8 = ad1; r9 = n1;
+    goto <clclu_wb2>;
+<clclu_a_w5>
+    if (r1v != 10) goto <clclu_a_w6>;
+    r10 = ad1; r11 = n1;
+    goto <clclu_wb2>;
+<clclu_a_w6>
+    if (r1v != 12) goto <clclu_a_w7>;
+    r12 = ad1; r13 = n1;
+    goto <clclu_wb2>;
+<clclu_a_w7>
+    r14 = ad1; r15 = n1;
+<clclu_wb2>
+    if (r1v == r3v) goto <clclu_end>;
+    if (r3v != 0) goto <clclu_b_w1>;
+    r0 = ad2; r1 = n2;
+    goto <clclu_end>;
+<clclu_b_w1>
+    if (r3v != 2) goto <clclu_b_w2>;
+    r2 = ad2; r3 = n2;
+    goto <clclu_end>;
+<clclu_b_w2>
+    if (r3v != 4) goto <clclu_b_w3>;
+    r4 = ad2; r5 = n2;
+    goto <clclu_end>;
+<clclu_b_w3>
+    if (r3v != 6) goto <clclu_b_w4>;
+    r6 = ad2; r7 = n2;
+    goto <clclu_end>;
+<clclu_b_w4>
+    if (r3v != 8) goto <clclu_b_w5>;
+    r8 = ad2; r9 = n2;
+    goto <clclu_end>;
+<clclu_b_w5>
+    if (r3v != 10) goto <clclu_b_w6>;
+    r10 = ad2; r11 = n2;
+    goto <clclu_end>;
+<clclu_b_w6>
+    if (r3v != 12) goto <clclu_b_w7>;
+    r12 = ad2; r13 = n2;
+    goto <clclu_end>;
+<clclu_b_w7>
+    r14 = ad2; r15 = n2;
+<clclu_end>
+}
+

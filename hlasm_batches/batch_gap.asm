@@ -1,0 +1,36 @@
+PROG     CSECT
+BT1      NOPR  0
+* --- Gap candidates, corrected 2026-10-04, see GAP_REPORT.md.
+* --- 29/30 confirmed NODECODE; G0021 OILF decodes (spec covers it).
+G0001    LCTL   1,3,16(4)
+G0002    STCTL  1,3,16(4)
+G0003    SIGP   1,2,16(3)
+G0004    SPX    16(3)
+G0005    PTLB
+G0006    MC     16(3),15
+G0007    LRA    1,16(2,3)
+G0008    LRAG   1,74565(2,3)
+G0009    CS     1,3,16(4)
+G0010    CDS    2,4,16(4)
+G0011    MVCP   0(4),16(5),1
+G0012    MVCS   0(4),16(5),1
+G0013    MVCK   0(4),16(5),1
+G0014    PLO    1,16(5),0,0
+G0015    UNPKU  0(4),16(5)
+G0016    STFL   16(3)
+G0017    CVBY   1,74565(2,3)
+G0018    CVDY   1,74565(2,3)
+G0019    LGFI   1,305419896
+G0020    OIHF   1,305419896
+G0021    OILF   1,305419896
+G0022    CLFEBR 1,7,2,7
+G0023    CDLGBR 1,7,2,7
+G0024    IDTE   1,2,7
+G0025    FIDTR  1,7,2,7
+G0026    CDFTR  1,7,2,7
+G0027    CFDTR  1,7,2,7
+G0028    ADTRA  1,7,2,7
+G0029    BPRP   7,BT1,BT2
+G0030    LMD    1,3,0(4),16(5)
+BT2      NOPR  0
+         END

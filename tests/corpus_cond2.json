@@ -1,0 +1,450 @@
+[
+  {
+    "bytes_hex": "0703",
+    "capstone_mnemonic": "bcr",
+    "capstone_op_str": "0, %r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 0 (nopr), R2 field=3"
+  },
+  {
+    "bytes_hex": "0700",
+    "capstone_mnemonic": "bcr",
+    "capstone_op_str": "0, %r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 0 (nopr), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "070e",
+    "capstone_mnemonic": "bcr",
+    "capstone_op_str": "0, %r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 0 (nopr), R2 field=14"
+  },
+  {
+    "bytes_hex": "0701",
+    "capstone_mnemonic": "bcr",
+    "capstone_op_str": "0, %r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 0 (nopr), R2 field=1"
+  },
+  {
+    "bytes_hex": "0713",
+    "capstone_mnemonic": "bor",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 1 (bor), R2 field=3"
+  },
+  {
+    "bytes_hex": "0710",
+    "capstone_mnemonic": "bor",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 1 (bor), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "071e",
+    "capstone_mnemonic": "bor",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 1 (bor), R2 field=14"
+  },
+  {
+    "bytes_hex": "0711",
+    "capstone_mnemonic": "bor",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 1 (bor), R2 field=1"
+  },
+  {
+    "bytes_hex": "0723",
+    "capstone_mnemonic": "bhr",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 2 (bhr), R2 field=3"
+  },
+  {
+    "bytes_hex": "0720",
+    "capstone_mnemonic": "bhr",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 2 (bhr), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "072e",
+    "capstone_mnemonic": "bhr",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 2 (bhr), R2 field=14"
+  },
+  {
+    "bytes_hex": "0721",
+    "capstone_mnemonic": "bhr",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 2 (bhr), R2 field=1"
+  },
+  {
+    "bytes_hex": "0733",
+    "capstone_mnemonic": "bnler",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 3 (bnler), R2 field=3"
+  },
+  {
+    "bytes_hex": "0730",
+    "capstone_mnemonic": "bnler",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 3 (bnler), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "073e",
+    "capstone_mnemonic": "bnler",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 3 (bnler), R2 field=14"
+  },
+  {
+    "bytes_hex": "0731",
+    "capstone_mnemonic": "bnler",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 3 (bnler), R2 field=1"
+  },
+  {
+    "bytes_hex": "0743",
+    "capstone_mnemonic": "blr",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 4 (blr), R2 field=3"
+  },
+  {
+    "bytes_hex": "0740",
+    "capstone_mnemonic": "blr",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 4 (blr), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "074e",
+    "capstone_mnemonic": "blr",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 4 (blr), R2 field=14"
+  },
+  {
+    "bytes_hex": "0741",
+    "capstone_mnemonic": "blr",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 4 (blr), R2 field=1"
+  },
+  {
+    "bytes_hex": "0753",
+    "capstone_mnemonic": "bnher",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 5 (bnher), R2 field=3"
+  },
+  {
+    "bytes_hex": "0750",
+    "capstone_mnemonic": "bnher",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 5 (bnher), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "075e",
+    "capstone_mnemonic": "bnher",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 5 (bnher), R2 field=14"
+  },
+  {
+    "bytes_hex": "0751",
+    "capstone_mnemonic": "bnher",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 5 (bnher), R2 field=1"
+  },
+  {
+    "bytes_hex": "0763",
+    "capstone_mnemonic": "blhr",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 6 (blhr), R2 field=3"
+  },
+  {
+    "bytes_hex": "0760",
+    "capstone_mnemonic": "blhr",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 6 (blhr), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "076e",
+    "capstone_mnemonic": "blhr",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 6 (blhr), R2 field=14"
+  },
+  {
+    "bytes_hex": "0761",
+    "capstone_mnemonic": "blhr",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 6 (blhr), R2 field=1"
+  },
+  {
+    "bytes_hex": "0773",
+    "capstone_mnemonic": "bner",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 7 (bner), R2 field=3"
+  },
+  {
+    "bytes_hex": "0770",
+    "capstone_mnemonic": "bner",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 7 (bner), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "077e",
+    "capstone_mnemonic": "bner",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 7 (bner), R2 field=14"
+  },
+  {
+    "bytes_hex": "0771",
+    "capstone_mnemonic": "bner",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 7 (bner), R2 field=1"
+  },
+  {
+    "bytes_hex": "0783",
+    "capstone_mnemonic": "ber",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 8 (ber), R2 field=3"
+  },
+  {
+    "bytes_hex": "0780",
+    "capstone_mnemonic": "ber",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 8 (ber), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "078e",
+    "capstone_mnemonic": "ber",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 8 (ber), R2 field=14"
+  },
+  {
+    "bytes_hex": "0781",
+    "capstone_mnemonic": "ber",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 8 (ber), R2 field=1"
+  },
+  {
+    "bytes_hex": "0793",
+    "capstone_mnemonic": "bnlhr",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 9 (bnlhr), R2 field=3"
+  },
+  {
+    "bytes_hex": "0790",
+    "capstone_mnemonic": "bnlhr",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 9 (bnlhr), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "079e",
+    "capstone_mnemonic": "bnlhr",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 9 (bnlhr), R2 field=14"
+  },
+  {
+    "bytes_hex": "0791",
+    "capstone_mnemonic": "bnlhr",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 9 (bnlhr), R2 field=1"
+  },
+  {
+    "bytes_hex": "07a3",
+    "capstone_mnemonic": "bher",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 10 (bher), R2 field=3"
+  },
+  {
+    "bytes_hex": "07a0",
+    "capstone_mnemonic": "bher",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 10 (bher), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "07ae",
+    "capstone_mnemonic": "bher",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 10 (bher), R2 field=14"
+  },
+  {
+    "bytes_hex": "07a1",
+    "capstone_mnemonic": "bher",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 10 (bher), R2 field=1"
+  },
+  {
+    "bytes_hex": "07b3",
+    "capstone_mnemonic": "bnlr",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 11 (bnlr), R2 field=3"
+  },
+  {
+    "bytes_hex": "07b0",
+    "capstone_mnemonic": "bnlr",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 11 (bnlr), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "07be",
+    "capstone_mnemonic": "bnlr",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 11 (bnlr), R2 field=14"
+  },
+  {
+    "bytes_hex": "07b1",
+    "capstone_mnemonic": "bnlr",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 11 (bnlr), R2 field=1"
+  },
+  {
+    "bytes_hex": "07c3",
+    "capstone_mnemonic": "bler",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 12 (bler), R2 field=3"
+  },
+  {
+    "bytes_hex": "07c0",
+    "capstone_mnemonic": "bler",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 12 (bler), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "07ce",
+    "capstone_mnemonic": "bler",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 12 (bler), R2 field=14"
+  },
+  {
+    "bytes_hex": "07c1",
+    "capstone_mnemonic": "bler",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 12 (bler), R2 field=1"
+  },
+  {
+    "bytes_hex": "07d3",
+    "capstone_mnemonic": "bnhr",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 13 (bnhr), R2 field=3"
+  },
+  {
+    "bytes_hex": "07d0",
+    "capstone_mnemonic": "bnhr",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 13 (bnhr), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "07de",
+    "capstone_mnemonic": "bnhr",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 13 (bnhr), R2 field=14"
+  },
+  {
+    "bytes_hex": "07d1",
+    "capstone_mnemonic": "bnhr",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 13 (bnhr), R2 field=1"
+  },
+  {
+    "bytes_hex": "07e3",
+    "capstone_mnemonic": "bnor",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 14 (bnor), R2 field=3"
+  },
+  {
+    "bytes_hex": "07e0",
+    "capstone_mnemonic": "bnor",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 14 (bnor), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "07ee",
+    "capstone_mnemonic": "bnor",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 14 (bnor), R2 field=14"
+  },
+  {
+    "bytes_hex": "07e1",
+    "capstone_mnemonic": "bnor",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 14 (bnor), R2 field=1"
+  },
+  {
+    "bytes_hex": "07f3",
+    "capstone_mnemonic": "br",
+    "capstone_op_str": "%r3",
+    "category": "branch-bcr",
+    "notes": "BCR mask 15 (br), R2 field=3"
+  },
+  {
+    "bytes_hex": "07f0",
+    "capstone_mnemonic": "br",
+    "capstone_op_str": "%r0",
+    "category": "branch-bcr",
+    "notes": "BCR mask 15 (br), R2 field=0; R2=0 architectural no-op regardless of cc"
+  },
+  {
+    "bytes_hex": "07fe",
+    "capstone_mnemonic": "br",
+    "capstone_op_str": "%r14",
+    "category": "branch-bcr",
+    "notes": "BCR mask 15 (br), R2 field=14; return idiom (br_ret)"
+  },
+  {
+    "bytes_hex": "07f1",
+    "capstone_mnemonic": "br",
+    "capstone_op_str": "%r1",
+    "category": "branch-bcr",
+    "notes": "BCR mask 15 (br), R2 field=1"
+  }
+]

@@ -1,0 +1,308 @@
+[
+  {
+    "bytes_hex": "0e02",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r2",
+    "expected_len": 2
+  },
+  {
+    "bytes_hex": "0f02",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r2",
+    "expected_len": 2
+  },
+  {
+    "bytes_hex": "1012",
+    "capstone_mnemonic": "lpr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 2
+  },
+  {
+    "bytes_hex": "1112",
+    "capstone_mnemonic": "lnr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 2
+  },
+  {
+    "bytes_hex": "1212",
+    "capstone_mnemonic": "ltr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 2
+  },
+  {
+    "bytes_hex": "1312",
+    "capstone_mnemonic": "lcr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 2
+  },
+  {
+    "bytes_hex": "1e12",
+    "capstone_mnemonic": "alr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 2
+  },
+  {
+    "bytes_hex": "1f12",
+    "capstone_mnemonic": "slr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 2
+  },
+  {
+    "bytes_hex": "4e10f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "4f10f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "5e10f000",
+    "capstone_mnemonic": "al",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "5f10f000",
+    "capstone_mnemonic": "sl",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "6010f000",
+    "capstone_mnemonic": "std",
+    "capstone_op_str": "%f1, 0(%r15)",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "7010f000",
+    "capstone_mnemonic": "ste",
+    "capstone_op_str": "%f1, 0(%r15)",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "a5101234",
+    "capstone_mnemonic": "iihh",
+    "capstone_op_str": "%r1, 0x1234",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "a51600ff",
+    "capstone_mnemonic": "nilh",
+    "capstone_op_str": "%r1, 0xff",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "a51700ff",
+    "capstone_mnemonic": "nill",
+    "capstone_op_str": "%r1, 0xff",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "a51b00ff",
+    "capstone_mnemonic": "oill",
+    "capstone_op_str": "%r1, 0xff",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9000012",
+    "capstone_mnemonic": "lpgr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9010012",
+    "capstone_mnemonic": "lngr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9020012",
+    "capstone_mnemonic": "ltgr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9030012",
+    "capstone_mnemonic": "lcgr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b90a0012",
+    "capstone_mnemonic": "algr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b90b0012",
+    "capstone_mnemonic": "slgr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9100012",
+    "capstone_mnemonic": "lpgfr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9110012",
+    "capstone_mnemonic": "lngfr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9130012",
+    "capstone_mnemonic": "lcgfr",
+    "capstone_op_str": "%r1, %r2",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9180023",
+    "capstone_mnemonic": "agfr",
+    "capstone_op_str": "%r2, %r3",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "bd13f000",
+    "capstone_mnemonic": "clm",
+    "capstone_op_str": "%r1, 3, 0(%r15)",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "c01812345678",
+    "capstone_mnemonic": "iihf",
+    "capstone_op_str": "%r1, 0x12345678",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "c01912345678",
+    "capstone_mnemonic": "iilf",
+    "capstone_op_str": "%r1, 0x12345678",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "c01a12345678",
+    "capstone_mnemonic": "nihf",
+    "capstone_op_str": "%r1, 0x12345678",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "c01d12345678",
+    "capstone_mnemonic": "oilf",
+    "capstone_op_str": "%r1, 0x12345678",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "c41f00000000",
+    "capstone_mnemonic": "strl",
+    "capstone_op_str": "%r1, 0",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f0000002",
+    "capstone_mnemonic": "ltg",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f000000a",
+    "capstone_mnemonic": "alg",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f000000b",
+    "capstone_mnemonic": "slg",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f0000012",
+    "capstone_mnemonic": "lt",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f0000018",
+    "capstone_mnemonic": "agf",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f0000019",
+    "capstone_mnemonic": "sgf",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f000001a",
+    "capstone_mnemonic": "algf",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f000001b",
+    "capstone_mnemonic": "slgf",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f0000030",
+    "capstone_mnemonic": "cgf",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f0000031",
+    "capstone_mnemonic": "clgf",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e310f0000032",
+    "capstone_mnemonic": "ltgf",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e32030000014",
+    "capstone_mnemonic": "lgf",
+    "capstone_op_str": "%r2, 0(%r3)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e32030000016",
+    "capstone_mnemonic": "llgf",
+    "capstone_op_str": "%r2, 0(%r3)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e32030000090",
+    "capstone_mnemonic": "llgc",
+    "capstone_op_str": "%r2, 0(%r3)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "e32030000091",
+    "capstone_mnemonic": "llgh",
+    "capstone_op_str": "%r2, 0(%r3)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb12f0000021",
+    "capstone_mnemonic": "clmy",
+    "capstone_op_str": "%r1, 2, 0(%r15)",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb13f0000090",
+    "capstone_mnemonic": "stmy",
+    "capstone_op_str": "%r1, %r3, 0(%r15)",
+    "expected_len": 6
+  }
+]

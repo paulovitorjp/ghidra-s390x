@@ -1,0 +1,1651 @@
+# s390x_arith.sinc — arithmetic / logical / shift / rotate / compare / TM
+# constructors for the IBM z/Architecture (s390x) SLEIGH processor module.
+#
+# Phase 2 work. Intended to be @included by (or merged into)
+# data/languages/s390x.slaspec AFTER its "Phase 2" marker. Follows
+# CONVENTIONS.md exactly (UPPERCASE fields, lowercase registers,
+# ea_D12/ea_D20 macros, cc register).
+#
+# VERIFICATION (do not weaken without re-verifying):
+#   * Every opcode/format below was taken from IBM z/Architecture Principles
+#     of Operation SA22-7832-14, Appendix B "Instructions Arranged by
+#     Operation Code", and cross-checked against the per-instruction format
+#     diagrams and "Resulting Condition Code" text in Chapter 7.
+#   * Every byte pattern was additionally decoded with Capstone 5.0.7
+#     (CS_ARCH_SYSZ); 69/69 vectors decode to the expected mnemonic with the
+#     expected length (see /tmp/pop/validate_vectors.py).
+#   * Corrections found during verification (i.e. why you must not trust
+#     memory): NG/OG/XG are E3 80/81/82 (NOT E3 14/16/17); NGR/OGR/XGR are
+#     B9 80/81/82 (NOT B9 14/16/17); CHI/CGHI are A7 E/F (NOT A7 D/C);
+#     CHY is E3 79 (NOT E3 75); MS is 0x71 RX-a (no EB 51 collision with TMY);
+#     32-bit shifts exist as RS-a (88-8B: SRL/SLL/SRA/SLA) AND as RSY-a
+#     K-variants (EB DC/DD/DE/DF, distinct-operands facility, R1=dest/R3=src).
+#
+# DISPLAYLIMIT (cosmetic only — decode and pcode use the full fields):
+#   RXY/RSY/SIY constructors print only the low 12 displacement bits
+#   ($(DL2)); the high 8 bits ($(DH2)) are omitted from the listing text.
+#   B2=0/X2=0 print as the pseudo-register name "zero".
+# (RIa token is defined once in s390x_loadstore.sinc; do not redefine it here.)
+
+define token SIYd(48)
+    SIYd_OP = (40,47)
+    SIYd_I2 = (32,39)
+    SIYd_B1 = (28,31)
+    SIYd_DL1 = (16,27)
+    SIYd_DH1 = (8,15)
+    SIYd_OP2 = (0,7)
+;
+attach variables [ SIYd_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# ---------------------------------------------------------------------------
+# Condition-code helper macros.
+# The 'cc' register is a byte varnode holding the condition code as a
+# plain 0-3 value (no bit packing). All arithmetic macros take 8-byte
+# low-order bits hold the operand/result; sa/sb/sr are 0/1 sign bits.
+# ---------------------------------------------------------------------------
+
+macro cc_set(ncc) {
+    cc = ncc;
+}
+
+# Shared tail for ADD/SUBTRACT: ov (0/1), sr = result sign (0/1),
+# r = result varnode (zero-test on the full varnode).
+macro cc_ov_tail(r, sr, ov) {
+    local ncc:1;
+        if (ov != 1) goto <if_1_else>;
+ ncc = 3; 
+    goto <if_1_end>;
+    <if_1_else>
+
+                if (r != 0) goto <if_2_else>;
+ ncc = 0; 
+        goto <if_2_end>;
+        <if_2_else>
+
+                        if (sr != 1) goto <if_3_else>;
+ ncc = 1; 
+            goto <if_3_end>;
+            <if_3_else>
+ ncc = 2; 
+            <if_3_end>
+        
+        <if_2_end>
+    
+    <if_1_end>
+    cc_set(ncc);
+}
+
+# Signed ADD: overflow iff the operand signs agree and the result sign differs.
+macro cc_add32(r, sa, sb) {
+    local sr:8;
+    local ov:1;
+    sr = (r >> 31) & 1;
+    ov = 0;
+        if (sa != sb) goto <if_4_end>;
+
+                if (sr == sa) goto <if_5_end>;
+ ov = 1; 
+        <if_5_end>
+    
+    <if_4_end>
+    cc_ov_tail(r, sr, ov);
+}
+
+macro cc_add64(r, sa, sb) {
+    local sr:8;
+    local ov:1;
+    sr = (r >> 63) & 1;
+    ov = 0;
+        if (sa != sb) goto <if_6_end>;
+
+                if (sr == sa) goto <if_7_end>;
+ ov = 1; 
+        <if_7_end>
+    
+    <if_6_end>
+    cc_ov_tail(r, sr, ov);
+}
+
+# Signed SUBTRACT: overflow iff the operand signs differ and the result sign
+# differs from the first operand's sign.
+macro cc_sub32(r, sa, sb) {
+    local sr:8;
+    local ov:1;
+    sr = (r >> 31) & 1;
+    ov = 0;
+        if (sa == sb) goto <if_8_end>;
+
+                if (sr == sa) goto <if_9_end>;
+ ov = 1; 
+        <if_9_end>
+    
+    <if_8_end>
+    cc_ov_tail(r, sr, ov);
+}
+
+macro cc_sub64(r, sa, sb) {
+    local sr:8;
+    local ov:1;
+    sr = (r >> 63) & 1;
+    ov = 0;
+        if (sa == sb) goto <if_10_end>;
+
+                if (sr == sa) goto <if_11_end>;
+ ov = 1; 
+        <if_11_end>
+    
+    <if_10_end>
+    cc_ov_tail(r, sr, ov);
+}
+
+# AND/OR/XOR (register and SS forms): 0 = result zero, 1 = result not zero.
+macro cc_logic(r) {
+    local ncc:1;
+        if (r != 0) goto <if_12_else>;
+ ncc = 0; 
+    goto <if_12_end>;
+    <if_12_else>
+ ncc = 1; 
+    <if_12_end>
+    cc_set(ncc);
+}
+
+# Signed COMPARE: 0 = equal, 1 = first low, 2 = first high. Callers mask a/b
+# to the operand width first so the unsigned '<' below is valid when signs
+# are equal.
+macro cc_scmp32(a, b) {
+    local sa:8;
+    local sb:8;
+    local ncc:1;
+    sa = (a >> 31) & 1;
+    sb = (b >> 31) & 1;
+        if (a != b) goto <if_13_else>;
+ ncc = 0; 
+    goto <if_13_end>;
+    <if_13_else>
+
+                if (sa != sb) goto <if_14_else>;
+
+                        if (!(a < b)) goto <if_15_else>;
+ ncc = 1; 
+            goto <if_15_end>;
+            <if_15_else>
+ ncc = 2; 
+            <if_15_end>
+        
+        goto <if_14_end>;
+        <if_14_else>
+
+                        if (sa != 1) goto <if_16_else>;
+ ncc = 1; 
+            goto <if_16_end>;
+            <if_16_else>
+ ncc = 2; 
+            <if_16_end>
+        
+        <if_14_end>
+    
+    <if_13_end>
+    cc_set(ncc);
+}
+
+macro cc_scmp64(a, b) {
+    local sa:8;
+    local sb:8;
+    local ncc:1;
+    sa = (a >> 63) & 1;
+    sb = (b >> 63) & 1;
+        if (a != b) goto <if_17_else>;
+ ncc = 0; 
+    goto <if_17_end>;
+    <if_17_else>
+
+                if (sa != sb) goto <if_18_else>;
+
+                        if (!(a < b)) goto <if_19_else>;
+ ncc = 1; 
+            goto <if_19_end>;
+            <if_19_else>
+ ncc = 2; 
+            <if_19_end>
+        
+        goto <if_18_end>;
+        <if_18_else>
+
+                        if (sa != 1) goto <if_20_else>;
+ ncc = 1; 
+            goto <if_20_end>;
+            <if_20_else>
+ ncc = 2; 
+            <if_20_end>
+        
+        <if_18_end>
+    
+    <if_17_end>
+    cc_set(ncc);
+}
+
+# Unsigned COMPARE: 0 = equal, 1 = first low, 2 = first high.
+macro cc_ucmp(a, b) {
+    local ncc:1;
+        if (a != b) goto <if_21_else>;
+ ncc = 0; 
+    goto <if_21_end>;
+    <if_21_else>
+
+                if (!(a < b)) goto <if_22_else>;
+ ncc = 1; 
+        goto <if_22_end>;
+        <if_22_else>
+ ncc = 2; 
+        <if_22_end>
+    
+    <if_21_end>
+    cc_set(ncc);
+}
+
+# TEST UNDER MASK: 0 = selected bits all zero (or mask zero),
+# 1 = mixed, 3 = selected bits all one.
+macro cc_tm(r, mask) {
+    local ncc:1;
+        if (r != 0) goto <if_23_else>;
+ ncc = 0; 
+    goto <if_23_end>;
+    <if_23_else>
+
+                if (r != mask) goto <if_24_else>;
+ ncc = 3; 
+        goto <if_24_end>;
+        <if_24_else>
+ ncc = 1; 
+        <if_24_end>
+    
+    <if_23_end>
+    cc_set(ncc);
+}
+
+# TEST UNDER MASK HIGH/LOW, 16-bit field variant (PoP 7-460/7-461): the
+# mixed case distinguishes the leftmost bit of the tested 16-bit field
+# (field's MSB = leftmost bit of the register field under test):
+# 0 = selected bits all zero (or mask zero),
+# 1 = mixed, leftmost bit of the field is zero,
+# 2 = mixed, leftmost bit of the field is one,
+# 3 = selected bits all one.
+# Do NOT use for the byte forms (TM/TMY): those have no CC=2.
+macro cc_tm16(field, r, mask) {
+    local ncc:1;
+    if (r != 0) goto <tm16_else>;
+ ncc = 0;
+    goto <tm16_end>;
+    <tm16_else>
+    if (r != mask) goto <tm16_mixed>;
+ ncc = 3;
+    goto <tm16_end>;
+    <tm16_mixed>
+    if ((field & 0x8000) != 0) goto <tm16_leftone>;
+ ncc = 1;
+    goto <tm16_end>;
+    <tm16_leftone>
+ ncc = 2;
+    <tm16_end>
+    cc_set(ncc);
+}
+
+# ===========================================================================
+# ADD, 32-bit. Result -> bits 32-63 of R1; bits 0-31 of R1 unchanged.
+# CC: 0 = zero, 1 = <0, 2 = >0, 3 = overflow (PoP 7-26).
+# ===========================================================================
+
+:AR "AR " RR_R1 "," RR_R2 is RR_OP=0x1A & RR_R1 & RR_R2
+{
+    local a:8;
+    local b:8;
+    local r:8;
+    a = RR_R1 & 0xffffffff;
+    b = RR_R2 & 0xffffffff;
+    r = (a + b) & 0xffffffff;
+    RR_R1 = (RR_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_add32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:A "A " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5A & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m32:4;
+    local a:8;
+    local b:8;
+    local r:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m32 = *:4 ea;
+    a = RXa_R1 & 0xffffffff;
+    b = zext(m32);
+    r = (a + b) & 0xffffffff;
+    RXa_R1 = (RXa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_add32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:AH "AH " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x4A & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m16:2;
+    local a:8;
+    local b:8;
+    local r:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m16 = *:2 ea;
+    a = RXa_R1 & 0xffffffff;
+    b = sext(m16);
+    r = (a + b) & 0xffffffff;
+    RXa_R1 = (RXa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_add32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:AHY "AHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x7A
+{
+    local ea:8;
+    local m16:2;
+    local a:8;
+    local b:8;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m16 = *:2 ea;
+    a = RXYa_R1 & 0xffffffff;
+    b = sext(m16);
+    r = (a + b) & 0xffffffff;
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_add32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:AHI "AHI " RIa_R1 "," RIa_I2 is RIa_OP=0xA7 & RIa_R1 & RIa_OPCD=0xA & RIa_I2
+{
+    local a:8;
+    local b:8;
+    local r:8;
+    a = RIa_R1 & 0xffffffff;
+    local _ext_ria_i2:2;
+    _ext_ria_i2 = RIa_I2;
+    b = sext(_ext_ria_i2);
+    r = (a + b) & 0xffffffff;
+    RIa_R1 = (RIa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_add32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:AFI "AFI " RILa_R1 "," RILa_I2 is RILa_OP=0xC2 & RILa_R1 & RILa_OPCD=0x9 & RILa_I2
+{
+    local a:8;
+    local b:8;
+    local r:8;
+    a = RILa_R1 & 0xffffffff;
+    local _ext_rila_i2:4;
+    _ext_rila_i2 = RILa_I2;
+    b = sext(_ext_rila_i2);
+    r = (a + b) & 0xffffffff;
+    RILa_R1 = (RILa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_add32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+# ===========================================================================
+# ADD, 64-bit. Full-register result. CC as above (PoP 7-26).
+# ===========================================================================
+
+:AGR "AGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB908 & RRE_R1 & RRE_R2
+{
+    local a:8;
+    local b:8;
+    local r:8;
+    a = RRE_R1;
+    b = RRE_R2;
+    r = a + b;
+    RRE_R1 = r;
+    cc_add64(r, (a >> 63) & 1, (b >> 63) & 1);
+}
+
+:AG "AG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x08
+{
+    local ea:8;
+    local m64:8;
+    local a:8;
+    local b:8;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m64 = *:8 ea;
+    a = RXYa_R1;
+    b = m64;
+    r = a + b;
+    RXYa_R1 = r;
+    cc_add64(r, (a >> 63) & 1, (b >> 63) & 1);
+}
+
+:AGHI "AGHI " RIa_R1 "," RIa_I2 is RIa_OP=0xA7 & RIa_R1 & RIa_OPCD=0xB & RIa_I2
+{
+    local a:8;
+    local b:8;
+    local r:8;
+    a = RIa_R1;
+    local _ext_ria_i2:2;
+    _ext_ria_i2 = RIa_I2;
+    b = sext(_ext_ria_i2);
+    r = a + b;
+    RIa_R1 = r;
+    cc_add64(r, (a >> 63) & 1, (b >> 63) & 1);
+}
+
+:AGFI "AGFI " RILa_R1 "," RILa_I2 is RILa_OP=0xC2 & RILa_R1 & RILa_OPCD=0x8 & RILa_I2
+{
+    local a:8;
+    local b:8;
+    local r:8;
+    a = RILa_R1;
+    local _ext_rila_i2:4;
+    _ext_rila_i2 = RILa_I2;
+    b = sext(_ext_rila_i2);
+    r = a + b;
+    RILa_R1 = r;
+    cc_add64(r, (a >> 63) & 1, (b >> 63) & 1);
+}
+
+# ===========================================================================
+# SUBTRACT, 32-bit and 64-bit. CC: 0 = zero, 1 = <0, 2 = >0, 3 = overflow
+# (PoP 7-453/7-454).
+# ===========================================================================
+
+:SR "SR " RR_R1 "," RR_R2 is RR_OP=0x1B & RR_R1 & RR_R2
+{
+    local a:8;
+    local b:8;
+    local r:8;
+    a = RR_R1 & 0xffffffff;
+    b = RR_R2 & 0xffffffff;
+    r = (a - b) & 0xffffffff;
+    RR_R1 = (RR_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_sub32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:S "S " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5B & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m32:4;
+    local a:8;
+    local b:8;
+    local r:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m32 = *:4 ea;
+    a = RXa_R1 & 0xffffffff;
+    b = zext(m32);
+    r = (a - b) & 0xffffffff;
+    RXa_R1 = (RXa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_sub32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:SH "SH " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x4B & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m16:2;
+    local a:8;
+    local b:8;
+    local r:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m16 = *:2 ea;
+    a = RXa_R1 & 0xffffffff;
+    b = sext(m16);
+    r = (a - b) & 0xffffffff;
+    RXa_R1 = (RXa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_sub32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:SHY "SHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x7B
+{
+    local ea:8;
+    local m16:2;
+    local a:8;
+    local b:8;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m16 = *:2 ea;
+    a = RXYa_R1 & 0xffffffff;
+    b = sext(m16);
+    r = (a - b) & 0xffffffff;
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_sub32(r, (a >> 31) & 1, (b >> 31) & 1);
+}
+
+:SGR "SGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB909 & RRE_R1 & RRE_R2
+{
+    local a:8;
+    local b:8;
+    local r:8;
+    a = RRE_R1;
+    b = RRE_R2;
+    r = a - b;
+    RRE_R1 = r;
+    cc_sub64(r, (a >> 63) & 1, (b >> 63) & 1);
+}
+
+:SG "SG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x09
+{
+    local ea:8;
+    local m64:8;
+    local a:8;
+    local b:8;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m64 = *:8 ea;
+    a = RXYa_R1;
+    b = m64;
+    r = a - b;
+    RXYa_R1 = r;
+    cc_sub64(r, (a >> 63) & 1, (b >> 63) & 1);
+}
+
+# ===========================================================================
+# AND. CC: 0 = result zero, 1 = result not zero (PoP 7-33).
+# ===========================================================================
+
+:NR "NR " RR_R1 "," RR_R2 is RR_OP=0x14 & RR_R1 & RR_R2
+{
+    local r:8;
+    r = (RR_R1 & RR_R2) & 0xffffffff;
+    RR_R1 = (RR_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:N "N " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x54 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m32:4;
+    local r:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m32 = *:4 ea;
+    r = (RXa_R1 & zext(m32)) & 0xffffffff;
+    RXa_R1 = (RXa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:NY "NY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x54
+{
+    local ea:8;
+    local m32:4;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m32 = *:4 ea;
+    r = (RXYa_R1 & zext(m32)) & 0xffffffff;
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:NGR "NGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB980 & RRE_R1 & RRE_R2
+{
+    RRE_R1 = RRE_R1 & RRE_R2;
+    cc_logic(RRE_R1);
+}
+
+:NG "NG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x80
+{
+    local ea:8;
+    local m64:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m64 = *:8 ea;
+    RXYa_R1 = RXYa_R1 & m64;
+    cc_logic(RXYa_R1);
+}
+
+:NI "NI " SI_D1 "(" SI_B1 ")" "," SI_I2 is SI_OP=0x94 & SI_I2 & SI_B1 & SI_D1
+{
+    local ea:8;
+    local m1:1;
+    local r:1;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    m1 = *:1 ea;
+    r = m1 & SI_I2;
+    *:1 ea = r;    cc_logic(r);
+}
+
+:NC "NC " SSa_D1 "(" SSa_L "," SSa_B1 ")" "," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xD4 & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8;
+    local ea2:8;
+    local len:8;
+    local a:1;
+    local b:1;
+    local r:1;
+    local allzero:1;
+    local ncc:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    local _ext1_ssa_l:1; _ext1_ssa_l = SSa_L;
+    len = zext(_ext1_ssa_l) + 1;
+    allzero = 1;
+        <loop_1_start>
+    if (len == 0) goto <loop_1_end>;
+
+    a = *:1 (ea1);
+    b = *:1 (ea2);
+    r = a & b;
+    *:1 ea1 = r;
+        if (r == 0) goto <if_25_end>;
+ allzero = 0; 
+    <if_25_end>
+    ea1 = ea1 + 1;
+    ea2 = ea2 + 1;
+    len = len - 1;
+
+    goto <loop_1_start>;
+    <loop_1_end>
+        if (allzero != 1) goto <if_26_else>;
+ ncc = 0; 
+    goto <if_26_end>;
+    <if_26_else>
+ ncc = 1; 
+    <if_26_end>
+    cc_set(ncc);
+}
+
+# ===========================================================================
+# OR. CC: 0 = result zero, 1 = result not zero (PoP 7-353).
+# ===========================================================================
+
+:OR "OR " RR_R1 "," RR_R2 is RR_OP=0x16 & RR_R1 & RR_R2
+{
+    local r:8;
+    r = (RR_R1 | RR_R2) & 0xffffffff;
+    RR_R1 = (RR_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:O "O " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x56 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m32:4;
+    local r:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m32 = *:4 ea;
+    r = (RXa_R1 | zext(m32)) & 0xffffffff;
+    RXa_R1 = (RXa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:OY "OY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x56
+{
+    local ea:8;
+    local m32:4;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m32 = *:4 ea;
+    r = (RXYa_R1 | zext(m32)) & 0xffffffff;
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:OGR "OGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB981 & RRE_R1 & RRE_R2
+{
+    RRE_R1 = RRE_R1 | RRE_R2;
+    cc_logic(RRE_R1);
+}
+
+:OG "OG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x81
+{
+    local ea:8;
+    local m64:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m64 = *:8 ea;
+    RXYa_R1 = RXYa_R1 | m64;
+    cc_logic(RXYa_R1);
+}
+
+:OI "OI " SI_D1 "(" SI_B1 ")" "," SI_I2 is SI_OP=0x96 & SI_I2 & SI_B1 & SI_D1
+{
+    local ea:8;
+    local m1:1;
+    local r:1;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    m1 = *:1 ea;
+    r = m1 | SI_I2;
+    *:1 ea = r;    cc_logic(r);
+}
+
+:OC "OC " SSa_D1 "(" SSa_L "," SSa_B1 ")" "," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xD6 & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8;
+    local ea2:8;
+    local len:8;
+    local a:1;
+    local b:1;
+    local r:1;
+    local allzero:1;
+    local ncc:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    local _ext2_ssa_l:1; _ext2_ssa_l = SSa_L;
+    len = zext(_ext2_ssa_l) + 1;
+    allzero = 1;
+        <loop_2_start>
+    if (len == 0) goto <loop_2_end>;
+
+    a = *:1 (ea1);
+    b = *:1 (ea2);
+    r = a | b;
+    *:1 ea1 = r;
+        if (r == 0) goto <if_27_end>;
+ allzero = 0; 
+    <if_27_end>
+    ea1 = ea1 + 1;
+    ea2 = ea2 + 1;
+    len = len - 1;
+
+    goto <loop_2_start>;
+    <loop_2_end>
+        if (allzero != 1) goto <if_28_else>;
+ ncc = 0; 
+    goto <if_28_end>;
+    <if_28_else>
+ ncc = 1; 
+    <if_28_end>
+    cc_set(ncc);
+}
+
+# ===========================================================================
+# EXCLUSIVE OR. CC: 0 = result zero, 1 = result not zero (PoP 7-292).
+# ===========================================================================
+
+:XR "XR " RR_R1 "," RR_R2 is RR_OP=0x17 & RR_R1 & RR_R2
+{
+    local r:8;
+    r = (RR_R1 ^ RR_R2) & 0xffffffff;
+    RR_R1 = (RR_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:X "X " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x57 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m32:4;
+    local r:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m32 = *:4 ea;
+    r = (RXa_R1 ^ zext(m32)) & 0xffffffff;
+    RXa_R1 = (RXa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:XY "XY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x57
+{
+    local ea:8;
+    local m32:4;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m32 = *:4 ea;
+    r = (RXYa_R1 ^ zext(m32)) & 0xffffffff;
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:XGR "XGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB982 & RRE_R1 & RRE_R2
+{
+    RRE_R1 = RRE_R1 ^ RRE_R2;
+    cc_logic(RRE_R1);
+}
+
+:XG "XG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x82
+{
+    local ea:8;
+    local m64:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m64 = *:8 ea;
+    RXYa_R1 = RXYa_R1 ^ m64;
+    cc_logic(RXYa_R1);
+}
+
+:XI "XI " SI_D1 "(" SI_B1 ")" "," SI_I2 is SI_OP=0x97 & SI_I2 & SI_B1 & SI_D1
+{
+    local ea:8;
+    local m1:1;
+    local r:1;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    m1 = *:1 ea;
+    r = m1 ^ SI_I2;
+    *:1 ea = r;    cc_logic(r);
+}
+
+:XC "XC " SSa_D1 "(" SSa_L "," SSa_B1 ")" "," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xD7 & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8;
+    local ea2:8;
+    local len:8;
+    local a:1;
+    local b:1;
+    local r:1;
+    local allzero:1;
+    local ncc:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    local _ext3_ssa_l:1; _ext3_ssa_l = SSa_L;
+    len = zext(_ext3_ssa_l) + 1;
+    allzero = 1;
+        <loop_3_start>
+    if (len == 0) goto <loop_3_end>;
+
+    a = *:1 (ea1);
+    b = *:1 (ea2);
+    r = a ^ b;
+    *:1 ea1 = r;
+        if (r == 0) goto <if_29_end>;
+ allzero = 0; 
+    <if_29_end>
+    ea1 = ea1 + 1;
+    ea2 = ea2 + 1;
+    len = len - 1;
+
+    goto <loop_3_start>;
+    <loop_3_end>
+        if (allzero != 1) goto <if_30_else>;
+ ncc = 0; 
+    goto <if_30_end>;
+    <if_30_else>
+ ncc = 1; 
+    <if_30_end>
+    cc_set(ncc);
+}
+
+# ===========================================================================
+# Shift cores. a = operand (8-byte varnode, only the low w bits significant),
+# amt = shift count (0..63). Sets r = result (low w bits) and ncc.
+# SLA/SLAG: sign bit preserved; overflow iff a bit unlike the sign is shifted
+#   out of the top numeric-bit position (PoP 7-439).
+# SRA/SRAG: sign bit preserved; vacated bits filled with the sign
+#   (PoP 7-441). No overflow possible.
+# ===========================================================================
+
+macro sla_core32(a, amt, r, ncc) {
+    local sa:8;
+    local num:8;
+    local rnum:8;
+    local out:8;
+    local one:8;
+    local allones:8;
+    local ov:1;
+    sa = (a >> 31) & 1;
+    num = a & 0x7fffffff;
+    ov = 0;
+    one = 1;
+        if (amt != 0) goto <if_31_else>;
+
+        rnum = num;
+    
+    goto <if_31_end>;
+    <if_31_else>
+
+                if (!(amt > 30)) goto <if_32_else>;
+
+            # Entire 31-bit numeric part shifted out (PoP 7-438, note 3).
+            rnum = 0;
+                        if (sa != 0) goto <if_33_else>;
+
+                                if (num == 0) goto <if_34_end>;
+ ov = 1; 
+                <if_34_end>
+            
+            goto <if_33_end>;
+            <if_33_else>
+
+                                if (num == 0x7fffffff) goto <if_35_end>;
+ ov = 1; 
+                <if_35_end>
+            
+            <if_33_end>
+        
+        goto <if_32_end>;
+        <if_32_else>
+
+            out = num >> (31 - amt);
+            rnum = (num << amt) & 0x7fffffff;
+            allones = (one << amt) - one;
+                        if (sa != 0) goto <if_36_else>;
+
+                                if (out == 0) goto <if_37_end>;
+ ov = 1; 
+                <if_37_end>
+            
+            goto <if_36_end>;
+            <if_36_else>
+
+                                if (out == allones) goto <if_38_end>;
+ ov = 1; 
+                <if_38_end>
+            
+            <if_36_end>
+        
+        <if_32_end>
+    
+    <if_31_end>
+    r = (sa << 31) | rnum;
+        if (ov != 1) goto <if_39_else>;
+ ncc = 3; 
+    goto <if_39_end>;
+    <if_39_else>
+
+                if (r != 0) goto <if_40_else>;
+ ncc = 0; 
+        goto <if_40_end>;
+        <if_40_else>
+
+                        if (sa != 1) goto <if_41_else>;
+ ncc = 1; 
+            goto <if_41_end>;
+            <if_41_else>
+ ncc = 2; 
+            <if_41_end>
+        
+        <if_40_end>
+    
+    <if_39_end>
+}
+
+macro sra_core32(a, amt, r, ncc) {
+    local sa:8;
+    local num:8;
+    local rnum:8;
+    local mask31:8;
+    sa = (a >> 31) & 1;
+    num = a & 0x7fffffff;
+    mask31 = 0x7fffffff;
+        if (amt != 0) goto <if_42_else>;
+
+        rnum = num;
+    
+    goto <if_42_end>;
+    <if_42_else>
+
+                if (!(amt > 30)) goto <if_43_else>;
+
+            # Entire numeric part shifted out; result is -1 or 0
+            # (PoP 7-441, note 2).
+                        if (sa != 1) goto <if_44_else>;
+ rnum = mask31; 
+            goto <if_44_end>;
+            <if_44_else>
+ rnum = 0; 
+            <if_44_end>
+        
+        goto <if_43_end>;
+        <if_43_else>
+
+            rnum = num >> amt;
+                        if (sa != 1) goto <if_45_end>;
+
+                rnum = rnum | ((mask31 << (31 - amt)) & mask31);
+            
+            <if_45_end>
+        
+        <if_43_end>
+    
+    <if_42_end>
+    r = (sa << 31) | rnum;
+        if (r != 0) goto <if_46_else>;
+ ncc = 0; 
+    goto <if_46_end>;
+    <if_46_else>
+
+                if (sa != 1) goto <if_47_else>;
+ ncc = 1; 
+        goto <if_47_end>;
+        <if_47_else>
+ ncc = 2; 
+        <if_47_end>
+    
+    <if_46_end>
+}
+
+macro sla_core64(a, amt, r, ncc) {
+    local sa:8;
+    local num:8;
+    local rnum:8;
+    local out:8;
+    local one:8;
+    local allones:8;
+    local ov:1;
+    sa = (a >> 63) & 1;
+    num = a & ((0x7FFFFFFF << 32) | 0xFFFFFFFF);
+    ov = 0;
+    one = 1;
+        if (amt != 0) goto <if_48_else>;
+
+        rnum = num;
+    
+    goto <if_48_end>;
+    <if_48_else>
+
+                if (!(amt > 62)) goto <if_49_else>;
+
+            rnum = 0;
+                        if (sa != 0) goto <if_50_else>;
+
+                                if (num == 0) goto <if_51_end>;
+ ov = 1; 
+                <if_51_end>
+            
+            goto <if_50_end>;
+            <if_50_else>
+
+                                if (num == ((0x7FFFFFFF << 32) | 0xFFFFFFFF)) goto <if_52_end>;
+ ov = 1; 
+                <if_52_end>
+            
+            <if_50_end>
+        
+        goto <if_49_end>;
+        <if_49_else>
+
+            out = num >> (63 - amt);
+            rnum = (num << amt) & ((0x7FFFFFFF << 32) | 0xFFFFFFFF);
+            allones = (one << amt) - one;
+                        if (sa != 0) goto <if_53_else>;
+
+                                if (out == 0) goto <if_54_end>;
+ ov = 1; 
+                <if_54_end>
+            
+            goto <if_53_end>;
+            <if_53_else>
+
+                                if (out == allones) goto <if_55_end>;
+ ov = 1; 
+                <if_55_end>
+            
+            <if_53_end>
+        
+        <if_49_end>
+    
+    <if_48_end>
+    r = (sa << 63) | rnum;
+        if (ov != 1) goto <if_56_else>;
+ ncc = 3; 
+    goto <if_56_end>;
+    <if_56_else>
+
+                if (r != 0) goto <if_57_else>;
+ ncc = 0; 
+        goto <if_57_end>;
+        <if_57_else>
+
+                        if (sa != 1) goto <if_58_else>;
+ ncc = 1; 
+            goto <if_58_end>;
+            <if_58_else>
+ ncc = 2; 
+            <if_58_end>
+        
+        <if_57_end>
+    
+    <if_56_end>
+}
+
+macro sra_core64(a, amt, r, ncc) {
+    local sa:8;
+    local num:8;
+    local rnum:8;
+    local mask63:8;
+    sa = (a >> 63) & 1;
+    num = a & ((0x7FFFFFFF << 32) | 0xFFFFFFFF);
+    mask63 = ((0x7FFFFFFF << 32) | 0xFFFFFFFF);
+        if (amt != 0) goto <if_59_else>;
+
+        rnum = num;
+    
+    goto <if_59_end>;
+    <if_59_else>
+
+                if (!(amt > 62)) goto <if_60_else>;
+
+                        if (sa != 1) goto <if_61_else>;
+ rnum = mask63; 
+            goto <if_61_end>;
+            <if_61_else>
+ rnum = 0; 
+            <if_61_end>
+        
+        goto <if_60_end>;
+        <if_60_else>
+
+            rnum = num >> amt;
+                        if (sa != 1) goto <if_62_end>;
+
+                rnum = rnum | ((mask63 << (63 - amt)) & mask63);
+            
+            <if_62_end>
+        
+        <if_60_end>
+    
+    <if_59_end>
+    r = (sa << 63) | rnum;
+        if (r != 0) goto <if_63_else>;
+ ncc = 0; 
+    goto <if_63_end>;
+    <if_63_else>
+
+                if (sa != 1) goto <if_64_else>;
+ ncc = 1; 
+        goto <if_64_end>;
+        <if_64_else>
+ ncc = 2; 
+        <if_64_end>
+    
+    <if_63_end>
+}
+
+# ===========================================================================
+# SHIFTS, 32-bit, RS-a. Bits 12-15 are ignored by hardware (left
+# unconstrained). Result -> bits 32-63 of R1; bits 0-31 unchanged.
+# CC: SLL/SRL unchanged; SLA 0/1/2/3; SRA 0/1/2 (PoP 7-438..7-442).
+# ===========================================================================
+
+:SLL "SLL " RSa_R1 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x89 & RSa_R1 & RSa_B2 & RSa_D2
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    ea_D12(sh, RSa_B2, zero, RSa_D2);
+    amt = sh & 63;
+    a = RSa_R1 & 0xffffffff;
+    r = (a << amt) & 0xffffffff;
+    RSa_R1 = (RSa_R1 & (0xFFFFFFFF << 32)) | r;
+}
+
+:SRL "SRL " RSa_R1 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x88 & RSa_R1 & RSa_B2 & RSa_D2
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    ea_D12(sh, RSa_B2, zero, RSa_D2);
+    amt = sh & 63;
+    a = RSa_R1 & 0xffffffff;
+    r = (a >> amt) & 0xffffffff;
+    RSa_R1 = (RSa_R1 & (0xFFFFFFFF << 32)) | r;
+}
+
+:SLA "SLA " RSa_R1 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8B & RSa_R1 & RSa_B2 & RSa_D2
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    local ncc:1;
+    ea_D12(sh, RSa_B2, zero, RSa_D2);
+    amt = sh & 63;
+    a = RSa_R1 & 0xffffffff;
+    sla_core32(a, amt, r, ncc);
+    RSa_R1 = (RSa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_set(ncc);
+}
+
+:SRA "SRA " RSa_R1 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8A & RSa_R1 & RSa_B2 & RSa_D2
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    local ncc:1;
+    ea_D12(sh, RSa_B2, zero, RSa_D2);
+    amt = sh & 63;
+    a = RSa_R1 & 0xffffffff;
+    sra_core32(a, amt, r, ncc);
+    RSa_R1 = (RSa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_set(ncc);
+}
+
+# ===========================================================================
+# SHIFTS, 32-bit, RSY-a "distinct operands" K-variants (PoP 7-438..7-442).
+# R3 = source operand, R1 = destination. Require the distinct-operands
+# facility; assemblers also accept the classic mnemonics for these encodings.
+# ===========================================================================
+
+:SLLK "SLLK " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDF
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    a = RSYa_R3 & 0xffffffff;
+    r = (a << amt) & 0xffffffff;
+    RSYa_R1 = (RSYa_R1 & (0xFFFFFFFF << 32)) | r;
+}
+
+:SRLK "SRLK " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDE
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    a = RSYa_R3 & 0xffffffff;
+    r = (a >> amt) & 0xffffffff;
+    RSYa_R1 = (RSYa_R1 & (0xFFFFFFFF << 32)) | r;
+}
+
+:SLAK "SLAK " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDD
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    local ncc:1;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    a = RSYa_R3 & 0xffffffff;
+    sla_core32(a, amt, r, ncc);
+    RSYa_R1 = (RSYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_set(ncc);
+}
+
+:SRAK "SRAK " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDC
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    local ncc:1;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    a = RSYa_R3 & 0xffffffff;
+    sra_core32(a, amt, r, ncc);
+    RSYa_R1 = (RSYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_set(ncc);
+}
+
+# ===========================================================================
+# SHIFTS, 64-bit, RSY-a. R3 = source, R1 = destination.
+# CC: SLLG/SRLG unchanged; SLAG 0/1/2/3; SRAG 0/1/2 (PoP 7-438..7-442).
+# ===========================================================================
+
+:SLLG "SLLG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0D
+{
+    local sh:8;
+    local amt:8;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    RSYa_R1 = RSYa_R3 << amt;
+}
+
+:SRLG "SRLG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0C
+{
+    local sh:8;
+    local amt:8;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    RSYa_R1 = RSYa_R3 >> amt;
+}
+
+:SLAG "SLAG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0B
+{
+    local sh:8;
+    local amt:8;
+    local r:8;
+    local ncc:1;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    sla_core64(RSYa_R3, amt, r, ncc);
+    RSYa_R1 = r;
+    cc_set(ncc);
+}
+
+:SRAG "SRAG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0A
+{
+    local sh:8;
+    local amt:8;
+    local r:8;
+    local ncc:1;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    sra_core64(RSYa_R3, amt, r, ncc);
+    RSYa_R1 = r;
+    cc_set(ncc);
+}
+
+# ===========================================================================
+# ROTATE LEFT SINGLE LOGICAL (PoP 7-426). R3 = source, R1 = destination.
+# CC unchanged.
+# ===========================================================================
+
+:RLL "RLL " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x1D
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    local r:8;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = (sh & 63) & 31;
+    a = RSYa_R3 & 0xffffffff;
+        if (amt != 0) goto <if_65_else>;
+
+        r = a;
+    
+    goto <if_65_end>;
+    <if_65_else>
+
+        r = ((a << amt) | (a >> (32 - amt))) & 0xffffffff;
+    
+    <if_65_end>
+    RSYa_R1 = (RSYa_R1 & (0xFFFFFFFF << 32)) | r;
+}
+
+:RLLG "RLLG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x1C
+{
+    local sh:8;
+    local amt:8;
+    local a:8;
+    ea_D20(sh, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
+    amt = sh & 63;
+    a = RSYa_R3;
+        if (amt != 0) goto <if_66_else>;
+
+        RSYa_R1 = a;
+    
+    goto <if_66_end>;
+    <if_66_else>
+
+        RSYa_R1 = (a << amt) | (a >> (64 - amt));
+    
+    <if_66_end>
+}
+
+# ===========================================================================
+# COMPARE signed. CC: 0 = equal, 1 = first low, 2 = first high (PoP 7-141).
+# ===========================================================================
+
+:CR "CR " RR_R1 "," RR_R2 is RR_OP=0x19 & RR_R1 & RR_R2
+{
+    local a:8;
+    local b:8;
+    a = RR_R1 & 0xffffffff;
+    b = RR_R2 & 0xffffffff;
+    cc_scmp32(a, b);
+}
+
+:C "C " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x59 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m32:4;
+    local a:8;
+    local b:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m32 = *:4 ea;
+    a = RXa_R1 & 0xffffffff;
+    b = zext(m32);
+    cc_scmp32(a, b);
+}
+
+:CH "CH " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x49 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m16:2;
+    local a:8;
+    local b:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m16 = *:2 ea;
+    a = RXa_R1 & 0xffffffff;
+    b = sext(m16) & 0xffffffff;
+    cc_scmp32(a, b);
+}
+
+:CHY "CHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x79
+{
+    local ea:8;
+    local m16:2;
+    local a:8;
+    local b:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m16 = *:2 ea;
+    a = RXYa_R1 & 0xffffffff;
+    b = sext(m16) & 0xffffffff;
+    cc_scmp32(a, b);
+}
+
+:CGR "CGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB920 & RRE_R1 & RRE_R2
+{
+    cc_scmp64(RRE_R1, RRE_R2);
+}
+
+:CG "CG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x20
+{
+    local ea:8;
+    local m64:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m64 = *:8 ea;
+    cc_scmp64(RXYa_R1, m64);
+}
+
+:CHI "CHI " RIa_R1 "," RIa_I2 is RIa_OP=0xA7 & RIa_R1 & RIa_OPCD=0xE & RIa_I2
+{
+    local a:8;
+    local b:8;
+    a = RIa_R1 & 0xffffffff;
+    local _ext4_ria_i2:2; _ext4_ria_i2 = RIa_I2;
+    b = sext(_ext4_ria_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+}
+
+:CGHI "CGHI " RIa_R1 "," RIa_I2 is RIa_OP=0xA7 & RIa_R1 & RIa_OPCD=0xF & RIa_I2
+{
+    local b:8;
+    local _ext_ria_i2:2;
+    _ext_ria_i2 = RIa_I2;
+    b = sext(_ext_ria_i2);
+    cc_scmp64(RIa_R1, b);
+}
+
+:CFI "CFI " RILa_R1 "," RILa_I2 is RILa_OP=0xC2 & RILa_R1 & RILa_OPCD=0xD & RILa_I2
+{
+    local a:8;
+    local b:8;
+    a = RILa_R1 & 0xffffffff;
+    local _ext5_rila_i2:4; _ext5_rila_i2 = RILa_I2;
+    b = sext(_ext5_rila_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+}
+
+:CGFI "CGFI " RILa_R1 "," RILa_I2 is RILa_OP=0xC2 & RILa_R1 & RILa_OPCD=0xC & RILa_I2
+{
+    local b:8;
+    local _ext_rila_i2:4;
+    _ext_rila_i2 = RILa_I2;
+    b = sext(_ext_rila_i2);
+    cc_scmp64(RILa_R1, b);
+}
+
+# ===========================================================================
+# COMPARE LOGICAL (unsigned). CC: 0 = equal, 1 = first low, 2 = first high
+# (PoP 7-146).
+# ===========================================================================
+
+:CLR "CLR " RR_R1 "," RR_R2 is RR_OP=0x15 & RR_R1 & RR_R2
+{
+    local a:8;
+    local b:8;
+    a = RR_R1 & 0xffffffff;
+    b = RR_R2 & 0xffffffff;
+    cc_ucmp(a, b);
+}
+
+:CL "CL " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x55 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local m32:4;
+    local a:8;
+    local b:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    m32 = *:4 ea;
+    a = RXa_R1 & 0xffffffff;
+    b = zext(m32);
+    cc_ucmp(a, b);
+}
+
+:CLG "CLG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x21
+{
+    local ea:8;
+    local m64:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m64 = *:8 ea;
+    cc_ucmp(RXYa_R1, m64);
+}
+
+:CLGR "CLGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB921 & RRE_R1 & RRE_R2
+{
+    cc_ucmp(RRE_R1, RRE_R2);
+}
+
+:CLI "CLI " SI_D1 "(" SI_B1 ")" "," SI_I2 is SI_OP=0x95 & SI_I2 & SI_B1 & SI_D1
+{
+    local ea:8;
+    local m1:1;
+    local a:8;
+    local b:8;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    m1 = *:1 ea;
+    a = zext(m1);
+    local _ext_si_i2:1;
+    _ext_si_i2 = SI_I2;
+    b = zext(_ext_si_i2);
+    cc_ucmp(a, b);
+}
+
+:CLC "CLC " SSa_D1 "(" SSa_L "," SSa_B1 ")" "," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xD5 & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8;
+    local ea2:8;
+    local len:8;
+    local a:1;
+    local b:1;
+    local ncc:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    local _ext6_ssa_l:1; _ext6_ssa_l = SSa_L;
+    len = zext(_ext6_ssa_l) + 1;
+    ncc = 0;
+        <loop_4_start>
+    if (len == 0) goto <loop_4_end>;
+
+    a = *:1 (ea1);
+    b = *:1 (ea2);
+        if (a == b) goto <if_67_else>;
+
+                if (!(a < b)) goto <if_68_else>;
+ ncc = 1; 
+        goto <if_68_end>;
+        <if_68_else>
+ ncc = 2; 
+        <if_68_end>
+        len = 0;
+    
+    goto <if_67_end>;
+    <if_67_else>
+
+        ea1 = ea1 + 1;
+        ea2 = ea2 + 1;
+        len = len - 1;
+    
+    <if_67_end>
+
+    goto <loop_4_start>;
+    <loop_4_end>
+    cc_set(ncc);
+}
+
+# ===========================================================================
+# TEST UNDER MASK (PoP 7-459). CC: 0 = selected bits all zero (or mask
+# zero), 1 = mixed, 2 unused, 3 = selected bits all one.
+# ===========================================================================
+
+# TEST UNDER MASK HIGH/LOW (PoP 7-460/7-461): RI-format, opcode 0xA7.
+# M3 selects the 16-bit field of R1 under test (verified against LLVM/
+# Capstone SYSZ decode): 0=TMLH (bits 32-47), 1=TMLL (bits 48-63),
+# 2=TMHH (bits 0-15), 3=TMHL (bits 16-31). Found missing by the
+# differential fuzzer.
+define token RIM(32)
+    RIM_OP = (24,31)
+    RIM_R1 = (20,23)
+    RIM_M3 = (16,19)
+    RIM_I2 = (0,15)
+;
+attach variables [ RIM_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+:TMHH "TMHH " RIM_R1 "," RIM_I2 is RIM_OP=0xA7 & RIM_R1 & RIM_M3=0x2 & RIM_I2
+{
+    local f:8;
+    local mask:8;
+    local r:8;
+    f = (RIM_R1 >> 48) & 0xffff;
+    mask = RIM_I2 & 0xffff;
+    r = f & mask;
+    cc_tm16(f, r, mask);
+}
+
+:TMHL "TMHL " RIM_R1 "," RIM_I2 is RIM_OP=0xA7 & RIM_R1 & RIM_M3=0x3 & RIM_I2
+{
+    local f:8;
+    local mask:8;
+    local r:8;
+    f = (RIM_R1 >> 32) & 0xffff;
+    mask = RIM_I2 & 0xffff;
+    r = f & mask;
+    cc_tm16(f, r, mask);
+}
+
+:TMLH "TMLH " RIM_R1 "," RIM_I2 is RIM_OP=0xA7 & RIM_R1 & RIM_M3=0x0 & RIM_I2
+{
+    local f:8;
+    local mask:8;
+    local r:8;
+    f = (RIM_R1 >> 16) & 0xffff;
+    mask = RIM_I2 & 0xffff;
+    r = f & mask;
+    cc_tm16(f, r, mask);
+}
+
+:TMLL "TMLL " RIM_R1 "," RIM_I2 is RIM_OP=0xA7 & RIM_R1 & RIM_M3=0x1 & RIM_I2
+{
+    local f:8;
+    local mask:8;
+    local r:8;
+    f = RIM_R1 & 0xffff;
+    mask = RIM_I2 & 0xffff;
+    r = f & mask;
+    cc_tm16(f, r, mask);
+}
+
+:TM "TM " SI_D1 "(" SI_B1 ")" "," SI_I2 is SI_OP=0x91 & SI_I2 & SI_B1 & SI_D1
+{
+    local ea:8;
+    local m1:1;
+    local m:8;
+    local mask:8;
+    local r:8;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    m1 = *:1 ea;
+    m = zext(m1);
+    local _ext_si_i2:1;
+    _ext_si_i2 = SI_I2;
+    mask = zext(_ext_si_i2);
+    r = m & mask;
+    cc_tm(r, mask);
+}
+
+:TMY "TMY " SIYd_DL1 "(" SIYd_B1 ")" "," SIYd_I2 is SIYd_OP=0xEB & SIYd_I2 & SIYd_B1 & SIYd_DL1 & SIYd_DH1 & SIYd_OP2=0x51
+{
+    local ea:8;
+    local m1:1;
+    local m:8;
+    local mask:8;
+    local r:8;
+    ea_D20(ea, SIYd_B1, zero, SIYd_DH1, SIYd_DL1);
+    m1 = *:1 ea;
+    m = zext(m1);
+    local _ext_siyd_i2:1;
+    _ext_siyd_i2 = SIYd_I2;
+    mask = zext(_ext_siyd_i2);
+    r = m & mask;
+    cc_tm(r, mask);
+}

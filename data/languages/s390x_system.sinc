@@ -1,0 +1,495 @@
+# s390x_system.sinc — System/privileged and crypto-facility instruction
+# constructors.
+#
+# This file is textually included into s390x.slaspec at merge time
+# (@include "s390x_system.sinc"). It shares the define-section tokens,
+# registers, attachments, and macros of s390x.slaspec; the extra
+# tokens it needs (RRFb, RRFc) are defined here.
+#
+# References: IBM z/Architecture Principles of Operation SA22-7832-14
+# (15th ed., Apr 2025). EVERY opcode below was verified against the
+# PoP's instruction figures/descriptions (Ch. 7 and Ch. 10) and the
+# Appendix A opcode summary table; the public mirror
+# https://kib.kiev.ua/x86docs/Z/Z/SA22-7832-14.pdf was used
+# (downloaded 2026-09-17, converted with pdftotext).
+# Cross-checked against Capstone 5.0.7 (CS_ARCH_SYSZ) — see
+# tools/validate_system.py and tests/corpus_system.json.
+#
+# Conventions: see CONVENTIONS.md. Constructor names are lowercase and
+# match the display mnemonic; every constructor carries an explicit
+# [...] display section in HLASM operand order. Field names are
+# globally unique per-token (<TOKEN>_<FIELD>); SLEIGH bit numbering is
+# bit 0 = LSB regardless of endianness, so PoP range (s,e) on an N-bit
+# token is written (N-1-e,N-1-s).
+#
+# SEMANTICS POLICY: privileged and crypto instructions decode with the
+# correct length, mnemonic, and operands, and carry CONSERVATIVE
+# CLOBBER MODELS in pcode — never exact emulation, never fabricated
+# concrete values. Rationale: a fully opaque stub tells the decompiler
+# "nothing is clobbered", which is actively wrong (KM sets CC and
+# rewrites its chaining value; STCK stores 8 bytes to memory). Every
+# clobbered location is therefore written, but only with the
+# zero-operand pcodeop `unkval` (defined below; the same idiom as
+# x86's RDRAND `define pcodeop rdrand`), which the decompiler treats
+# as an opaque unknown input — the honest static approximation for
+# values that are dynamic or machine-dependent (clock readings, cipher
+# outputs, chaining values, CPU IDs). Exactly-known effects are
+# modeled precisely: SPM's CC write from R1 bits 34-35, IPM's
+# CC/program-mask insertion into R1, SPKA's PSW-key update from
+# address bits 56-59. Effects on machine facilities with no modeled
+# varnode (TOD clock, clock comparator, CPU timer, PSW
+# address-space-control) stay unmodeled; those stubs say so
+# explicitly. STCK/STCKE/STCKF are NOT privileged (they run in
+# problem state and are how user code reads the TOD clock); they
+# store an unknown value to memory. NOTE: sleighc rejects reads of
+# never-written `local` temporaries ("Temporary is read but not
+# written"), so unknown values MUST come from `unkval()`, not from
+# unassigned locals.
+#
+# IMPORTANT ASSUMPTIONS (for the merge/sleighc phase to confirm):
+#  1. Reserved/ignored fields are left UNCONSTRAINED (PoP-faithful;
+#     matches the trap4/lpsw precedent in s390x_branch.sinc), even
+#     where Capstone 5.0.7 only decodes the all-zero form (e.g. IPM's
+#     ignored byte, KM's ignored byte, KIMD's M3). Corpus vectors use
+#     the Capstone-decodable forms.
+#  2. Comment-only { } blocks for opaque stubs are accepted by
+#     sleighc (precedent: svc/trap2/diagnose/ex in s390x_branch.sinc,
+#     which compiles with zero errors).
+#  3. Overlapping-constructor disambiguation is not needed here: all
+#     opcodes in this file are disjoint from other fragments
+#     (verified: no existing constructor uses 04, B202-B27D, or
+#     B91E-B93F).
+
+# ---------------------------------------------------------------------------
+# Extra tokens
+# ---------------------------------------------------------------------------
+
+# RRFb: 4-byte RRF format, R3 variant (CIPHER MESSAGE WITH
+# AUTHENTICATION / CIPHER MESSAGE WITH COUNTER). PoP Figure 7-x:
+# OP(0-15), R3(16-19), ignored(20-23), R1(24-27), R2(28-31).
+define token RRFb(32)
+    RRFb_OP = (16,31)
+    RRFb_R3 = (12,15)
+    RRFb_IGN = (8,11)
+    RRFb_R1 = (4,7)
+    RRFb_R2 = (0,3)
+;
+attach variables [ RRFb_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFb_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFb_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RRFc: 4-byte RRF format, M3 variant (COMPUTE INTERMEDIATE/LAST
+# MESSAGE DIGEST). PoP Figure 7-222: OP(0-15), M3(16-19),
+# reserved(20-23), R1(24-27), R2(28-31). M3 stays numeric (modifier;
+# bit 0 is the extension-12 flag). It is parsed but NOT displayed:
+# the PoP assembler syntax is "KIMD R1,R2[,M3]" (M3 optional) and
+# Capstone never prints it.
+define token RRFc(32)
+    RRFc_OP = (16,31)
+    RRFc_M3 = (12,15)
+    RRFc_IGN = (8,11)
+    RRFc_R1 = (4,7)
+    RRFc_R2 = (0,3)
+;
+attach variables [ RRFc_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFc_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# ---------------------------------------------------------------------------
+# Unknown-value source for the conservative clobber models (see
+# SEMANTICS POLICY above). Zero-operand pcodeop; the result is sized
+# by context, so one definition serves 1/2/8/16-byte uses — the same
+# idiom as x86 RDRAND (`Rmr16 = rdrand();` in rdrand.sinc).
+# ---------------------------------------------------------------------------
+define pcodeop unkval;
+
+# ---------------------------------------------------------------------------
+# TOD clock and CPU timer (S format). STCK/STCKE/STCKF are NOT
+# privileged; the SET variants are.
+# ---------------------------------------------------------------------------
+
+:sck "sck " S_D2 "(" S_B2 ")" is S_OP=0xB204 & S_B2 & S_D2
+{
+    # SET CLOCK (PoP 10-133): the TOD clock is set from the 8-byte
+    # value at the second-operand address. Privileged. The TOD clock
+    # has no modeled varnode in this spec, so there is no pcode to
+    # emit; the effect lands entirely in unmodeled machine state.
+    # (Memory is only read, not written, so no clobber is modeled.)
+}
+
+:stck "stck " S_D2 "(" S_B2 ")" is S_OP=0xB205 & S_B2 & S_D2
+{
+    # STORE CLOCK (PoP 7-445): the 8-byte TOD clock value is stored at
+    # the second-operand address. NOT privileged (problem-state
+    # programs use this to read the clock). The stored value is
+    # unknowable statically, so an unknown value is stored: the
+    # decompiler sees 8 unknown bytes at the operand address.
+    # CC is set (0 = set state, 2 = error, 3 = stopped), so it is
+    # clobbered as unknown.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    *:8 ea = unkval();
+    cc = unkval();
+}
+
+:sckc "sckc " S_D2 "(" S_B2 ")" is S_OP=0xB206 & S_B2 & S_D2
+{
+    # SET CLOCK COMPARATOR (PoP 10-134): the clock comparator is set
+    # from the 8-byte value at the second-operand address.
+    # Privileged. The comparator has no modeled varnode, so there is
+    # no pcode to emit; the effect lands entirely in unmodeled
+    # machine state. (Memory is only read, not written.)
+}
+
+:stckc "stckc " S_D2 "(" S_B2 ")" is S_OP=0xB207 & S_B2 & S_D2
+{
+    # STORE CLOCK COMPARATOR (PoP 10-134): the 8-byte clock
+    # comparator value is stored at the second-operand address.
+    # Privileged. The stored value is unknowable statically.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    *:8 ea = unkval();
+}
+
+:spt "spt " S_D2 "(" S_B2 ")" is S_OP=0xB208 & S_B2 & S_D2
+{
+    # SET CPU TIMER (PoP 10-135): the CPU timer is set from the 8-byte
+    # value at the second-operand address. Privileged. The CPU timer
+    # has no modeled varnode, so there is no pcode to emit; the
+    # effect lands entirely in unmodeled machine state. (Memory is
+    # only read, not written.)
+}
+
+:stpt "stpt " S_D2 "(" S_B2 ")" is S_OP=0xB209 & S_B2 & S_D2
+{
+    # STORE CPU TIMER (PoP 10-151): the 8-byte CPU timer value is
+    # stored at the second-operand address. Privileged. The stored
+    # value is unknowable statically.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    *:8 ea = unkval();
+}
+
+:stcke "stcke " S_D2 "(" S_B2 ")" is S_OP=0xB278 & S_B2 & S_D2
+{
+    # STORE CLOCK EXTENDED (PoP 7-446): the 16-byte extended TOD
+    # clock value is stored at the second-operand address. NOT
+    # privileged. The stored value is unknowable statically.
+    # CC is set (0/2/3, as STCK), so it is clobbered as unknown.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    *:16 ea = unkval();
+    cc = unkval();
+}
+
+:stckf "stckf " S_D2 "(" S_B2 ")" is S_OP=0xB27C & S_B2 & S_D2
+{
+    # STORE CLOCK FAST (PoP 7-445): the 8-byte TOD clock value is
+    # stored at the second-operand address (faster, less precise
+    # variant of STCK). NOT privileged. The stored value is
+    # unknowable statically. CC is set (0/2/3, as STCK), so it is
+    # clobbered as unknown.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    *:8 ea = unkval();
+    cc = unkval();
+}
+
+# ---------------------------------------------------------------------------
+# CPU/system control (S format). All privileged.
+# ---------------------------------------------------------------------------
+
+:spka "spka " S_D2 "(" S_B2 ")" is S_OP=0xB20A & S_B2 & S_D2
+{
+    # SET PSW KEY FROM ADDRESS (PoP 10-136): the PSW key (PSW bits
+    # 8-11) is set from bits 56-59 of the second-operand ADDRESS
+    # (storage is not accessed). Privileged. The address expression
+    # is exact in pcode; PSW bit p lives at pswm value-bit (63-p)
+    # (same convention as SSM's system-mask write in
+    # s390x_branch.sinc), so the key lands at pswm bits 52-55.
+    # Address bits 56-59 (PoP numbering) are SLEIGH bits 7-4.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    pswm = (pswm & 0xFF0FFFFFFFFFFFFF) | (((ea >> 4) & 0xF) << 52);
+}
+
+:stap "stap " S_D2 "(" S_B2 ")" is S_OP=0xB212 & S_B2 & S_D2
+{
+    # STORE CPU ADDRESS (PoP 10-148): the 2-byte CPU address of the
+    # executing CPU is stored at the second-operand address.
+    # Privileged. The stored value is unknowable statically.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    *:2 ea = unkval();
+}
+
+:stidp "stidp " S_D2 "(" S_B2 ")" is S_OP=0xB202 & S_B2 & S_D2
+{
+    # STORE CPU ID (PoP 10-149): the 8-byte CPU identification (CPU
+    # ID, model, version) is stored at the second-operand address.
+    # Privileged. The stored value is unknowable statically.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    *:8 ea = unkval();
+}
+
+:stsi "stsi " S_D2 "(" S_B2 ")" is S_OP=0xB27D & S_B2 & S_D2
+{
+    # STORE SYSTEM INFORMATION (PoP 10-153): basic-machine / logical-
+    # partition / VM configuration data is stored at the
+    # second-operand address. Privileged. The stored bytes are
+    # unknowable statically; the true length is dynamic (it depends
+    # on the function codes in R0/R1 and can be up to a 4K SYSIB),
+    # so a single 8-byte unknown store marks the store site without
+    # claiming a length we cannot know. CC is set (0 = information
+    # stored, 3 = not available), so it is clobbered as unknown.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    *:8 ea = unkval();
+    cc = unkval();
+}
+
+:sacf "sacf " S_D2 "(" S_B2 ")" is S_OP=0xB279 & S_B2 & S_D2
+{
+    # SET ADDRESS SPACE CONTROL FAST (PoP 10-132): bits 52-55 of the
+    # second-operand ADDRESS (not storage contents) are used as a
+    # code to set the address-space-control bits (PSW bits 16-17);
+    # bits 0-51 and 56-63 of the address are ignored (bits 52-53
+    # must be zero or a specification exception is recognized).
+    # Privileged. Unlike SAC it does not discard prefetched
+    # instructions. Conservative model: the two address-space-
+    # control bits (pswm numeric bits 47-46, since PoP PSW bit p is
+    # pswm value-bit (63-p), per the SSM convention) are set to an
+    # unknown value; the rest of pswm is unchanged. The exact
+    # code-to-mode mapping is not encoded (the code is dynamic).
+    # CC is unchanged (PoP 10-132).
+    local asc:8;
+    asc = unkval();
+    pswm = (pswm & 0xFFFF3FFFFFFFFFFF) | ((asc & 0x0000000000000003) << 46);
+}
+
+:pc "pc " S_D2 "(" S_B2 ")" is S_OP=0xB218 & S_B2 & S_D2
+{
+    # PROGRAM CALL (PoP 10-99; not to be confused with the program
+    # counter): linkage to another program via the entry-table
+    # designated by the second-operand address. Privileged
+    # (semi-privileged per Fig. 5-6). No pcode is emitted: resolving
+    # the target needs the entry table and linkage stack, and the
+    # register/PSW effects depend on the called program, so any
+    # static model would be fabrication. The decompiler treats it as
+    # a fall-through instruction with no clobbers, which is the
+    # documented limitation for now.
+}
+
+# ---------------------------------------------------------------------------
+# Program mask (RR / RRE). The R1 field designates a general register
+# (NOT an immediate mask): SPM moves register bits into the PSW, IPM
+# moves PSW bits into the register (PoP 7-437, 7-302).
+# ---------------------------------------------------------------------------
+
+:spm "spm " RR_R1 is RR_OP=0x04 & RR_R1
+{
+    # SET PROGRAM MASK (PoP 7-437): bits 34-35 of general register
+    # R1 replace the condition code, and bits 36-39 replace the
+    # program mask (PSW bits 36-39). Bits 0-33 and 40-63 of R1 are
+    # ignored. Bits 12-15 of the instruction (R2 position) are
+    # ignored (left unconstrained, per file convention; Capstone
+    # only decodes the R2=0 form). Both writes are exact in pcode:
+    # PoP bit p is SLEIGH bit (63-p), so R1 bits 34-35 are SLEIGH
+    # bits 29-28 and R1 bits 36-39 are SLEIGH bits 27-24; the program
+    # mask lands at pswm value-bits 43-40 (PSW bit p = pswm
+    # value-bit (63-p), same convention as SSM in s390x_branch.sinc:
+    # PSW bits 20-23 are the program mask).
+    # SLEIGH sizes every operator strictly, so the 2-bit CC is
+    # rebuilt from 1-byte comparisons (t is already masked to 0-3).
+    # Serialization and specification checks not modeled.
+    local t:8;
+    t = (RR_R1 >> 28) & 0x0000000000000003;
+    cc = (t == 0x0000000000000001) + 2 * (t == 0x0000000000000002) +
+         3 * (t == 0x0000000000000003);
+    pswm = (pswm & 0xFFFFF0FFFFFFFFFF) | (((RR_R1 >> 24) & 0x000000000000000F) << 40);
+}
+
+:ipm "ipm " RRE_R1 is RRE_OP=0xB222 & RRE_R1
+{
+    # INSERT PROGRAM MASK (PoP 7-302): the condition code and program
+    # mask from the current PSW are inserted into bit positions
+    # 34-35 and 36-39 of general register R1; bits 32-33 of R1 are
+    # set to zero; bits 0-31 and 40-63 are unchanged. Condition code
+    # is unchanged. Bits 16-23 and 28-31 of the instruction are
+    # ignored (left unconstrained, per file convention; Capstone
+    # only decodes the all-zero form). PoP bit p is SLEIGH bit
+    # (63-p): CC occupies R1 SLEIGH bits 29-28, the program mask R1
+    # SLEIGH bits 27-24, read back from pswm value-bits 43-40.
+    RRE_R1 = (RRE_R1 & 0xFFFFFFFF00FFFFFF) |
+             (((zext(cc) & 0x0000000000000003) << 28) |
+              (((pswm >> 40) & 0x000000000000000F) << 24));
+}
+
+# ---------------------------------------------------------------------------
+# Message-security-assist: basic cipher/message-digest instructions
+# (RRE). These RUN IN PROBLEM STATE (not privileged) and appear in
+# real crypto code (OpenSSL, TLS). The function code lives in bits
+# 57-63 of GENERAL REGISTER 0, not in the instruction (PoP 7-54);
+# bits 16-23 of the instruction are IGNORED.
+# ---------------------------------------------------------------------------
+
+:km "km " RRE_R1 "," RRE_R2 is RRE_OP=0xB92E & RRE_R1 & RRE_R2
+{
+    # CIPHER MESSAGE (PoP 7-54): block-cipher operation selected by
+    # the function code in GR0 bits 57-63 (e.g. 18 = KM-AES-128).
+    # R1 = parameter-block address, R2 = operand address.
+    # Conservative clobber model: exact emulation is impossible
+    # statically (function code, key, and data are all dynamic). The
+    # address/length registers are updated by the real instruction,
+    # the chaining value in the parameter block and the (in-place)
+    # operand are rewritten, and CC is set (0 = completed,
+    # 3 = partial). The stores precede the register clobbers so the
+    # memory addresses are the true operand addresses.
+    *:8 RRE_R1 = unkval();
+    *:8 RRE_R2 = unkval();
+    RRE_R1 = unkval();
+    RRE_R2 = unkval();
+    cc = unkval();
+}
+
+:kmc "kmc " RRE_R1 "," RRE_R2 is RRE_OP=0xB92F & RRE_R1 & RRE_R2
+{
+    # CIPHER MESSAGE WITH CHAINING (PoP 7-54): as KM, with chaining
+    # value carried across invocations. Same conservative clobber
+    # model as KM.
+    *:8 RRE_R1 = unkval();
+    *:8 RRE_R2 = unkval();
+    RRE_R1 = unkval();
+    RRE_R2 = unkval();
+    cc = unkval();
+}
+
+:kmf "kmf " RRE_R1 "," RRE_R2 is RRE_OP=0xB92A & RRE_R1 & RRE_R2
+{
+    # CIPHER MESSAGE WITH CIPHER FEEDBACK (PoP 7-102). Same
+    # conservative clobber model as KM.
+    *:8 RRE_R1 = unkval();
+    *:8 RRE_R2 = unkval();
+    RRE_R1 = unkval();
+    RRE_R2 = unkval();
+    cc = unkval();
+}
+
+:kmo "kmo " RRE_R1 "," RRE_R2 is RRE_OP=0xB92B & RRE_R1 & RRE_R2
+{
+    # CIPHER MESSAGE WITH OUTPUT FEEDBACK (PoP 7-133). Same
+    # conservative clobber model as KM.
+    *:8 RRE_R1 = unkval();
+    *:8 RRE_R2 = unkval();
+    RRE_R1 = unkval();
+    RRE_R2 = unkval();
+    cc = unkval();
+}
+
+:kmac "kmac " RRE_R1 "," RRE_R2 is RRE_OP=0xB91E & RRE_R1 & RRE_R2
+{
+    # COMPUTE MESSAGE AUTHENTICATION CODE (PoP 7-239): R1 =
+    # parameter-block address (chaining value updated, MAC stored
+    # into the block), R2 = message address. Same conservative
+    # clobber model as KM (the message operand is only read, but
+    # clobbering it is the safe over-approximation).
+    *:8 RRE_R1 = unkval();
+    *:8 RRE_R2 = unkval();
+    RRE_R1 = unkval();
+    RRE_R2 = unkval();
+    cc = unkval();
+}
+
+:pcc "pcc" is RRE_OP=0xB92C
+{
+    # PERFORM CRYPTOGRAPHIC COMPUTATION (PoP 7-358): bits 16-31 of
+    # the instruction are ignored (no operands); function code in
+    # GR0. Used e.g. for XTS-parameter setup. Conservative clobber
+    # model: the parameter-block address is the implicit operand in
+    # GR1; the block is rewritten and CC is set. GR1 itself is not
+    # described as modified by PoP 7-358, so only the block and CC
+    # are clobbered.
+    *:8 r1 = unkval();
+    cc = unkval();
+}
+
+:pckmo "pckmo" is RRE_OP=0xB928
+{
+    # PERFORM CRYPTOGRAPHIC KEY MANAGEMENT OPERATION (PoP 10-78):
+    # bits 16-31 of the instruction are ignored (no operands);
+    # function code in GR0 bits 57-63. PRIVILEGED. Same conservative
+    # clobber model as PCC (parameter block at GR1, CC set).
+    *:8 r1 = unkval();
+    cc = unkval();
+}
+
+:ppno "ppno " RRE_R1 "," RRE_R2 is RRE_OP=0xB93C & RRE_R1 & RRE_R2
+{
+    # PERFORM RANDOM NUMBER OPERATION (PoP 7-409): the R1/R2 fields
+    # are ignored and the instruction executes as a no-operation
+    # (the PoP lists the alias mnemonic PRNO for the same opcode;
+    # Capstone prints 'ppno'). Opaque by definition.
+}
+
+# ---------------------------------------------------------------------------
+# Message-security-assist: RRF-b (R3 field) and RRF-c (M3 field).
+# ---------------------------------------------------------------------------
+
+:kma "kma " RRFb_R1 "," RRFb_R3 "," RRFb_R2 is RRFb_OP=0xB929 & RRFb_R1 & RRFb_R3 & RRFb_R2
+{
+    # CIPHER MESSAGE WITH AUTHENTICATION (PoP 7-86): RRF-b format;
+    # R3 (bits 16-19) designates the register holding the
+    # authentication tag/parameter; bits 20-23 ignored. Function
+    # code in GR0. Conservative clobber model as for KM: the R1/R3/R2
+    # registers are updated, the parameter block (chaining value) and
+    # the operand are rewritten, and CC is set. R3's memory role is
+    # instruction-specific, so only the register itself is clobbered.
+    *:8 RRFb_R1 = unkval();
+    *:8 RRFb_R2 = unkval();
+    RRFb_R1 = unkval();
+    RRFb_R3 = unkval();
+    RRFb_R2 = unkval();
+    cc = unkval();
+}
+
+:kmctr "kmctr " RRFb_R1 "," RRFb_R3 "," RRFb_R2 is RRFb_OP=0xB92D & RRFb_R1 & RRFb_R3 & RRFb_R2
+{
+    # CIPHER MESSAGE WITH COUNTER (PoP 7-119): RRF-b format; R3
+    # (bits 16-19) designates the counter register; bits 20-23
+    # ignored. Function code in GR0. Same conservative clobber model
+    # as KMA (R3 holds the counter value, updated by the
+    # instruction).
+    *:8 RRFb_R1 = unkval();
+    *:8 RRFb_R2 = unkval();
+    RRFb_R1 = unkval();
+    RRFb_R3 = unkval();
+    RRFb_R2 = unkval();
+    cc = unkval();
+}
+
+:kimd "kimd " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB93E & RRFc_R1 & RRFc_R2
+{
+    # COMPUTE INTERMEDIATE MESSAGE DIGEST (PoP 7-203): RRF-c format;
+    # M3 (bits 16-19) is a modifier (bit 0 = extension-12 flags
+    # enable), bits 20-23 reserved. M3 is parsed but not displayed
+    # (PoP syntax "KIMD R1,R2[,M3]"; Capstone never prints it).
+    # Function code in GR0. Conservative clobber model as for KM:
+    # R1 = parameter-block address (chaining value updated), R2 =
+    # message address.
+    *:8 RRFc_R1 = unkval();
+    *:8 RRFc_R2 = unkval();
+    RRFc_R1 = unkval();
+    RRFc_R2 = unkval();
+    cc = unkval();
+}
+
+:klmd "klmd " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB93F & RRFc_R1 & RRFc_R2
+{
+    # COMPUTE LAST MESSAGE DIGEST (PoP 7-218): as KIMD, finalizes
+    # the digest. Same conservative clobber model as KIMD.
+    *:8 RRFc_R1 = unkval();
+    *:8 RRFc_R2 = unkval();
+    RRFc_R1 = unkval();
+    RRFc_R2 = unkval();
+    cc = unkval();
+}

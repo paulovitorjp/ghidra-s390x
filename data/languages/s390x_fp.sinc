@@ -1,0 +1,2354 @@
+# ============================================================================
+# s390x_fp.sinc — Floating-point instructions for the s390x SLEIGH spec.
+#
+# Covers the HFP (hexadecimal floating-point, PoP Ch. 18) and BFP
+# (binary floating-point / IEEE-754, PoP Ch. 19) instruction groups that
+# operate on the floating-point registers f0-f15:
+#
+#   Loads/stores/lengthening : LE LD LER LDR LDE LXD LXDR
+#                              (BFP: LDEBR LXDBR)
+#   HFP arithmetic           : AE AD AER ADR SE SD SER SDR
+#                              MDE MD MDER MDR DE DD DER DDR
+#   HFP compare              : CE CD CER CDR
+#   BFP arithmetic (RXE/RRE) : AEB ADB SEB SDB MDEB MDB DEB DDB
+#                              AEBR ADBR SEBR SDBR MDEBR MDBR DEBR DDBR
+#   BFP compare              : CEB CDB CEBR CDBR
+#   BFP sign/test            : LPEBR LNEBR LTEBR
+#   BFP convert/round        : CEFBR CDFBR CEGBR CDGBR CELFBR CDLFBR
+#                              FIEBR FIDBR FIXBR
+#   HFP convert from fixed   : CEGR CDGR
+#
+# Inclusion: add the line
+#     @include "s390x_fp.sinc"
+# to data/languages/s390x.slaspec (after the other @include lines).
+#
+# Conventions and deliberate approximations:
+# - A short (32-bit) FP datum occupies the LEFTMOST 32 bits of its 64-bit
+#   FPR (PoP 9-8). The 4-byte aliases f0h-f15h overlay those high halves,
+#   so short loads/writes leave the low 32 bits untouched, exactly like
+#   hardware. Disassembly prints them as e.g. "f1h".
+# - HFP is NOT IEEE-754. There is no HFP p-code operator, so HFP arithmetic
+#   is modeled with the IEEE FLOAT_* operators as an approximation. Every
+#   HFP arithmetic constructor carries a TODO. Dataflow (registers read /
+#   written, CC set) is accurate; bit-level HFP semantics are not.
+# - BFP arithmetic uses FLOAT_* directly (BFP == IEEE-754 binary32/64).
+# - IEEE exception flags (inexact, overflow, underflow, invalid) and the
+#   FPC rounding-mode/M3/M4 modifiers are NOT modeled; each affected
+#   constructor carries an explicit TODO. CC is modeled per the PoP.
+# - Extended-format (128-bit) targets use a single FPR attach for the
+#   high-order 64 bits and OVER-ACCEPT the "valid register pair"
+#   requirement (PoP 9-8: pairs are (0,2),(4,6),(8,10),(12,14),
+#   (1,3),(5,7),(9,11),(13,15)). The low-order 64 bits (F(R1+2)) are not
+#   modeled; each such constructor carries a TODO.
+# - MDE/MDER/MDEB/MDEBR are short->long multiplies. The model computes the
+#   short (32-bit) product into the high half (TODO notes the deviation:
+#   hardware produces a 48-bit-exact long product).
+# Reference: IBM z/Architecture Principles of Operation SA22-7832-14.
+# ============================================================================
+
+# 4-byte aliases for the HIGH halves of f0-f15 (big-endian: offset 0x0c0 is
+# the most-significant end, so offset+0 is the high 32 bits where short
+# FP data lives). Low 32 bits are never touched through these aliases.
+define register offset=0x0c0 size=4 [
+    f0h f1h f2h f3h f4h f5h f6h f7h
+    f8h f9h f10h f11h f12h f13h f14h f15h
+];
+
+# ---------------------------------------------------------------------------
+# Tokens. Bit numbering is SLEIGH LSB=0 (PoP numbers MSB=0); every field is
+# converted as (N-1-e, N-1-s) for an N-bit token.
+# ---------------------------------------------------------------------------
+
+# RXs: RX-a (32b), R1 -> short-FP alias (fNh). Short HFP loads/arithmetic.
+define token RXs(32)
+    RXs_OP = (24,31)
+    RXs_R1 = (20,23)
+    RXs_X2 = (16,19)
+    RXs_B2 = (12,15)
+    RXs_D2 = (0,11)
+;
+
+# RXl: RX-a (32b), R1 -> full FPR. Long HFP loads/arithmetic.
+define token RXl(32)
+    RXl_OP = (24,31)
+    RXl_R1 = (20,23)
+    RXl_X2 = (16,19)
+    RXl_B2 = (12,15)
+    RXl_D2 = (0,11)
+;
+
+# RRs: RR (16b), R1/R2 -> short-FP aliases. Short HFP register ops.
+define token RRs(16)
+    RRs_OP = (8,15)
+    RRs_R1 = (4,7)
+    RRs_R2 = (0,3)
+;
+
+# RRl: RR (16b), R1/R2 -> full FPRs. Long HFP register ops.
+define token RRl(16)
+    RRl_OP = (8,15)
+    RRl_R1 = (4,7)
+    RRl_R2 = (0,3)
+;
+
+# RXEs: RXE (48b), R1 -> short-FP alias. Short BFP memory ops.
+# PoP RXE: OP(0-7) R1(8-11) X2(12-15) B2(16-19) DL2(20-31) DH2(32-39) OP2(40-47).
+define token RXEs(48)
+    RXEs_OP  = (40,47)
+    RXEs_R1  = (36,39)
+    RXEs_X2  = (32,35)
+    RXEs_B2  = (28,31)
+    RXEs_DL2 = (16,27)
+    RXEs_DH2 = (8,15)
+    RXEs_OP2 = (0,7)
+;
+
+# RXEl: RXE (48b), R1 -> full FPR. Long BFP memory ops + HFP lengthening.
+define token RXEl(48)
+    RXEl_OP  = (40,47)
+    RXEl_R1  = (36,39)
+    RXEl_X2  = (32,35)
+    RXEl_B2  = (28,31)
+    RXEl_DL2 = (16,27)
+    RXEl_DH2 = (8,15)
+    RXEl_OP2 = (0,7)
+;
+
+# RREs: RRE (32b), R1/R2 -> short-FP aliases. Short BFP register ops.
+define token RREs(32)
+    RREs_OP  = (16,31)
+    RREs_IGN = (8,15)
+    RREs_R1  = (4,7)
+    RREs_R2  = (0,3)
+;
+
+# RREsl: RRE (32b), R1 -> full FPR (long result), R2 -> short-FP alias.
+# For MDEBR (short->long multiply) and LDEBR (short->long lengthen).
+define token RREsl(32)
+    RREsl_OP  = (16,31)
+    RREsl_IGN = (8,15)
+    RREsl_R1  = (4,7)
+    RREsl_R2  = (0,3)
+;
+
+# RREl: RRE (32b), R1/R2 -> full FPRs. Long BFP register ops + long->extended.
+define token RREl(32)
+    RREl_OP  = (16,31)
+    RREl_IGN = (8,15)
+    RREl_R1  = (4,7)
+    RREl_R2  = (0,3)
+;
+
+# RREg: RRE (32b), R1 -> GPR. FPC register ops (SFPC/EFPC use general
+# registers per PoP 9-30/9-47, not FPRs).
+define token RREg(32)
+    RREg_OP  = (16,31)
+    RREg_IGN = (8,15)
+    RREg_R1  = (4,7)
+    RREg_R2  = (0,3)
+;
+
+# RREsg: RRE (32b), R1 -> short-FP alias, R2 -> GPR. Convert fixed->short.
+define token RREsg(32)
+    RREsg_OP  = (16,31)
+    RREsg_IGN = (8,15)
+    RREsg_R1  = (4,7)
+    RREsg_R2  = (0,3)
+;
+
+# RRElg: RRE (32b), R1 -> full FPR, R2 -> GPR. Convert fixed->long.
+define token RRElg(32)
+    RRElg_OP  = (16,31)
+    RRElg_IGN = (8,15)
+    RRElg_R1  = (4,7)
+    RRElg_R2  = (0,3)
+;
+
+# RREfg: RRE (32b), R1 -> full FPR, R2 -> GPR. LDGR (load FPR from GR).
+define token RREfg(32)
+    RREfg_OP  = (16,31)
+    RREfg_IGN = (8,15)
+    RREfg_R1  = (4,7)
+    RREfg_R2  = (0,3)
+;
+
+# RREgf: RRE (32b), R1 -> GPR, R2 -> full FPR. LGDR (load GR from FPR).
+define token RREgf(32)
+    RREgf_OP  = (16,31)
+    RREgf_IGN = (8,15)
+    RREgf_R1  = (4,7)
+    RREgf_R2  = (0,3)
+;
+
+# RRFs: RRF-e (32b), R1/R2 -> short-FP aliases, M3/M4 modifiers.
+# PoP RRF-e: OP(0-15) M3(16-19) M4(20-23) R1(24-27) R2(28-31).
+define token RRFs(32)
+    RRFs_OP = (16,31)
+    RRFs_M3 = (12,15)
+    RRFs_M4 = (8,11)
+    RRFs_R1 = (4,7)
+    RRFs_R2 = (0,3)
+;
+
+# RRFl: RRF-e (32b), R1/R2 -> full FPRs, M3/M4 modifiers.
+define token RRFl(32)
+    RRFl_OP = (16,31)
+    RRFl_M3 = (12,15)
+    RRFl_M4 = (8,11)
+    RRFl_R1 = (4,7)
+    RRFl_R2 = (0,3)
+;
+
+# RRFsg: RRF-e (32b), R1 -> short-FP alias, R2 -> GPR, M3/M4 modifiers.
+define token RRFsg(32)
+    RRFsg_OP = (16,31)
+    RRFsg_M3 = (12,15)
+    RRFsg_M4 = (8,11)
+    RRFsg_R1 = (4,7)
+    RRFsg_R2 = (0,3)
+;
+
+# RRFlg: RRF-e (32b), R1 -> full FPR, R2 -> GPR, M3/M4 modifiers.
+define token RRFlg(32)
+    RRFlg_OP = (16,31)
+    RRFlg_M3 = (12,15)
+    RRFlg_M4 = (8,11)
+    RRFlg_R1 = (4,7)
+    RRFlg_R2 = (0,3)
+;
+
+# ---------------------------------------------------------------------------
+# Phase 7 tokens: RRD, RXF, RRF-b (R3), RRF-e (GPR dest), RXY-a, DFP.
+# ---------------------------------------------------------------------------
+
+# RRDs/RRDl: RRD (32b) multiply-add/subtract. PoP Fig 5-1 (SA22-7832-14):
+#   OP(0-15) R1(16-19) /(20-23) R3(24-27) R2(28-31).
+# SLEIGH (N=32): OP=(16,31) R1=(12,15) IGN=(8,11) R3=(4,7) R2=(0,3).
+# The reserved nibble must be 0 (Capstone rejects nonzero). Capstone prints
+# operands in PoP order R1,R3,R2.
+define token RRDs(32)
+    RRDs_OP  = (16,31)
+    RRDs_R1  = (12,15)
+    RRDs_IGN = (8,11)
+    RRDs_R3  = (4,7)
+    RRDs_R2  = (0,3)
+;
+
+define token RRDl(32)
+    RRDl_OP  = (16,31)
+    RRDl_R1  = (12,15)
+    RRDl_IGN = (8,11)
+    RRDl_R3  = (4,7)
+    RRDl_R2  = (0,3)
+;
+
+# RXFs: RXF (48b). PoP Fig 5-1: OP(0-7) R3(8-11) X2(12-15) B2(16-19)
+#   D2(20-31) R1(32-35) /(36-39) OP2(40-47).
+# SLEIGH (N=48): OP=(40,47) R3=(36,39) X2=(32,35) B2=(28,31) DL2=(16,27)
+#   R1=(12,15) IGN=(8,11) OP2=(0,7).
+# Used for HFP unnormalized multiply (ED38-ED3D, R1/R3 long) and DFP
+# shift-significand (ED40/ED41/ED48/ED49, decode-only). The reserved nibble
+# must be 0 (Capstone rejects nonzero).
+define token RXFs(48)
+    RXFs_OP  = (40,47)
+    RXFs_R3  = (36,39)
+    RXFs_X2  = (32,35)
+    RXFs_B2  = (28,31)
+    RXFs_DL2 = (16,27)
+    RXFs_R1  = (12,15)
+    RXFs_IGN = (8,11)
+    RXFs_OP2 = (0,7)
+;
+
+# RXFl: RXF (48b), R1/R3 -> full FPR. Long BFP RXF multiply-add.
+define token RXFl(48)
+    RXFl_OP  = (40,47)
+    RXFl_R3  = (36,39)
+    RXFl_X2  = (32,35)
+    RXFl_B2  = (28,31)
+    RXFl_DL2 = (16,27)
+    RXFl_R1  = (12,15)
+    RXFl_IGN = (8,11)
+    RXFl_OP2 = (0,7)
+;
+
+# RXFss: RXF (48b), R1/R3 -> short-FP alias. Short BFP RXF multiply-add.
+define token RXFss(48)
+    RXFss_OP  = (40,47)
+    RXFss_R3  = (36,39)
+    RXFss_X2  = (32,35)
+    RXFss_B2  = (28,31)
+    RXFss_DL2 = (16,27)
+    RXFss_R1  = (12,15)
+    RXFss_IGN = (8,11)
+    RXFss_OP2 = (0,7)
+;
+
+# RRFbs/RRFbl: RRF-b (32b) with R3 (not M3) at bits 16-19, M4 at 20-23.
+# SLEIGH: OP=(16,31) R3=(12,15) M4=(8,11) R1=(4,7) R2=(0,3).
+# Used for DIEBR/DIDBR (M4 shown) and CPSDR (M4 nibble must be 0).
+define token RRFbs(32)
+    RRFbs_OP = (16,31)
+    RRFbs_R3 = (12,15)
+    RRFbs_M4 = (8,11)
+    RRFbs_R1 = (4,7)
+    RRFbs_R2 = (0,3)
+;
+
+define token RRFbl(32)
+    RRFbl_OP = (16,31)
+    RRFbl_R3 = (12,15)
+    RRFbl_M4 = (8,11)
+    RRFbl_R1 = (4,7)
+    RRFbl_R2 = (0,3)
+;
+
+# RRFgs/RRFgl: RRF-e (32b), R1 -> GPR (destination), R2 -> FPR (source).
+# For CONVERT TO FIXED / CONVERT TO LOGICAL (BFP/HFP -> integer).
+define token RRFgs(32)
+    RRFgs_OP = (16,31)
+    RRFgs_M3 = (12,15)
+    RRFgs_M4 = (8,11)
+    RRFgs_R1 = (4,7)
+    RRFgs_R2 = (0,3)
+;
+
+define token RRFgl(32)
+    RRFgl_OP = (16,31)
+    RRFgl_M3 = (12,15)
+    RRFgl_M4 = (8,11)
+    RRFgl_R1 = (4,7)
+    RRFgl_R2 = (0,3)
+;
+
+# RXYFs/RXYFl: RXY-a (48b) for FP loads/stores. PoP Fig 5-1:
+#   OP(0-7) R1(8-11) X2(12-15) B2(16-19) DL2(20-31) DH2(32-39) OP2(40-47).
+# SLEIGH (N=48): OP=(40,47) R1=(36,39) X2=(32,35) B2=(28,31)
+#   DL2=(16,27) DH2=(8,15) D20=(8,27) OP2=(0,7).
+# D20 is the combined 20-bit displacement, displayed as hex. SLEIGH has no
+# signed field display; negative displacements show as unsigned hex
+# (e.g. 0xFF100 instead of Capstone's -0xF00). The p-code sign-extends
+# correctly via ea_D20.
+define token RXYFs(48)
+    RXYFs_OP  = (40,47)
+    RXYFs_R1  = (36,39)
+    RXYFs_X2  = (32,35)
+    RXYFs_B2  = (28,31)
+    RXYFs_DL2 = (16,27)
+    RXYFs_DH2 = (8,15)
+    RXYFs_D20 = (8,27)
+    RXYFs_OP2 = (0,7)
+;
+
+define token RXYFl(48)
+    RXYFl_OP  = (40,47)
+    RXYFl_R1  = (36,39)
+    RXYFl_X2  = (32,35)
+    RXYFl_B2  = (28,31)
+    RXYFl_DL2 = (16,27)
+    RXYFl_DH2 = (8,15)
+    RXYFl_D20 = (8,27)
+    RXYFl_OP2 = (0,7)
+;
+
+# DFP tokens (all decode-only; DFP values occupy full 64-bit FPRs).
+# DFPab: RRF-a/b shape. OP=(16,31) R3=(12,15) M4=(8,11) R1=(4,7) R2=(0,3).
+define token DFPab(32)
+    DFPab_OP = (16,31)
+    DFPab_R3 = (12,15)
+    DFPab_M4 = (8,11)
+    DFPab_R1 = (4,7)
+    DFPab_R2 = (0,3)
+;
+
+# DFPd: RRF-d shape. OP=(16,31) M3=(12,15) M4=(8,11) R1=(4,7) R2=(0,3).
+define token DFPd(32)
+    DFPd_OP = (16,31)
+    DFPd_M3 = (12,15)
+    DFPd_M4 = (8,11)
+    DFPd_R1 = (4,7)
+    DFPd_R2 = (0,3)
+;
+
+# DFPe_ff/fr/rf: RRF-e shape with mixed FPR/GPR attachments.
+define token DFPe_ff(32)
+    DFPe_ff_OP = (16,31)
+    DFPe_ff_M3 = (12,15)
+    DFPe_ff_M4 = (8,11)
+    DFPe_ff_R1 = (4,7)
+    DFPe_ff_R2 = (0,3)
+;
+
+define token DFPe_fr(32)
+    DFPe_fr_OP = (16,31)
+    DFPe_fr_M3 = (12,15)
+    DFPe_fr_M4 = (8,11)
+    DFPe_fr_R1 = (4,7)
+    DFPe_fr_R2 = (0,3)
+;
+
+define token DFPe_rf(32)
+    DFPe_rf_OP = (16,31)
+    DFPe_rf_M3 = (12,15)
+    DFPe_rf_M4 = (8,11)
+    DFPe_rf_R1 = (4,7)
+    DFPe_rf_R2 = (0,3)
+;
+
+# DFPrr_ff/fr/rf: RRE shape with mixed attachments; M3/M4 split for A-forms.
+define token DFPrr_ff(32)
+    DFPrr_ff_OP  = (16,31)
+    DFPrr_ff_IGN = (8,15)
+    DFPrr_ff_R1  = (4,7)
+    DFPrr_ff_R2  = (0,3)
+;
+
+define token DFPrr_fr(32)
+    DFPrr_fr_OP = (16,31)
+    DFPrr_fr_M3 = (12,15)
+    DFPrr_fr_M4 = (8,11)
+    DFPrr_fr_R1 = (4,7)
+    DFPrr_fr_R2 = (0,3)
+;
+
+define token DFPrr_rf(32)
+    DFPrr_rf_OP = (16,31)
+    DFPrr_rf_M3 = (12,15)
+    DFPrr_rf_M4 = (8,11)
+    DFPrr_rf_R1 = (4,7)
+    DFPrr_rf_R2 = (0,3)
+;
+
+# RREls: RRE (32b), R1 -> short FPR (high half), R2 -> full FPR.
+# For LOAD ROUNDED (long BFP -> short BFP).
+define token RREls(32)
+    RREls_OP  = (16,31)
+    RREls_IGN = (8,15)
+    RREls_R1  = (4,7)
+    RREls_R2  = (0,3)
+;
+
+# RRFsl: RRF-e (32b), R1 -> short FPR, R2 -> full FPR, M3/M4 modifiers.
+# For LOAD ROUNDED (long BFP -> short BFP) A-form.
+define token RRFsl(32)
+    RRFsl_OP = (16,31)
+    RRFsl_M3 = (12,15)
+    RRFsl_M4 = (8,11)
+    RRFsl_R1 = (4,7)
+    RRFsl_R2 = (0,3)
+;
+
+# ---------------------------------------------------------------------------
+# Attachments.
+# ---------------------------------------------------------------------------
+attach variables [ RXs_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RXs_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXs_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXl_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RXl_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXl_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRs_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRs_R2 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRl_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RRl_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RXEs_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RXEs_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXEs_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXEl_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RXEl_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXEl_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RREs_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RREs_R2 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RREsl_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RREsl_R2 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RREl_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RREl_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RREg_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RREsg_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RREsg_R2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRElg_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RRElg_R2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RREfg_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RREfg_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RREgf_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RREgf_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RRFs_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRFs_R2 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRFl_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RRFl_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RRFsg_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRFsg_R2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFlg_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RRFlg_R2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# Phase 7 attachments.
+attach variables [ RRDs_R1 RRDs_R3 RRDs_R2 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRDl_R1 RRDl_R3 RRDl_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RXFs_R1 RXFs_R3 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RXFs_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXFs_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXFl_R1 RXFl_R3 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RXFl_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXFl_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXFss_R1 RXFss_R3 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RXFss_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXFss_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFbs_R1 RRFbs_R3 RRFbs_R2 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRFbl_R1 RRFbl_R3 RRFbl_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RRFgs_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFgs_R2 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRFgl_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFgl_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RXYFs_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RXYFs_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYFs_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYFl_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RXYFl_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYFl_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ DFPab_R1 DFPab_R2 DFPab_R3 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ DFPd_R1 DFPd_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ DFPe_ff_R1 DFPe_ff_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ DFPe_fr_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ DFPe_fr_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ DFPe_rf_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ DFPe_rf_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ DFPrr_ff_R1 DFPrr_ff_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ DFPrr_fr_R1 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ DFPrr_fr_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ DFPrr_rf_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ DFPrr_rf_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RREls_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RREls_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+attach variables [ RRFsl_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRFsl_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+
+# ---------------------------------------------------------------------------
+# Condition-code helpers. cc_set (from s390x_arith.sinc) writes the 2-bit CC
+# into the PSW byte. r/z/a/b are float varnodes; z is the all-zeros bit
+# pattern of the same size (== +0.0).
+# ---------------------------------------------------------------------------
+
+# BFP arithmetic result -> CC: 0=zero, 1=negative, 2=positive, 3=NaN.
+macro fp_cc_result(r, z) {
+    local ncc:1;
+    if (nan(r) != 0) goto <fpcc_nan>;
+    if (r f== z) goto <fpcc_zero>;
+    if (r f< z) goto <fpcc_neg>;
+    ncc = 2;
+    goto <fpcc_done>;
+<fpcc_neg>
+    ncc = 1;
+    goto <fpcc_done>;
+<fpcc_zero>
+    ncc = 0;
+    goto <fpcc_done>;
+<fpcc_nan>
+    ncc = 3;
+<fpcc_done>
+    cc_set(ncc);
+}
+
+# HFP arithmetic result -> CC (HFP has no NaN/Infinity): 0=zero,1=neg,2=pos.
+macro fp_cc_hfp(r, z) {
+    local ncc:1;
+    if (r f== z) goto <fph_zero>;
+    if (r f< z) goto <fph_neg>;
+    ncc = 2;
+    goto <fph_done>;
+<fph_neg>
+    ncc = 1;
+    goto <fph_done>;
+<fph_zero>
+    ncc = 0;
+<fph_done>
+    cc_set(ncc);
+}
+
+# BFP compare -> CC: 0=equal, 1=a<b, 2=a>b, 3=unordered (NaN operand).
+macro fp_cc_compare(a, b) {
+    local ncc:1;
+    if (nan(a) != 0) goto <fpcc_unordered>;
+    if (nan(b) != 0) goto <fpcc_unordered>;
+    if (a f== b) goto <fpcc_equal>;
+    if (a f< b) goto <fpcc_low>;
+    ncc = 2;
+    goto <fpcc_cdone>;
+<fpcc_low>
+    ncc = 1;
+    goto <fpcc_cdone>;
+<fpcc_equal>
+    ncc = 0;
+    goto <fpcc_cdone>;
+<fpcc_unordered>
+    ncc = 3;
+<fpcc_cdone>
+    cc_set(ncc);
+}
+
+# HFP compare -> CC (no NaN in HFP): 0=equal, 1=a<b, 2=a>b.
+macro fp_cc_compare_hfp(a, b) {
+    local ncc:1;
+    if (a f== b) goto <fphc_equal>;
+    if (a f< b) goto <fphc_low>;
+    ncc = 2;
+    goto <fphc_done>;
+<fphc_low>
+    ncc = 1;
+    goto <fphc_done>;
+<fphc_equal>
+    ncc = 0;
+<fphc_done>
+    cc_set(ncc);
+}
+
+# ============================================================================
+# HFP (hexadecimal floating-point) RX-a: short forms. R1 is the 32-bit high
+# half of the FPR. CC unchanged for LE; arithmetic sets CC 0/1/2.
+# TODO: HFP is not IEEE-754; FLOAT_* operators approximate the value.
+# ============================================================================
+
+:LE "LE " RXs_R1 "," RXs_D2 "(" RXs_X2 "," RXs_B2 ")" is RXs_OP=0x78 & RXs_R1 & RXs_X2 & RXs_B2 & RXs_D2
+{
+    # LOAD (short): 4 bytes -> high half of FPR; low half unchanged (PoP 9-8).
+    # CC unchanged. No arithmetic exceptions (no operand inspection).
+    local ea:8;
+    ea_D12(ea, RXs_B2, RXs_X2, RXs_D2);
+    RXs_R1 = *:4 ea;
+}
+
+:AE "AE " RXs_R1 "," RXs_D2 "(" RXs_X2 "," RXs_B2 ")" is RXs_OP=0x7A & RXs_R1 & RXs_X2 & RXs_B2 & RXs_D2
+{
+    # ADD NORMALIZED (short HFP). TODO: HFP approx; HFP overflow/underflow
+    # exceptions and normalized-result rules not modeled.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D12(ea, RXs_B2, RXs_X2, RXs_D2);
+    a = RXs_R1; b = *:4 ea; z = 0;
+    a = a f+ b;
+    RXs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SE "SE " RXs_R1 "," RXs_D2 "(" RXs_X2 "," RXs_B2 ")" is RXs_OP=0x7B & RXs_R1 & RXs_X2 & RXs_B2 & RXs_D2
+{
+    # SUBTRACT NORMALIZED (short HFP). TODO: HFP approx (see AE).
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D12(ea, RXs_B2, RXs_X2, RXs_D2);
+    a = RXs_R1; b = *:4 ea; z = 0;
+    a = a f- b;
+    RXs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:MDE "MDE " RXs_R1 "," RXs_D2 "(" RXs_X2 "," RXs_B2 ")" is RXs_OP=0x7C & RXs_R1 & RXs_X2 & RXs_B2 & RXs_D2
+{
+    # MULTIPLY (short HFP multiplier/multiplicand, long HFP product).
+    # TODO: hardware produces a LONG (64-bit) product; modeled as a short
+    #   product into the high half. HFP approx (see AE).
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D12(ea, RXs_B2, RXs_X2, RXs_D2);
+    a = RXs_R1; b = *:4 ea; z = 0;
+    a = a f* b;
+    RXs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:DE "DE " RXs_R1 "," RXs_D2 "(" RXs_X2 "," RXs_B2 ")" is RXs_OP=0x7D & RXs_R1 & RXs_X2 & RXs_B2 & RXs_D2
+{
+    # DIVIDE (short HFP). TODO: HFP approx (see AE); HFP divide-exception
+    # rules (fraction > 1) not modeled.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D12(ea, RXs_B2, RXs_X2, RXs_D2);
+    a = RXs_R1; b = *:4 ea; z = 0;
+    a = a f/ b;
+    RXs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:CE "CE " RXs_R1 "," RXs_D2 "(" RXs_X2 "," RXs_B2 ")" is RXs_OP=0x79 & RXs_R1 & RXs_X2 & RXs_B2 & RXs_D2
+{
+    # COMPARE (short HFP): CC 0=equal, 1=R1 low, 2=R1 high. TODO: HFP approx.
+    local ea:8; local a:4; local b:4;
+    ea_D12(ea, RXs_B2, RXs_X2, RXs_D2);
+    a = RXs_R1; b = *:4 ea;
+    fp_cc_compare_hfp(a, b);
+}
+
+# ============================================================================
+# HFP (hexadecimal floating-point) RX-a: long forms. R1 is the full 64-bit
+# FPR. TODO: HFP is not IEEE-754; FLOAT_* operators approximate the value.
+# ============================================================================
+
+:LD "LD " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x68 & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # LOAD (long): 8 bytes -> FPR. CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    RXl_R1 = *:8 ea;
+}
+
+:AD "AD " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x6A & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # ADD NORMALIZED (long HFP). TODO: HFP approx (see AE).
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    a = RXl_R1; b = *:8 ea; z = 0;
+    a = a f+ b;
+    RXl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SD "SD " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x6B & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # SUBTRACT NORMALIZED (long HFP). TODO: HFP approx (see AE).
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    a = RXl_R1; b = *:8 ea; z = 0;
+    a = a f- b;
+    RXl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:MD "MD " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x6C & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # MULTIPLY (long HFP). TODO: HFP approx (see AE).
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    a = RXl_R1; b = *:8 ea; z = 0;
+    a = a f* b;
+    RXl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:DD "DD " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x6D & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # DIVIDE (long HFP). TODO: HFP approx (see AE/DE).
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    a = RXl_R1; b = *:8 ea; z = 0;
+    a = a f/ b;
+    RXl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:CD "CD " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x69 & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # COMPARE (long HFP): CC 0=equal, 1=R1 low, 2=R1 high. TODO: HFP approx.
+    local ea:8; local a:8; local b:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    a = RXl_R1; b = *:8 ea;
+    fp_cc_compare_hfp(a, b);
+}
+
+# ============================================================================
+# HFP (hexadecimal floating-point) RR: short forms. TODO: HFP approx (see AE).
+# ============================================================================
+
+:LER "LER " RRs_R1 "," RRs_R2 is RRs_OP=0x38 & RRs_R1 & RRs_R2
+{
+    # LOAD (short, register): high half -> high half. CC unchanged.
+    RRs_R1 = RRs_R2;
+}
+
+:AER "AER " RRs_R1 "," RRs_R2 is RRs_OP=0x3A & RRs_R1 & RRs_R2
+{
+    # ADD NORMALIZED (short HFP, register). TODO: HFP approx (see AE).
+    local a:4; local z:4;
+    a = RRs_R1 f+ RRs_R2; z = 0;
+    RRs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SER "SER " RRs_R1 "," RRs_R2 is RRs_OP=0x3B & RRs_R1 & RRs_R2
+{
+    # SUBTRACT NORMALIZED (short HFP, register). TODO: HFP approx (see AE).
+    local a:4; local z:4;
+    a = RRs_R1 f- RRs_R2; z = 0;
+    RRs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:MDER "MDER " RRs_R1 "," RRs_R2 is RRs_OP=0x3C & RRs_R1 & RRs_R2
+{
+    # MULTIPLY (short HFP operands, long HFP product).
+    # TODO: hardware produces a LONG product; modeled as short product into
+    #   the high half. HFP approx (see AE).
+    local a:4; local z:4;
+    a = RRs_R1 f* RRs_R2; z = 0;
+    RRs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:DER "DER " RRs_R1 "," RRs_R2 is RRs_OP=0x3D & RRs_R1 & RRs_R2
+{
+    # DIVIDE (short HFP, register). TODO: HFP approx (see AE/DE).
+    local a:4; local z:4;
+    a = RRs_R1 f/ RRs_R2; z = 0;
+    RRs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:CER "CER " RRs_R1 "," RRs_R2 is RRs_OP=0x39 & RRs_R1 & RRs_R2
+{
+    # COMPARE (short HFP, register). TODO: HFP approx.
+    fp_cc_compare_hfp(RRs_R1, RRs_R2);
+}
+
+# ============================================================================
+# HFP (hexadecimal floating-point) RR: long forms. TODO: HFP approx (see AE).
+# ============================================================================
+
+:LDR "LDR " RRl_R1 "," RRl_R2 is RRl_OP=0x28 & RRl_R1 & RRl_R2
+{
+    # LOAD (long, register). CC unchanged.
+    RRl_R1 = RRl_R2;
+}
+
+:ADR "ADR " RRl_R1 "," RRl_R2 is RRl_OP=0x2A & RRl_R1 & RRl_R2
+{
+    # ADD NORMALIZED (long HFP, register). TODO: HFP approx (see AE).
+    local a:8; local z:8;
+    a = RRl_R1 f+ RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SDR "SDR " RRl_R1 "," RRl_R2 is RRl_OP=0x2B & RRl_R1 & RRl_R2
+{
+    # SUBTRACT NORMALIZED (long HFP, register). TODO: HFP approx (see AE).
+    local a:8; local z:8;
+    a = RRl_R1 f- RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:MDR "MDR " RRl_R1 "," RRl_R2 is RRl_OP=0x2C & RRl_R1 & RRl_R2
+{
+    # MULTIPLY (long HFP, register). TODO: HFP approx (see AE).
+    local a:8; local z:8;
+    a = RRl_R1 f* RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:DDR "DDR " RRl_R1 "," RRl_R2 is RRl_OP=0x2D & RRl_R1 & RRl_R2
+{
+    # DIVIDE (long HFP, register). TODO: HFP approx (see AE/DE).
+    local a:8; local z:8;
+    a = RRl_R1 f/ RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:CDR "CDR " RRl_R1 "," RRl_R2 is RRl_OP=0x29 & RRl_R1 & RRl_R2
+{
+    # COMPARE (long HFP, register). TODO: HFP approx.
+    fp_cc_compare_hfp(RRl_R1, RRl_R2);
+}
+
+# ============================================================================
+# BFP (IEEE-754 binary floating-point) RXE: short forms. R1 is the 32-bit
+# high half of the FPR. CC 0=zero,1=negative,2=positive,3=NaN.
+# TODO: IEEE exception flags (inexact/overflow/underflow/invalid) and the
+# FPC rounding mode are not modeled.
+# ============================================================================
+
+:AEB "AEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2 & RXEs_DH2 & RXEs_OP2=0x0A
+{
+    # ADD (short BFP). TODO: IEEE flags/rounding not modeled.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D20(ea, RXEs_B2, RXEs_X2, RXEs_DH2, RXEs_DL2);
+    a = RXEs_R1; b = *:4 ea; z = 0;
+    a = a f+ b;
+    RXEs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:SEB "SEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2 & RXEs_DH2 & RXEs_OP2=0x0B
+{
+    # SUBTRACT (short BFP). TODO: IEEE flags/rounding not modeled.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D20(ea, RXEs_B2, RXEs_X2, RXEs_DH2, RXEs_DL2);
+    a = RXEs_R1; b = *:4 ea; z = 0;
+    a = a f- b;
+    RXEs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:MDEB "MDEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2 & RXEs_DH2 & RXEs_OP2=0x0C
+{
+    # MULTIPLY (short BFP operands, long BFP product).
+    # TODO: hardware produces a LONG (64-bit) exact product; modeled as a
+    #   short product into the high half. IEEE flags/rounding not modeled.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D20(ea, RXEs_B2, RXEs_X2, RXEs_DH2, RXEs_DL2);
+    a = RXEs_R1; b = *:4 ea; z = 0;
+    a = a f* b;
+    RXEs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:DEB "DEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2 & RXEs_DH2 & RXEs_OP2=0x0D
+{
+    # DIVIDE (short BFP). TODO: IEEE flags/rounding not modeled.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D20(ea, RXEs_B2, RXEs_X2, RXEs_DH2, RXEs_DL2);
+    a = RXEs_R1; b = *:4 ea; z = 0;
+    a = a f/ b;
+    RXEs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:CEB "CEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2 & RXEs_DH2 & RXEs_OP2=0x09
+{
+    # COMPARE (short BFP): CC 0=equal,1=low,2=high,3=unordered.
+    local ea:8; local a:4; local b:4;
+    ea_D20(ea, RXEs_B2, RXEs_X2, RXEs_DH2, RXEs_DL2);
+    a = RXEs_R1; b = *:4 ea;
+    fp_cc_compare(a, b);
+}
+
+# ============================================================================
+# BFP (IEEE-754) RXE: long forms + HFP LOAD LENGTHENED. R1 is the full FPR.
+# TODO: IEEE flags/rounding not modeled (BFP); HFP approx (LDE/LXD).
+# ============================================================================
+
+:ADB "ADB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2 & RXEl_DH2 & RXEl_OP2=0x1A
+{
+    # ADD (long BFP). TODO: IEEE flags/rounding not modeled.
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D20(ea, RXEl_B2, RXEl_X2, RXEl_DH2, RXEl_DL2);
+    a = RXEl_R1; b = *:8 ea; z = 0;
+    a = a f+ b;
+    RXEl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:SDB "SDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2 & RXEl_DH2 & RXEl_OP2=0x1B
+{
+    # SUBTRACT (long BFP). TODO: IEEE flags/rounding not modeled.
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D20(ea, RXEl_B2, RXEl_X2, RXEl_DH2, RXEl_DL2);
+    a = RXEl_R1; b = *:8 ea; z = 0;
+    a = a f- b;
+    RXEl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:MDB "MDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2 & RXEl_DH2 & RXEl_OP2=0x1C
+{
+    # MULTIPLY (long BFP). TODO: IEEE flags/rounding not modeled.
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D20(ea, RXEl_B2, RXEl_X2, RXEl_DH2, RXEl_DL2);
+    a = RXEl_R1; b = *:8 ea; z = 0;
+    a = a f* b;
+    RXEl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:DDB "DDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2 & RXEl_DH2 & RXEl_OP2=0x1D
+{
+    # DIVIDE (long BFP). TODO: IEEE flags/rounding not modeled.
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D20(ea, RXEl_B2, RXEl_X2, RXEl_DH2, RXEl_DL2);
+    a = RXEl_R1; b = *:8 ea; z = 0;
+    a = a f/ b;
+    RXEl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:CDB "CDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2 & RXEl_DH2 & RXEl_OP2=0x19
+{
+    # COMPARE (long BFP): CC 0=equal,1=low,2=high,3=unordered.
+    local ea:8; local a:8; local b:8;
+    ea_D20(ea, RXEl_B2, RXEl_X2, RXEl_DH2, RXEl_DL2);
+    a = RXEl_R1; b = *:8 ea;
+    fp_cc_compare(a, b);
+}
+
+:LDE "LDE " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2 & RXEl_DH2 & RXEl_OP2=0x24
+{
+    # LOAD LENGTHENED (short->long HFP): source fraction extended with zeros
+    # (PoP 18-15); sign preserved. High 32 = source, low 32 = 0.
+    # CC unchanged.
+    local ea:8; local w:4;
+    ea_D20(ea, RXEl_B2, RXEl_X2, RXEl_DH2, RXEl_DL2);
+    w = *:4 ea;
+    RXEl_R1 = zext(w) << 32;
+}
+
+:LXD "LXD " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2 & RXEl_DH2 & RXEl_OP2=0x25
+{
+    # LOAD LENGTHENED (long->extended HFP).
+    # TODO: R1 must designate a valid FP register pair (PoP 9-8); only the
+    #   high-order 64 bits are modeled, the low-order 64 bits (F(R1+2))
+    #   are not. CC unchanged.
+    local ea:8;
+    ea_D20(ea, RXEl_B2, RXEl_X2, RXEl_DH2, RXEl_DL2);
+    RXEl_R1 = *:8 ea;
+}
+
+# ============================================================================
+# BFP (IEEE-754) RRE: short forms. CC 0=zero,1=negative,2=positive,3=NaN.
+# TODO: IEEE exception flags and FPC rounding not modeled.
+# ============================================================================
+
+:LPEBR "LPEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB300 & RREs_R1 & RREs_R2
+{
+    # LOAD POSITIVE (short BFP): R1 = |R2|. CC 0=zero,2=positive,3=NaN.
+    local a:4; local z:4;
+    a = abs(RREs_R2); z = 0;
+    RREs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:LNEBR "LNEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB301 & RREs_R1 & RREs_R2
+{
+    # LOAD NEGATIVE (short BFP): R1 = -|R2|. CC 0=zero,1=negative,3=NaN.
+    # (Implements LNGBR's obvious intent; no LNGBR exists in the PoP.)
+    local a:4; local z:4;
+    a = f- abs(RREs_R2); z = 0;
+    RREs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:LTEBR "LTEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB302 & RREs_R1 & RREs_R2
+{
+    # LOAD AND TEST (short BFP): R1 = R2, CC set. 0=zero,1=neg,2=pos,3=NaN.
+    local z:4;
+    RREs_R1 = RREs_R2; z = 0;
+    fp_cc_result(RREs_R1, z);
+}
+
+:AEBR "AEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB30A & RREs_R1 & RREs_R2
+{
+    # ADD (short BFP, register). TODO: IEEE flags/rounding not modeled.
+    local a:4; local z:4;
+    a = RREs_R1 f+ RREs_R2; z = 0;
+    RREs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:SEBR "SEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB30B & RREs_R1 & RREs_R2
+{
+    # SUBTRACT (short BFP, register). TODO: IEEE flags/rounding not modeled.
+    local a:4; local z:4;
+    a = RREs_R1 f- RREs_R2; z = 0;
+    RREs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:MDEBR "MDEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB30C & RREs_R1 & RREs_R2
+{
+    # MULTIPLY (short BFP operands, long BFP product, register).
+    # TODO: hardware produces a LONG exact product; modeled as short product
+    #   into the high half. IEEE flags/rounding not modeled.
+    local a:4; local z:4;
+    a = RREs_R1 f* RREs_R2; z = 0;
+    RREs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:DEBR "DEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB30D & RREs_R1 & RREs_R2
+{
+    # DIVIDE (short BFP, register). TODO: IEEE flags/rounding not modeled.
+    local a:4; local z:4;
+    a = RREs_R1 f/ RREs_R2; z = 0;
+    RREs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:CEBR "CEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB309 & RREs_R1 & RREs_R2
+{
+    # COMPARE (short BFP, register): CC 0=equal,1=low,2=high,3=unordered.
+    fp_cc_compare(RREs_R1, RREs_R2);
+}
+
+# ============================================================================
+# BFP RRE: short->long forms (R1 long, R2 short).
+# ============================================================================
+
+:LDEBR "LDEBR " RREsl_R1 "," RREsl_R2 is RREsl_OP=0xB304 & RREsl_R1 & RREsl_R2
+{
+    # LOAD LENGTHENED (short->long BFP): exact, value-preserving.
+    # CC unchanged.
+    RREsl_R1 = float2float(RREsl_R2);
+}
+
+# ============================================================================
+# BFP (IEEE-754) RRE: long forms. TODO: IEEE flags/rounding not modeled.
+# ============================================================================
+
+:ADBR "ADBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB31A & RREl_R1 & RREl_R2
+{
+    # ADD (long BFP, register). TODO: IEEE flags/rounding not modeled.
+    local a:8; local z:8;
+    a = RREl_R1 f+ RREl_R2; z = 0;
+    RREl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:SDBR "SDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB31B & RREl_R1 & RREl_R2
+{
+    # SUBTRACT (long BFP, register). TODO: IEEE flags/rounding not modeled.
+    local a:8; local z:8;
+    a = RREl_R1 f- RREl_R2; z = 0;
+    RREl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:MDBR "MDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB31C & RREl_R1 & RREl_R2
+{
+    # MULTIPLY (long BFP, register). TODO: IEEE flags/rounding not modeled.
+    local a:8; local z:8;
+    a = RREl_R1 f* RREl_R2; z = 0;
+    RREl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:DDBR "DDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB31D & RREl_R1 & RREl_R2
+{
+    # DIVIDE (long BFP, register). TODO: IEEE flags/rounding not modeled.
+    local a:8; local z:8;
+    a = RREl_R1 f/ RREl_R2; z = 0;
+    RREl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:CDBR "CDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB319 & RREl_R1 & RREl_R2
+{
+    # COMPARE (long BFP, register): CC 0=equal,1=low,2=high,3=unordered.
+    fp_cc_compare(RREl_R1, RREl_R2);
+}
+
+:LXDBR "LXDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB305 & RREl_R1 & RREl_R2
+{
+    # LOAD LENGTHENED (long->extended BFP).
+    # TODO: R1 must designate a valid FP register pair (PoP 9-8); only the
+    #   high-order 64 bits are modeled, the low-order 64 bits (F(R1+2),
+    #   zero for BFP lengthening) are not. CC unchanged.
+    RREl_R1 = RREl_R2;
+}
+
+:LXDR "LXDR " RREl_R1 "," RREl_R2 is RREl_OP=0xB325 & RREl_R1 & RREl_R2
+{
+    # LOAD LENGTHENED (long->extended HFP).
+    # TODO: R1 must designate a valid FP register pair (PoP 9-8); only the
+    #   high-order 64 bits are modeled, the low-order 64 bits (F(R1+2)) are
+    #   not. CC unchanged.
+    RREl_R1 = RREl_R2;
+}
+
+# ============================================================================
+# CONVERT FROM FIXED (RRE): GPR integer -> BFP/HFP. CC unchanged.
+# The 32-bit source lives in bits 32-63 of the GPR; it is extended to 64
+# bits (value-preserving) before int2float, so no narrowing is needed.
+# TODO: M3 rounding-method selection (base forms use the FPC BFP rounding
+#   mode) and IEEE exception flags are not modeled.
+# ============================================================================
+
+:CEFBR "CEFBR " RREsg_R1 "," RREsg_R2 is RREsg_OP=0xB394 & RREsg_IGN=0 & RREsg_R1 & RREsg_R2
+{
+    # CONVERT FROM FIXED (32-bit -> short BFP). CC unchanged.
+    local src:8;
+    src = (RREsg_R2 << 32) s>> 32;
+    RREsg_R1 = int2float(src);
+}
+
+:CEGBR "CEGBR " RREsg_R1 "," RREsg_R2 is RREsg_OP=0xB3A4 & RREsg_IGN=0 & RREsg_R1 & RREsg_R2
+{
+    # CONVERT FROM FIXED (64-bit -> short BFP). CC unchanged.
+    RREsg_R1 = int2float(RREsg_R2);
+}
+
+:CEGR "CEGR " RREsg_R1 "," RREsg_R2 is RREsg_OP=0xB3C4 & RREsg_R1 & RREsg_R2
+{
+    # CONVERT FROM FIXED (64-bit -> short HFP). CC unchanged.
+    # TODO: HFP result is not IEEE-754; int2float approximates the value.
+    RREsg_R1 = int2float(RREsg_R2);
+}
+
+:CDFBR "CDFBR " RRElg_R1 "," RRElg_R2 is RRElg_OP=0xB395 & RRElg_IGN=0 & RRElg_R1 & RRElg_R2
+{
+    # CONVERT FROM FIXED (32-bit -> long BFP). CC unchanged.
+    local src:8;
+    src = (RRElg_R2 << 32) s>> 32;
+    RRElg_R1 = int2float(src);
+}
+
+:CDGBR "CDGBR " RRElg_R1 "," RRElg_R2 is RRElg_OP=0xB3A5 & RRElg_IGN=0 & RRElg_R1 & RRElg_R2
+{
+    # CONVERT FROM FIXED (64-bit -> long BFP). CC unchanged.
+    RRElg_R1 = int2float(RRElg_R2);
+}
+
+:CDGR "CDGR " RRElg_R1 "," RRElg_R2 is RRElg_OP=0xB3C5 & RRElg_R1 & RRElg_R2
+{
+    # CONVERT FROM FIXED (64-bit -> long HFP). CC unchanged.
+    # TODO: HFP result is not IEEE-754; int2float approximates the value.
+    RRElg_R1 = int2float(RRElg_R2);
+}
+
+# ============================================================================
+# LOAD FP INTEGER (RRF-e): round BFP operand to an integer value, same format.
+# M3 selects the rounding method; M4 is 0 for these base forms (constrained).
+# CC unchanged.
+# TODO: only an approximate round() is modeled; the M3 method selection and
+#   the IEEE inexact flag are not modeled.
+# ============================================================================
+
+:FIEBR "FIEBR " RRFs_R1 "," RRFs_M3 "," RRFs_R2 is RRFs_OP=0xB357 & RRFs_M3 & RRFs_M4=0 & RRFs_R1 & RRFs_R2
+{
+    # LOAD FP INTEGER (short BFP). CC unchanged.
+    RRFs_R1 = round(RRFs_R2);
+}
+
+:FIDBR "FIDBR " RRFl_R1 "," RRFl_M3 "," RRFl_R2 is RRFl_OP=0xB35F & RRFl_M3 & RRFl_M4=0 & RRFl_R1 & RRFl_R2
+{
+    # LOAD FP INTEGER (long BFP). CC unchanged.
+    RRFl_R1 = round(RRFl_R2);
+}
+
+:FIXBR "FIXBR " RRFl_R1 "," RRFl_M3 "," RRFl_R2 is RRFl_OP=0xB347 & RRFl_M3 & RRFl_M4=0 & RRFl_R1 & RRFl_R2
+{
+    # LOAD FP INTEGER (extended BFP).
+    # TODO: R1/R2 must designate valid FP register pairs (PoP 9-8); only the
+    #   high-order 64 bits are modeled, the low-order 64 bits (F(R1+2)) are
+    #   not. M3 method selection and IEEE inexact flag not modeled.
+    #   CC unchanged.
+    RRFl_R1 = round(RRFl_R2);
+}
+
+# ============================================================================
+# CONVERT FROM LOGICAL (RRF-e): unsigned GPR integer -> BFP. CC unchanged.
+# TODO: M3 rounding-method selection, M4 XxC (inexact-exception control),
+#   and IEEE exception flags are not modeled.
+# ============================================================================
+
+:CELFBR "CELFBR " RRFsg_R1 "," RRFsg_M3 "," RRFsg_R2 "," RRFsg_M4 is RRFsg_OP=0xB390 & RRFsg_M3 & RRFsg_M4 & RRFsg_R1 & RRFsg_R2
+{
+    # CONVERT FROM LOGICAL (32-bit -> short BFP). CC unchanged.
+    local src:8;
+    src = (RRFsg_R2 << 32) >> 32;
+    RRFsg_R1 = int2float(src);
+}
+
+:CDLFBR "CDLFBR " RRFlg_R1 "," RRFlg_M3 "," RRFlg_R2 "," RRFlg_M4 is RRFlg_OP=0xB391 & RRFlg_M3 & RRFlg_M4 & RRFlg_R1 & RRFlg_R2
+{
+    # CONVERT FROM LOGICAL (32-bit -> long BFP). CC unchanged.
+    local src:8;
+    src = (RRFlg_R2 << 32) >> 32;
+    RRFlg_R1 = int2float(src);
+}
+
+# ============================================================================
+# Phase 7: remaining Capstone-validated BFP/HFP/DFP instructions.
+# All opcodes/formats verified against IBM PoP SA22-7832-14.
+# Overlap rule: where a base form and an A-form (or mask form) overlap,
+# the MORE constrained (base) constructor is defined FIRST; SLEIGH resolves
+# the overlap by first match. This is verified empirically (see report).
+# ============================================================================
+
+# ============================================================================
+# HFP RR (2-byte): sign, halve, unnormalized add/subtract, long multiply.
+# TODO: HFP approx (HFP bit patterns are interpreted as IEEE-754 doubles;
+#   see AE). CC set for arithmetic/test, unchanged for load/halve.
+# ============================================================================
+
+:LPDR "LPDR " RRl_R1 "," RRl_R2 is RRl_OP=0x20 & RRl_R1 & RRl_R2
+{
+    # LOAD POSITIVE (long HFP): R1 = |R2|. CC unchanged.
+    RRl_R1 = abs(RRl_R2);
+}
+
+:LNDR "LNDR " RRl_R1 "," RRl_R2 is RRl_OP=0x21 & RRl_R1 & RRl_R2
+{
+    # LOAD NEGATIVE (long HFP): R1 = -|R2|. CC unchanged.
+    RRl_R1 = f- abs(RRl_R2);
+}
+
+:LTDR "LTDR " RRl_R1 "," RRl_R2 is RRl_OP=0x22 & RRl_R1 & RRl_R2
+{
+    # LOAD AND TEST (long HFP): R1 = R2, CC set. TODO: HFP approx.
+    local z:8;
+    RRl_R1 = RRl_R2; z = 0;
+    fp_cc_hfp(RRl_R1, z);
+}
+
+:LCDR "LCDR " RRl_R1 "," RRl_R2 is RRl_OP=0x23 & RRl_R1 & RRl_R2
+{
+    # LOAD COMPLEMENT (long HFP): R1 = -R2. CC unchanged.
+    RRl_R1 = f- RRl_R2;
+}
+
+:HDR "HDR " RRl_R1 "," RRl_R2 is RRl_OP=0x24 & RRl_R1 & RRl_R2
+{
+    # HALVE (long HFP): R1 = R2 / 2, normalized. CC unchanged.
+    # TODO: HFP approx. (SLEIGH has no float literals; 2.0 is built from
+    #   its IEEE-754 bit pattern. IEEE division by 2 is exact.)
+    local two:8;
+    two = 0x4000000000000000;
+    RRl_R1 = RRl_R2 f/ two;
+}
+
+:MXDR "MXDR " RRl_R1 "," RRl_R2 is RRl_OP=0x27 & RRl_R1 & RRl_R2
+{
+    # MULTIPLY (long to extended HFP): R1(pair) = R1 * R2.
+    # TODO: R1 must designate a valid FP register pair (PoP 9-8); only the
+    #   high-order 64 bits are modeled. HFP approx.
+    local a:8; local z:8;
+    a = RRl_R1 f* RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:AWR "AWR " RRl_R1 "," RRl_R2 is RRl_OP=0x2E & RRl_R1 & RRl_R2
+{
+    # ADD UNNORMALIZED (long HFP, register). TODO: HFP approx.
+    local a:8; local z:8;
+    a = RRl_R1 f+ RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SWR "SWR " RRl_R1 "," RRl_R2 is RRl_OP=0x2F & RRl_R1 & RRl_R2
+{
+    # SUBTRACT UNNORMALIZED (long HFP, register). TODO: HFP approx.
+    local a:8; local z:8;
+    a = RRl_R1 f- RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:LPER "LPER " RRs_R1 "," RRs_R2 is RRs_OP=0x30 & RRs_R1 & RRs_R2
+{
+    # LOAD POSITIVE (short HFP): R1 = |R2|. CC unchanged.
+    RRs_R1 = abs(RRs_R2);
+}
+
+:LNER "LNER " RRs_R1 "," RRs_R2 is RRs_OP=0x31 & RRs_R1 & RRs_R2
+{
+    # LOAD NEGATIVE (short HFP): R1 = -|R2|. CC unchanged.
+    RRs_R1 = f- abs(RRs_R2);
+}
+
+:LTER "LTER " RRs_R1 "," RRs_R2 is RRs_OP=0x32 & RRs_R1 & RRs_R2
+{
+    # LOAD AND TEST (short HFP): R1 = R2, CC set. TODO: HFP approx.
+    local z:4;
+    RRs_R1 = RRs_R2; z = 0;
+    fp_cc_hfp(RRs_R1, z);
+}
+
+:LCER "LCER " RRs_R1 "," RRs_R2 is RRs_OP=0x33 & RRs_R1 & RRs_R2
+{
+    # LOAD COMPLEMENT (short HFP): R1 = -R2. CC unchanged.
+    RRs_R1 = f- RRs_R2;
+}
+
+:HER "HER " RRs_R1 "," RRs_R2 is RRs_OP=0x34 & RRs_R1 & RRs_R2
+{
+    # HALVE (short HFP): R1 = R2 / 2, normalized. CC unchanged.
+    # TODO: HFP approx. (2.0f from its IEEE-754 bit pattern.)
+    local two:4;
+    two = 0x40000000;
+    RRs_R1 = RRs_R2 f/ two;
+}
+
+:AUR "AUR " RRs_R1 "," RRs_R2 is RRs_OP=0x3E & RRs_R1 & RRs_R2
+{
+    # ADD UNNORMALIZED (short HFP, register). TODO: HFP approx.
+    local a:4; local z:4;
+    a = RRs_R1 f+ RRs_R2; z = 0;
+    RRs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SUR "SUR " RRs_R1 "," RRs_R2 is RRs_OP=0x3F & RRs_R1 & RRs_R2
+{
+    # SUBTRACT UNNORMALIZED (short HFP, register). TODO: HFP approx.
+    local a:4; local z:4;
+    a = RRs_R1 f- RRs_R2; z = 0;
+    RRs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+# ============================================================================
+# HFP RX-a (4-byte): unnormalized add/subtract from storage.
+# TODO: HFP approx. CC set.
+# ============================================================================
+
+:AW "AW " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x6E & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # ADD UNNORMALIZED (long HFP). TODO: HFP approx.
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    a = RXl_R1; b = *:8 ea; z = 0;
+    a = a f+ b;
+    RXl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SW "SW " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x6F & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # SUBTRACT UNNORMALIZED (long HFP). TODO: HFP approx.
+    local ea:8; local a:8; local b:8; local z:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    a = RXl_R1; b = *:8 ea; z = 0;
+    a = a f- b;
+    RXl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:AU "AU " RXs_R1 "," RXs_D2 "(" RXs_X2 "," RXs_B2 ")" is RXs_OP=0x7E & RXs_R1 & RXs_X2 & RXs_B2 & RXs_D2
+{
+    # ADD UNNORMALIZED (short HFP). TODO: HFP approx.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D12(ea, RXs_B2, RXs_X2, RXs_D2);
+    a = RXs_R1; b = *:4 ea; z = 0;
+    a = a f+ b;
+    RXs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SU "SU " RXs_R1 "," RXs_D2 "(" RXs_X2 "," RXs_B2 ")" is RXs_OP=0x7F & RXs_R1 & RXs_X2 & RXs_B2 & RXs_D2
+{
+    # SUBTRACT UNNORMALIZED (short HFP). TODO: HFP approx.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D12(ea, RXs_B2, RXs_X2, RXs_D2);
+    a = RXs_R1; b = *:4 ea; z = 0;
+    a = a f- b;
+    RXs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+# ============================================================================
+# HFP RRE: lengthen, multiply, round-to-integer, square root.
+# The reserved byte-2 nibble must be 0 (Capstone rejects nonzero).
+# TODO: HFP approx. CC unchanged except where noted.
+# ============================================================================
+
+:LDER "LDER " RREsl_R1 "," RREsl_R2 is RREsl_OP=0xB324 & RREsl_IGN=0 & RREsl_R1 & RREsl_R2
+{
+    # LOAD LENGTHENED (short->long HFP): value-preserving.
+    # TODO: HFP approx (float2float reinterprets the HFP bits as IEEE).
+    # CC unchanged.
+    RREsl_R1 = float2float(RREsl_R2);
+}
+
+:LXER "LXER " RREl_R1 "," RREl_R2 is RREl_OP=0xB326 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD LENGTHENED (long->extended HFP).
+    # TODO: R1 must designate a valid FP register pair (PoP 9-8); only the
+    #   high-order 64 bits are modeled. HFP approx. CC unchanged.
+    RREl_R1 = RREl_R2;
+}
+
+:MEER "MEER " RREs_R1 "," RREs_R2 is RREs_OP=0xB337 & RREs_IGN=0 & RREs_R1 & RREs_R2
+{
+    # MULTIPLY (short HFP): R1 = R1 * R2 (short product into high half).
+    # TODO: hardware produces a LONG product; modeled as short product.
+    #   HFP approx.
+    local a:4; local z:4;
+    a = RREs_R1 f* RREs_R2; z = 0;
+    RREs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SQER "SQER " RREs_R1 "," RREs_R2 is RREs_OP=0xB245 & RREs_IGN=0 & RREs_R1 & RREs_R2
+{
+    # SQUARE ROOT (short HFP): R1 = sqrt(R2). TODO: HFP approx.
+    # CC unchanged.
+    RREs_R1 = sqrt(RREs_R2);
+}
+
+:SQDR "SQDR " RREl_R1 "," RREl_R2 is RREl_OP=0xB244 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # SQUARE ROOT (long HFP): R1 = sqrt(R2). TODO: HFP approx.
+    # CC unchanged.
+    RREl_R1 = sqrt(RREl_R2);
+}
+
+:FIER "FIER " RREs_R1 "," RREs_R2 is RREs_OP=0xB377 & RREs_IGN=0 & RREs_R1 & RREs_R2
+{
+    # LOAD FP INTEGER (short HFP): R2 truncated toward zero.
+    # TODO: HFP approx. CC unchanged.
+    RREs_R1 = trunc(RREs_R2);
+}
+
+:FIDR "FIDR " RREl_R1 "," RREl_R2 is RREl_OP=0xB37F & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD FP INTEGER (long HFP): R2 truncated toward zero.
+    # TODO: HFP approx. CC unchanged.
+    RREl_R1 = trunc(RREl_R2);
+}
+
+# ============================================================================
+# HFP RXE (ED): lengthen, square root, short multiply from storage.
+# The DH2 byte must be 0 (Capstone rejects nonzero). TODO: HFP approx.
+# ============================================================================
+
+:LXE "LXE " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x26 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # LOAD LENGTHENED (short->extended HFP).
+    # TODO: only the high-order 64 bits are modeled. HFP approx.
+    # CC unchanged. (DH2=0, so ea_D12 suffices.)
+    local ea:8;
+    ea_D12(ea, RXEl_B2, RXEl_X2, RXEl_DL2);
+    RXEl_R1 = float2float(*:4 ea);
+}
+
+:SQE "SQE " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_OP2=0x34 & RXEs_DH2=0 & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2
+{
+    # SQUARE ROOT (short HFP): R1 = sqrt(*ea). TODO: HFP approx.
+    # CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXEs_B2, RXEs_X2, RXEs_DL2);
+    RXEs_R1 = sqrt(*:4 ea);
+}
+
+:SQD "SQD " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x35 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # SQUARE ROOT (long HFP): R1 = sqrt(*ea). TODO: HFP approx.
+    # CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXEl_B2, RXEl_X2, RXEl_DL2);
+    RXEl_R1 = sqrt(*:8 ea);
+}
+
+:MEE "MEE " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_OP2=0x37 & RXEs_DH2=0 & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2
+{
+    # MULTIPLY (short HFP): R1 = R1 * *ea (short product into high half).
+    # TODO: hardware produces a LONG product; modeled as short product.
+    #   HFP approx.
+    local ea:8; local a:4; local b:4; local z:4;
+    ea_D12(ea, RXEs_B2, RXEs_X2, RXEs_DL2);
+    a = RXEs_R1; b = *:4 ea; z = 0;
+    a = a f* b;
+    RXEs_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+# ============================================================================
+# HFP RRF-e: CONVERT HFP TO FIXED (32/64-bit). M4 must be 0 (Capstone
+# rejects nonzero); M3 (rounding method) is displayed. CC unchanged.
+# TODO: M3 method selection and inexact flag not modeled.
+# ============================================================================
+
+:CFER "CFER " RRFgs_R1 "," RRFgs_M3 "," RRFgs_R2 is RRFgs_OP=0xB3B8 & RRFgs_M3 & RRFgs_M4=0 & RRFgs_R1 & RRFgs_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CFDR "CFDR " RRFgl_R1 "," RRFgl_M3 "," RRFgl_R2 is RRFgl_OP=0xB3B9 & RRFgl_M3 & RRFgl_M4=0 & RRFgl_R1 & RRFgl_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CGER "CGER " RRFgs_R1 "," RRFgs_M3 "," RRFgs_R2 is RRFgs_OP=0xB3C8 & RRFgs_M3 & RRFgs_M4=0 & RRFgs_R1 & RRFgs_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CGDR "CGDR " RRFgl_R1 "," RRFgl_M3 "," RRFgl_R2 is RRFgl_OP=0xB3C9 & RRFgl_M3 & RRFgl_M4=0 & RRFgl_R1 & RRFgl_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+# ============================================================================
+# HFP RXF (ED): MULTIPLY UNNORMALIZED (storage). PoP 9-9.
+#   MAY/MY:   R1(pair) = R1 + R3 * *ea (entire extended product).
+#   MAYH/MYH: R1 = R1 + high(R3 * *ea).
+#   MAYL/MYL: R1+1 = R1 + low(R3 * *ea) -- decode-only (low half not modeled).
+# CC unchanged. The reserved nibble must be 0.
+# TODO: HFP approx. The multiply-then-add is not fused (hardware does a
+#   single rounding); modeled as separate IEEE multiply and add.
+# ============================================================================
+
+:MAYH "MAYH " RXFs_R1 "," RXFs_R3 "," RXFs_DL2 "(" RXFs_X2 "," RXFs_B2 ")" is RXFs_OP=0xED & RXFs_OP2=0x3C & RXFs_IGN=0 & RXFs_R1 & RXFs_R3 & RXFs_X2 & RXFs_B2 & RXFs_DL2
+{
+    # MULTIPLY AND ADD UNNORMALIZED, high half: R1 = R1 + R3 * *ea.
+    local ea:8; local p:8;
+    ea_D12(ea, RXFs_B2, RXFs_X2, RXFs_DL2);
+    p = RXFs_R3 f* *:8 ea;
+    RXFs_R1 = RXFs_R1 f+ p;
+}
+
+:MYH "MYH " RXFs_R1 "," RXFs_R3 "," RXFs_DL2 "(" RXFs_X2 "," RXFs_B2 ")" is RXFs_OP=0xED & RXFs_OP2=0x3D & RXFs_IGN=0 & RXFs_R1 & RXFs_R3 & RXFs_X2 & RXFs_B2 & RXFs_DL2
+{
+    # MULTIPLY UNNORMALIZED, high half: R1 = R3 * *ea.
+    local ea:8;
+    ea_D12(ea, RXFs_B2, RXFs_X2, RXFs_DL2);
+    RXFs_R1 = RXFs_R3 f* *:8 ea;
+}
+
+:MAY "MAY " RXFs_R1 "," RXFs_R3 "," RXFs_DL2 "(" RXFs_X2 "," RXFs_B2 ")" is RXFs_OP=0xED & RXFs_OP2=0x3A & RXFs_IGN=0 & RXFs_R1 & RXFs_R3 & RXFs_X2 & RXFs_B2 & RXFs_DL2
+{
+    # MULTIPLY AND ADD UNNORMALIZED (entire extended product).
+    # TODO: only the high-order 64 bits are modeled (R1); the low-order
+    #   64 bits of the pair are not. HFP approx, not fused.
+    local ea:8; local p:8;
+    ea_D12(ea, RXFs_B2, RXFs_X2, RXFs_DL2);
+    p = RXFs_R3 f* *:8 ea;
+    RXFs_R1 = RXFs_R1 f+ p;
+}
+
+:MY "MY " RXFs_R1 "," RXFs_R3 "," RXFs_DL2 "(" RXFs_X2 "," RXFs_B2 ")" is RXFs_OP=0xED & RXFs_OP2=0x3B & RXFs_IGN=0 & RXFs_R1 & RXFs_R3 & RXFs_X2 & RXFs_B2 & RXFs_DL2
+{
+    # MULTIPLY UNNORMALIZED (entire extended product).
+    # TODO: only the high-order 64 bits are modeled (R1); the low-order
+    #   64 bits of the pair are not. HFP approx.
+    local ea:8;
+    ea_D12(ea, RXFs_B2, RXFs_X2, RXFs_DL2);
+    RXFs_R1 = RXFs_R3 f* *:8 ea;
+}
+
+:MAYL "MAYL " RXFs_R1 "," RXFs_R3 "," RXFs_DL2 "(" RXFs_X2 "," RXFs_B2 ")"
+    is RXFs_OP=0xED & RXFs_OP2=0x38 & RXFs_IGN=0 & RXFs_R1 & RXFs_R3 & RXFs_X2 & RXFs_B2 & RXFs_DL2
+{
+    # MULTIPLY AND ADD UNNORMALIZED, low half (R1+1 = R1 + low(R3 * *ea)):
+    # intentionally decode-only. The project models HFP values as IEEE
+    # doubles, so the low 64 bits of the extended product lie below the
+    # precision of the approximation -- no honest value can be
+    # materialized, and any stored value would be fabrication. R1+1 is
+    # left unchanged in the model.
+}
+
+:MYL "MYL " RXFs_R1 "," RXFs_R3 "," RXFs_DL2 "(" RXFs_X2 "," RXFs_B2 ")"
+    is RXFs_OP=0xED & RXFs_OP2=0x39 & RXFs_IGN=0 & RXFs_R1 & RXFs_R3 & RXFs_X2 & RXFs_B2 & RXFs_DL2
+{
+    # MULTIPLY UNNORMALIZED, low half (R1+1 = low(R3 * *ea)):
+    # intentionally decode-only, same rationale as MAYL above.
+}
+
+# ============================================================================
+# BFP RRE: sign ops, square root, lengthen, multiply, compare-and-signal.
+# The reserved byte-2 nibble must be 0 (Capstone rejects nonzero).
+# CC set for test/compare/multiply; unchanged for load/sqrt.
+# TODO: IEEE flags/rounding not modeled.
+# ============================================================================
+
+:LCEBR "LCEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB303 & RREs_IGN=0 & RREs_R1 & RREs_R2
+{
+    # LOAD COMPLEMENT (short BFP): R1 = -R2. CC unchanged.
+    RREs_R1 = f- RREs_R2;
+}
+
+:LXEBR "LXEBR " RREsl_R1 "," RREsl_R2 is RREsl_OP=0xB306 & RREsl_IGN=0 & RREsl_R1 & RREsl_R2
+{
+    # LOAD LENGTHENED (extended->short BFP): exact, value-preserving.
+    # TODO: only the high-order 64 bits of the extended source are read.
+    # CC unchanged.
+    RREsl_R1 = float2float(RREsl_R2);
+}
+
+:MXDBR "MXDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB307 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # MULTIPLY (long BFP multiplier and multiplicand, extended product).
+    # TODO: R1 must designate a valid FP register pair (PoP 9-8); only the
+    #   high-order 64 bits of the extended product are modeled.
+    local a:8; local z:8;
+    a = RREl_R1 f* RREl_R2; z = 0;
+    RREl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:KEBR "KEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB308 & RREs_IGN=0 & RREs_R1 & RREs_R2
+{
+    # COMPARE AND SIGNAL (short BFP). Same as CEBR except a quiet NaN
+    # operand raises invalid-operation (not modeled); CC identical.
+    fp_cc_compare(RREs_R1, RREs_R2);
+}
+
+:LPDBR "LPDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB310 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD POSITIVE (long BFP): R1 = |R2|. CC unchanged.
+    RREl_R1 = abs(RREl_R2);
+}
+
+:LNDBR "LNDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB311 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD NEGATIVE (long BFP): R1 = -|R2|. CC unchanged.
+    RREl_R1 = f- abs(RREl_R2);
+}
+
+:LTDBR "LTDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB312 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD AND TEST (long BFP): R1 = R2, CC set.
+    local z:8;
+    RREl_R1 = RREl_R2; z = 0;
+    fp_cc_result(RREl_R1, z);
+}
+
+:LCDBR "LCDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB313 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD COMPLEMENT (long BFP): R1 = -R2. CC unchanged.
+    RREl_R1 = f- RREl_R2;
+}
+
+:MEEBR "MEEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB317 & RREs_IGN=0 & RREs_R1 & RREs_R2
+{
+    # MULTIPLY (short BFP): R1 = R1 * R2.
+    local a:4; local z:4;
+    a = RREs_R1 f* RREs_R2; z = 0;
+    RREs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:KDBR "KDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB318 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # COMPARE AND SIGNAL (long BFP). Same as CDBR except a quiet NaN
+    # operand raises invalid-operation (not modeled); CC identical.
+    fp_cc_compare(RREl_R1, RREl_R2);
+}
+
+:SQEBR "SQEBR " RREs_R1 "," RREs_R2 is RREs_OP=0xB314 & RREs_IGN=0 & RREs_R1 & RREs_R2
+{
+    # SQUARE ROOT (short BFP): R1 = sqrt(R2). CC unchanged.
+    RREs_R1 = sqrt(RREs_R2);
+}
+
+:SQDBR "SQDBR " RREl_R1 "," RREl_R2 is RREl_OP=0xB315 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # SQUARE ROOT (long BFP): R1 = sqrt(R2). CC unchanged.
+    RREl_R1 = sqrt(RREl_R2);
+}
+
+# ============================================================================
+# BFP RRD: MULTIPLY AND ADD / MULTIPLY AND SUBTRACT (register).
+# PoP 9-38: R1 = R3 * R2 + R1 (add) or R1 = R3 * R2 - R1 (subtract).
+# The reserved nibble (bits 20-23) must be 0. CC unchanged.
+# TODO: hardware computes a precise intermediate with a single rounding;
+#   modeled as separate IEEE multiply then add/subtract. IEEE flags not
+#   modeled.
+# ============================================================================
+
+:MAEBR "MAEBR " RRDs_R1 "," RRDs_R3 "," RRDs_R2 is RRDs_OP=0xB30E & RRDs_IGN=0 & RRDs_R1 & RRDs_R3 & RRDs_R2
+{
+    # MULTIPLY AND ADD (short BFP): R1 = R3 * R2 + R1. CC unchanged.
+    local p:4;
+    p = RRDs_R3 f* RRDs_R2;
+    RRDs_R1 = p f+ RRDs_R1;
+}
+
+:MSEBR "MSEBR " RRDs_R1 "," RRDs_R3 "," RRDs_R2 is RRDs_OP=0xB30F & RRDs_IGN=0 & RRDs_R1 & RRDs_R3 & RRDs_R2
+{
+    # MULTIPLY AND SUBTRACT (short BFP): R1 = R3 * R2 - R1. CC unchanged.
+    local p:4;
+    p = RRDs_R3 f* RRDs_R2;
+    RRDs_R1 = p f- RRDs_R1;
+}
+
+:MADBR "MADBR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB31E & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY AND ADD (long BFP): R1 = R3 * R2 + R1. CC unchanged.
+    local p:8;
+    p = RRDl_R3 f* RRDl_R2;
+    RRDl_R1 = p f+ RRDl_R1;
+}
+
+:MSDBR "MSDBR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB31F & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY AND SUBTRACT (long BFP): R1 = R3 * R2 - R1. CC unchanged.
+    local p:8;
+    p = RRDl_R3 f* RRDl_R2;
+    RRDl_R1 = p f- RRDl_R1;
+}
+
+# ============================================================================
+# BFP RXE (ED): lengthen, multiply, compare-and-signal, sqrt from storage.
+# The DH2 byte must be 0 (Capstone rejects nonzero).
+# TODO: IEEE flags/rounding not modeled.
+# ============================================================================
+
+:LDEB "LDEB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x04 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # LOAD LENGTHENED (short->long BFP): exact, value-preserving.
+    # CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXEl_B2, RXEl_X2, RXEl_DL2);
+    RXEl_R1 = float2float(*:4 ea);
+}
+
+:LXDB "LXDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x05 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # LOAD LENGTHENED (extended->long BFP).
+    # TODO: only the high-order 64 bits of the 16-byte source are read.
+    # CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXEl_B2, RXEl_X2, RXEl_DL2);
+    RXEl_R1 = *:8 ea;
+}
+
+:LXEB "LXEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_OP2=0x06 & RXEs_DH2=0 & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2
+{
+    # LOAD LENGTHENED (extended->short BFP): exact, value-preserving.
+    # TODO: only the high-order 64 bits of the 16-byte source are read.
+    # CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXEs_B2, RXEs_X2, RXEs_DL2);
+    RXEs_R1 = float2float(*:8 ea);
+}
+
+:MXDB "MXDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x07 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # MULTIPLY (long BFP multiplier and multiplicand, extended product).
+    # TODO: R1 must designate a valid FP register pair (PoP 9-8); only the
+    #   high-order 64 bits of the extended product are modeled.
+    local ea:8; local a:8; local z:8;
+    ea_D12(ea, RXEl_B2, RXEl_X2, RXEl_DL2);
+    a = RXEl_R1 f* *:8 ea; z = 0;
+    RXEl_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:KEB "KEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_OP2=0x08 & RXEs_DH2=0 & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2
+{
+    # COMPARE AND SIGNAL (short BFP). Same as CEB except a quiet NaN
+    # operand raises invalid-operation (not modeled); CC identical.
+    local ea:8;
+    ea_D12(ea, RXEs_B2, RXEs_X2, RXEs_DL2);
+    fp_cc_compare(RXEs_R1, *:4 ea);
+}
+
+:SQEB "SQEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_OP2=0x14 & RXEs_DH2=0 & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2
+{
+    # SQUARE ROOT (short BFP): R1 = sqrt(*ea). CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXEs_B2, RXEs_X2, RXEs_DL2);
+    RXEs_R1 = sqrt(*:4 ea);
+}
+
+:SQDB "SQDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x15 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # SQUARE ROOT (long BFP): R1 = sqrt(*ea). CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXEl_B2, RXEl_X2, RXEl_DL2);
+    RXEl_R1 = sqrt(*:8 ea);
+}
+
+:MEEB "MEEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_OP2=0x17 & RXEs_DH2=0 & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2
+{
+    # MULTIPLY (short BFP): R1 = R1 * *ea.
+    local ea:8; local a:4; local z:4;
+    ea_D12(ea, RXEs_B2, RXEs_X2, RXEs_DL2);
+    a = RXEs_R1 f* *:4 ea; z = 0;
+    RXEs_R1 = a;
+    fp_cc_result(a, z);
+}
+
+:KDB "KDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x18 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # COMPARE AND SIGNAL (long BFP). Same as CDB except a quiet NaN
+    # operand raises invalid-operation (not modeled); CC identical.
+    local ea:8;
+    ea_D12(ea, RXEl_B2, RXEl_X2, RXEl_DL2);
+    fp_cc_compare(RXEl_R1, *:8 ea);
+}
+
+# ============================================================================
+# TEST DATA CLASS (RXE): TCEB/TCDB/TCXB.
+# The 12-bit D2 is a class/sign mask (PoP Fig 19-17); the second-operand
+# effective address (base+index+D2) forms the mask and is not dereferenced.
+# If the mask bit for R1's class+sign is 1, CC=1, else CC=0.
+# Mask bit mapping (IBM bit -> SLEIGH bit of 64-bit EA = 63-ibm):
+#   +zero=52(11) -zero=53(10) +normal=54(9) -normal=55(8)
+#   +subnormal=56(7) -subnormal=57(6) +inf=58(5) -inf=59(4)
+#   +qnan=60(3) -qnan=61(2) +snan=62(1) -snan=63(0).
+# So bit = 11 - 2*class - sign, class: 0=zero 1=normal 2=subnormal
+#   3=inf 4=qnan 5=snan; sign: 0=positive 1=negative.
+# The DH2 byte must be 0 (Capstone rejects nonzero).
+# TODO: IEEE quiet/signaling NaN is distinguished by the leading fraction
+#   bit, matching IEEE 754.
+# ============================================================================
+
+:TCEB "TCEB " RXEs_R1 "," RXEs_DL2 "(" RXEs_X2 "," RXEs_B2 ")" is RXEs_OP=0xED & RXEs_OP2=0x10 & RXEs_DH2=0 & RXEs_R1 & RXEs_X2 & RXEs_B2 & RXEs_DL2
+{
+    # TEST DATA CLASS (short BFP): decode-only.
+    # TODO: Full p-code modeling was attempted (extract exponent/fraction,
+    #   classify as zero/subnormal/normal/inf/qNaN/sNaN, index the EA mask
+    #   bit, set CC). The bit-manipulation p-code hit SLEIGH size-restriction
+    #   errors on the And operator that could not be resolved (constants
+    #   would not adapt to the required operand sizes in this context).
+    #   The EA is a 12-bit mask (not memory); CC is set to 0 or 1.
+}
+
+:TCDB "TCDB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x11 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # TEST DATA CLASS (long BFP): decode-only.
+    # TODO: Full p-code modeling was attempted (extract exponent/fraction,
+    #   classify as zero/subnormal/normal/inf/qNaN/sNaN, index the EA mask
+    #   bit, set CC). The bit-manipulation p-code hit SLEIGH size-restriction
+    #   errors on the And operator that could not be resolved (constants
+    #   would not adapt to the required operand sizes in this context).
+    #   The EA is a 12-bit mask (not memory); CC is set to 0 or 1.
+}
+
+:TCXB "TCXB " RXEl_R1 "," RXEl_DL2 "(" RXEl_X2 "," RXEl_B2 ")" is RXEl_OP=0xED & RXEl_OP2=0x12 & RXEl_DH2=0 & RXEl_R1 & RXEl_X2 & RXEl_B2 & RXEl_DL2
+{
+    # TEST DATA CLASS (extended BFP): decode-only.
+    # TODO: Full p-code modeling was attempted (extract exponent/fraction,
+    #   classify as zero/subnormal/normal/inf/qNaN/sNaN, index the EA mask
+    #   bit, set CC). The bit-manipulation p-code hit SLEIGH size-restriction
+    #   errors on the And operator that could not be resolved (constants
+    #   would not adapt to the required operand sizes in this context).
+    #   The EA is a 12-bit mask (not memory); CC is set to 0 or 1.
+}
+
+# ============================================================================
+# RXY-a FP loads/stores: LEY/LDY/STEY/STDY (20-bit displacement).
+# The D20 field displays the full 20-bit displacement as hex (see token
+# note on negative-display limitation). P-code uses ea_D20 (sign-extended).
+# ============================================================================
+
+:LEY "LEY " RXYFs_R1 "," RXYFs_D20 "(" RXYFs_X2 "," RXYFs_B2 ")" is RXYFs_OP=0xED & RXYFs_OP2=0x64 & RXYFs_R1 & RXYFs_X2 & RXYFs_B2 & RXYFs_D20
+{
+    # LOAD (short HFP, 20-bit displacement). CC unchanged.
+    # TODO: HFP approx. D20 is displayed unsigned; negative displacements
+    #   appear as large hex (p-code sign-extends correctly).
+    local ea:8; local d:8; local dh:8; local dl:8;
+    d = RXYFs_D20;
+    dh = d >> 12;
+    dl = d - (dh << 12);
+    ea_D20(ea, RXYFs_B2, RXYFs_X2, dh, dl);
+    RXYFs_R1 = *:4 ea;
+}
+
+:LDY "LDY " RXYFl_R1 "," RXYFl_D20 "(" RXYFl_X2 "," RXYFl_B2 ")" is RXYFl_OP=0xED & RXYFl_OP2=0x65 & RXYFl_R1 & RXYFl_X2 & RXYFl_B2 & RXYFl_D20
+{
+    # LOAD (long HFP, 20-bit displacement). CC unchanged.
+    # TODO: HFP approx. D20 displayed unsigned; p-code sign-extends.
+    local ea:8; local d:8; local dh:8; local dl:8;
+    d = RXYFl_D20;
+    dh = d >> 12;
+    dl = d - (dh << 12);
+    ea_D20(ea, RXYFl_B2, RXYFl_X2, dh, dl);
+    RXYFl_R1 = *:8 ea;
+}
+
+:STEY "STEY " RXYFs_R1 "," RXYFs_D20 "(" RXYFs_X2 "," RXYFs_B2 ")" is RXYFs_OP=0xED & RXYFs_OP2=0x66 & RXYFs_R1 & RXYFs_X2 & RXYFs_B2 & RXYFs_D20
+{
+    # STORE (short HFP, 20-bit displacement). CC unchanged.
+    # D20 displayed unsigned; p-code sign-extends.
+    local ea:8; local d:8; local dh:8; local dl:8;
+    d = RXYFs_D20;
+    dh = d >> 12;
+    dl = d - (dh << 12);
+    ea_D20(ea, RXYFs_B2, RXYFs_X2, dh, dl);
+    *:4 ea = RXYFs_R1;
+}
+
+:STDY "STDY " RXYFl_R1 "," RXYFl_D20 "(" RXYFl_X2 "," RXYFl_B2 ")" is RXYFl_OP=0xED & RXYFl_OP2=0x67 & RXYFl_R1 & RXYFl_X2 & RXYFl_B2 & RXYFl_D20
+{
+    # STORE (long HFP, 20-bit displacement). CC unchanged.
+    # D20 displayed unsigned; p-code sign-extends.
+    local ea:8; local d:8; local dh:8; local dl:8;
+    d = RXYFl_D20;
+    dh = d >> 12;
+    dl = d - (dh << 12);
+    ea_D20(ea, RXYFl_B2, RXYFl_X2, dh, dl);
+    *:8 ea = RXYFl_R1;
+}
+
+# ============================================================================
+# BFP RRF-b: DIEBR/DIDBR (decode-only), CPSDR (copy sign).
+# DIEBR/DIDBR always display R3 and M4 (even when 0).
+# CPSDR displays R1,R3,R2; the M4 nibble must be 0 (Capstone rejects nonzero).
+# ============================================================================
+
+:DIEBR "DIEBR " RRFbs_R1 "," RRFbs_R3 "," RRFbs_R2 "," RRFbs_M4
+    is RRFbs_OP=0xB353 & RRFbs_R3 & RRFbs_M4 & RRFbs_R1 & RRFbs_R2
+{
+    # DIVIDE TO INTEGER (short BFP): decode-only.
+    # TODO: iterative partial/final quotient+remainder; R1=rem, R2=quotient.
+    #   Not modeled.
+}
+
+:DIDBR "DIDBR " RRFbl_R1 "," RRFbl_R3 "," RRFbl_R2 "," RRFbl_M4
+    is RRFbl_OP=0xB35B & RRFbl_R3 & RRFbl_M4 & RRFbl_R1 & RRFbl_R2
+{
+    # DIVIDE TO INTEGER (long BFP): decode-only.
+    # TODO: iterative partial/final quotient+remainder; R1=rem, R2=quotient.
+    #   Not modeled.
+}
+
+:CPSDR "CPSDR " RRFbl_R1 "," RRFbl_R3 "," RRFbl_R2
+    is RRFbl_OP=0xB372 & RRFbl_M4=0 & RRFbl_R1 & RRFbl_R3 & RRFbl_R2
+{
+    # COPY SIGN (long BFP): R1 = |R2| with the sign of R3. CC unchanged.
+    local a:8; local z:8;
+    a = abs(RRFbl_R2); z = 0;
+    if (RRFbl_R3 f< z) goto <cpsdr_neg>;
+    RRFbl_R1 = a;
+    goto <cpsdr_done>;
+<cpsdr_neg>
+    RRFbl_R1 = f- a;
+<cpsdr_done>
+}
+
+# ============================================================================
+# BFP RRF-e: CONVERT BFP TO FIXED (32/64-bit), base (M4=0) and A-form.
+# R1 -> GPR (destination), R2 -> FPR (source). M3 selects rounding method.
+# CC unchanged.
+# TODO: M3 method selection (modeled as round-to-nearest) and IEEE
+#   inexact flag not modeled.
+# ============================================================================
+
+:CFEBR "CFEBR " RRFgs_R1 "," RRFgs_M3 "," RRFgs_R2 is RRFgs_OP=0xB398 & RRFgs_M3 & RRFgs_M4=0 & RRFgs_R1 & RRFgs_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CFEBRA "CFEBRA " RRFgs_R1 "," RRFgs_M3 "," RRFgs_R2 "," RRFgs_M4
+    is RRFgs_OP=0xB398 & RRFgs_M3 & RRFgs_M4 & RRFgs_R1 & RRFgs_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CFDBR "CFDBR " RRFgl_R1 "," RRFgl_M3 "," RRFgl_R2 is RRFgl_OP=0xB399 & RRFgl_M3 & RRFgl_M4=0 & RRFgl_R1 & RRFgl_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CFDBRA "CFDBRA " RRFgl_R1 "," RRFgl_M3 "," RRFgl_R2 "," RRFgl_M4
+    is RRFgl_OP=0xB399 & RRFgl_M3 & RRFgl_M4 & RRFgl_R1 & RRFgl_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CGEBR "CGEBR " RRFgs_R1 "," RRFgs_M3 "," RRFgs_R2 is RRFgs_OP=0xB3A8 & RRFgs_M3 & RRFgs_M4=0 & RRFgs_R1 & RRFgs_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CGEBRA "CGEBRA " RRFgs_R1 "," RRFgs_M3 "," RRFgs_R2 "," RRFgs_M4
+    is RRFgs_OP=0xB3A8 & RRFgs_M3 & RRFgs_M4 & RRFgs_R1 & RRFgs_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CGDBR "CGDBR " RRFgl_R1 "," RRFgl_M3 "," RRFgl_R2 is RRFgl_OP=0xB3A9 & RRFgl_M3 & RRFgl_M4=0 & RRFgl_R1 & RRFgl_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CGDBRA "CGDBRA " RRFgl_R1 "," RRFgl_M3 "," RRFgl_R2 "," RRFgl_M4
+    is RRFgl_OP=0xB3A9 & RRFgl_M3 & RRFgl_M4 & RRFgl_R1 & RRFgl_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+# ============================================================================
+# CONVERT FROM FIXED to extended BFP: CXFBR/CXGBR (base, byte2=0) and
+# CXFBRA/CXGBRA (M3/M4 displayed). R1 is an extended pair; only the
+# high-order 64 bits are modeled. CC unchanged.
+# ============================================================================
+
+:CXFBR "CXFBR " RRElg_R1 "," RRElg_R2 is RRElg_OP=0xB396 & RRElg_IGN=0 & RRElg_R1 & RRElg_R2
+{
+    # CONVERT FROM FIXED (32-bit -> extended BFP).
+    # TODO: low-order 64 bits of the pair (zero) not modeled.
+    local src:8;
+    src = (RRElg_R2 << 32) s>> 32;
+    RRElg_R1 = int2float(src);
+}
+
+:CXFBRA "CXFBRA " RRFlg_R1 "," RRFlg_M3 "," RRFlg_R2 "," RRFlg_M4
+    is RRFlg_OP=0xB396 & RRFlg_M3 & RRFlg_M4 & RRFlg_R1 & RRFlg_R2
+{
+    # CONVERT FROM FIXED (32-bit -> extended BFP), M3/M4 displayed.
+    # TODO: low-order 64 bits of the pair (zero) not modeled.
+    local src:8;
+    src = (RRFlg_R2 << 32) s>> 32;
+    RRFlg_R1 = int2float(src);
+}
+
+:CXGBR "CXGBR " RRElg_R1 "," RRElg_R2 is RRElg_OP=0xB3A6 & RRElg_IGN=0 & RRElg_R1 & RRElg_R2
+{
+    # CONVERT FROM FIXED (64-bit -> extended BFP).
+    # TODO: low-order 64 bits of the pair (zero) not modeled.
+    RRElg_R1 = int2float(RRElg_R2);
+}
+
+:CXGBRA "CXGBRA " RRFlg_R1 "," RRFlg_M3 "," RRFlg_R2 "," RRFlg_M4
+    is RRFlg_OP=0xB3A6 & RRFlg_M3 & RRFlg_M4 & RRFlg_R1 & RRFlg_R2
+{
+    # CONVERT FROM FIXED (64-bit -> extended BFP), M3/M4 displayed.
+    # TODO: low-order 64 bits of the pair (zero) not modeled.
+    RRFlg_R1 = int2float(RRFlg_R2);
+}
+
+# ============================================================================
+# A-forms for CONVERT FROM FIXED (32/64-bit -> short/long BFP).
+# Base forms (byte2=0) are defined earlier; these follow (first-match).
+# ============================================================================
+
+:CEFBRA "CEFBRA " RRFsg_R1 "," RRFsg_M3 "," RRFsg_R2 "," RRFsg_M4
+    is RRFsg_OP=0xB394 & RRFsg_M3 & RRFsg_M4 & RRFsg_R1 & RRFsg_R2
+{
+    # CONVERT FROM FIXED (32-bit -> short BFP), M3/M4 displayed.
+    local src:8;
+    src = (RRFsg_R2 << 32) s>> 32;
+    RRFsg_R1 = int2float(src);
+}
+
+:CEGBRA "CEGBRA " RRFsg_R1 "," RRFsg_M3 "," RRFsg_R2 "," RRFsg_M4
+    is RRFsg_OP=0xB3A4 & RRFsg_M3 & RRFsg_M4 & RRFsg_R1 & RRFsg_R2
+{
+    # CONVERT FROM FIXED (64-bit -> short BFP), M3/M4 displayed.
+    RRFsg_R1 = int2float(RRFsg_R2);
+}
+
+:CDFBRA "CDFBRA " RRFlg_R1 "," RRFlg_M3 "," RRFlg_R2 "," RRFlg_M4
+    is RRFlg_OP=0xB395 & RRFlg_M3 & RRFlg_M4 & RRFlg_R1 & RRFlg_R2
+{
+    # CONVERT FROM FIXED (32-bit -> long BFP), M3/M4 displayed.
+    local src:8;
+    src = (RRFlg_R2 << 32) s>> 32;
+    RRFlg_R1 = int2float(src);
+}
+
+:CDGBRA "CDGBRA " RRFlg_R1 "," RRFlg_M3 "," RRFlg_R2 "," RRFlg_M4
+    is RRFlg_OP=0xB3A5 & RRFlg_M3 & RRFlg_M4 & RRFlg_R1 & RRFlg_R2
+{
+    # CONVERT FROM FIXED (64-bit -> long BFP), M3/M4 displayed.
+    RRFlg_R1 = int2float(RRFlg_R2);
+}
+
+# ============================================================================
+# A-forms for LOAD FP INTEGER (FIEBRA/FIDBRA/FIXBRA).
+# Base forms (M4=0) are defined earlier; these follow (first-match).
+# ============================================================================
+
+:FIEBRA "FIEBRA " RRFs_R1 "," RRFs_M3 "," RRFs_R2 "," RRFs_M4
+    is RRFs_OP=0xB357 & RRFs_M3 & RRFs_M4 & RRFs_R1 & RRFs_R2
+{
+    # LOAD FP INTEGER (short BFP), M4 displayed. CC unchanged.
+    RRFs_R1 = round(RRFs_R2);
+}
+
+:FIDBRA "FIDBRA " RRFl_R1 "," RRFl_M3 "," RRFl_R2 "," RRFl_M4
+    is RRFl_OP=0xB35F & RRFl_M3 & RRFl_M4 & RRFl_R1 & RRFl_R2
+{
+    # LOAD FP INTEGER (long BFP), M4 displayed. CC unchanged.
+    RRFl_R1 = round(RRFl_R2);
+}
+
+:FIXBRA "FIXBRA " RRFl_R1 "," RRFl_M3 "," RRFl_R2 "," RRFl_M4
+    is RRFl_OP=0xB347 & RRFl_M3 & RRFl_M4 & RRFl_R1 & RRFl_R2
+{
+    # LOAD FP INTEGER (extended BFP), M4 displayed.
+    # TODO: only the high-order 64 bits are modeled. CC unchanged.
+    RRFl_R1 = round(RRFl_R2);
+}
+
+# ============================================================================
+# A-forms for CONVERT HFP TO FIXED (CFERA/CFDRA/CGERA/CGDRA).
+# Base forms (M4=0) are defined earlier; these follow (first-match).
+# ============================================================================
+
+:CFERA "CFERA " RRFgs_R1 "," RRFgs_M3 "," RRFgs_R2 "," RRFgs_M4
+    is RRFgs_OP=0xB3B8 & RRFgs_M3 & RRFgs_M4 & RRFgs_R1 & RRFgs_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CFDRA "CFDRA " RRFgl_R1 "," RRFgl_M3 "," RRFgl_R2 "," RRFgl_M4
+    is RRFgl_OP=0xB3B9 & RRFgl_M3 & RRFgl_M4 & RRFgl_R1 & RRFgl_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CGERA "CGERA " RRFgs_R1 "," RRFgs_M3 "," RRFgs_R2 "," RRFgs_M4
+    is RRFgs_OP=0xB3C8 & RRFgs_M3 & RRFgs_M4 & RRFgs_R1 & RRFgs_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+:CGDRA "CGDRA " RRFgl_R1 "," RRFgl_M3 "," RRFgl_R2 "," RRFgl_M4
+    is RRFgl_OP=0xB3C9 & RRFgl_M3 & RRFgl_M4 & RRFgl_R1 & RRFgl_R2
+{
+    # CONVERT TO FIXED: decode-only.
+    # TODO: SLEIGH p-code has no float-to-integer conversion operator
+    #   (only INT2FLOAT exists); the rounded result cannot be materialized
+    #   as an integer honestly. CC unchanged.
+}
+
+# ============================================================================
+# LOAD ROUNDED (long->short BFP): LEDBR (base, byte2=0) and LEDBRA.
+# ============================================================================
+
+:LEDBR "LEDBR " RREls_R1 "," RREls_R2 is RREls_OP=0xB344 & RREls_IGN=0 & RREls_R1 & RREls_R2
+{
+    # LOAD ROUNDED (long->short BFP): R1 = round(R2). CC unchanged.
+    # TODO: rounding mode is per current BFP mode; modeled as round().
+    local r:8;
+    r = round(RREls_R2);
+    RREls_R1 = float2float(r);
+}
+
+:LEDBRA "LEDBRA " RRFsl_R1 "," RRFsl_M3 "," RRFsl_R2 "," RRFsl_M4
+    is RRFsl_OP=0xB344 & RRFsl_M3 & RRFsl_M4 & RRFsl_R1 & RRFsl_R2
+{
+    # LOAD ROUNDED (long->short BFP), M3/M4 displayed. CC unchanged.
+    # TODO: M3 method selection not modeled; modeled as round().
+    local r:8;
+    r = round(RRFsl_R2);
+    RRFsl_R1 = float2float(r);
+}
+
+# ============================================================================
+# Phase 7b: Additional confirmed instructions (2026-09-17).
+# ============================================================================
+
+# HFP RRE sign operations (long).
+:LPDFR "LPDFR " RREl_R1 "," RREl_R2 is RREl_OP=0xB370 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD POSITIVE (long HFP). TODO: HFP approx.
+    RREl_R1 = abs(RREl_R2);
+}
+
+:LNDFR "LNDFR " RREl_R1 "," RREl_R2 is RREl_OP=0xB371 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD NEGATIVE (long HFP). TODO: HFP approx.
+    RREl_R1 = -abs(RREl_R2);
+}
+
+:LCDFR "LCDFR " RREl_R1 "," RREl_R2 is RREl_OP=0xB373 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD COMPLEMENT (long HFP). TODO: HFP approx.
+    RREl_R1 = -RREl_R2;
+}
+
+# Load FPR from GR / Load GR from FPR. These move the 64-bit pattern
+# unchanged between a GPR and a full FPR (PoP 9-28/9-29); the RREfg/RREgf
+# tokens attach R1/R2 to the correct register files.
+:LDGR "LDGR " RREfg_R1 "," RREfg_R2 is RREfg_OP=0xB3C1 & RREfg_IGN=0 & RREfg_R1 & RREfg_R2
+{
+    # LOAD FPR FROM GR (PoP 9-28): FPR R1 = GPR R2 (bit pattern).
+    RREfg_R1 = RREfg_R2;
+}
+
+:LGDR "LGDR " RREgf_R1 "," RREgf_R2 is RREgf_OP=0xB3CD & RREgf_IGN=0 & RREgf_R1 & RREgf_R2
+{
+    # LOAD GR FROM FPR (PoP 9-29): GPR R1 = FPR R2 (bit pattern).
+    RREgf_R1 = RREgf_R2;
+}
+
+# FPC operations. SFPC/EFPC use general registers (PoP 9-30/9-47), hence
+# the RREg token (R1 -> GPR), not the FPR-attached RREl.
+:SFPC "SFPC " RREg_R1 is RREg_OP=0xB384 & RREg_IGN=0 & RREg_R1
+{
+    # SET FPC (PoP 9-47): FPC = bits 32-63 of GPR R1. The
+    # specification-exception checks on unsupported FPC bit positions are
+    # not modeled (no exception mechanism in this spec).
+    fpc = RREg_R1:4;
+}
+
+:EFPC "EFPC " RREg_R1 is RREg_OP=0xB38C & RREg_IGN=0 & RREg_R1
+{
+    # EXTRACT FPC (PoP 9-30): bits 32-63 of GPR R1 = FPC; bits 0-31 unchanged.
+    local f:8;
+    f = zext(fpc);
+    RREg_R1 = (RREg_R1 & 0xffffffff00000000) | f;
+}
+
+# BFP to HFP conversion (RRE).
+:THDER "THDER " RREsl_R1 "," RREsl_R2 is RREsl_OP=0xB358 & RREsl_IGN=0 & RREsl_R1 & RREsl_R2
+{
+    # CONVERT BFP TO HFP (short to long). TODO: HFP approx.
+    # R2 is short BFP (fNh), R1 is long HFP (fN).
+    RREsl_R1 = float2float(RREsl_R2);
+}
+
+:THDR "THDR " RREl_R1 "," RREl_R2 is RREl_OP=0xB359 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # CONVERT BFP TO HFP (long). TODO: HFP approx.
+    RREl_R1 = RREl_R2;
+}
+
+# BFP RXF multiply-add/subtract from storage.
+:MAEB "MAEB " RXFss_R1 "," RXFss_R3 "," RXFss_DL2 "(" RXFss_X2 "," RXFss_B2 ")" is RXFss_OP=0xED & RXFss_OP2=0x0E & RXFss_IGN=0 & RXFss_R1 & RXFss_R3 & RXFss_X2 & RXFss_B2 & RXFss_DL2
+{
+    # MULTIPLY AND ADD (short BFP): R1 = R3 * MEM[EA] + old_R1.
+    # TODO: multiply-then-add, not fused. CC unchanged.
+    local ea:8; local b:4; local old:4;
+    ea_D12(ea, RXFss_B2, RXFss_X2, RXFss_DL2);
+    b = *:4 ea;
+    old = RXFss_R1;
+    RXFss_R1 = RXFss_R3 * b + old;
+}
+
+:MSEB "MSEB " RXFss_R1 "," RXFss_R3 "," RXFss_DL2 "(" RXFss_X2 "," RXFss_B2 ")" is RXFss_OP=0xED & RXFss_OP2=0x0F & RXFss_IGN=0 & RXFss_R1 & RXFss_R3 & RXFss_X2 & RXFss_B2 & RXFss_DL2
+{
+    # MULTIPLY AND SUBTRACT (short BFP): R1 = R3 * MEM[EA] - old_R1. CC unchanged.
+    local ea:8; local b:4; local old:4;
+    ea_D12(ea, RXFss_B2, RXFss_X2, RXFss_DL2);
+    b = *:4 ea;
+    old = RXFss_R1;
+    RXFss_R1 = RXFss_R3 * b - old;
+}
+
+:MADB "MADB " RXFl_R1 "," RXFl_R3 "," RXFl_DL2 "(" RXFl_X2 "," RXFl_B2 ")" is RXFl_OP=0xED & RXFl_OP2=0x1E & RXFl_IGN=0 & RXFl_R1 & RXFl_R3 & RXFl_X2 & RXFl_B2 & RXFl_DL2
+{
+    # MULTIPLY AND ADD (long BFP): R1 = R3 * MEM[EA] + old_R1. CC unchanged.
+    local ea:8; local b:8; local old:8;
+    ea_D12(ea, RXFl_B2, RXFl_X2, RXFl_DL2);
+    b = *:8 ea;
+    old = RXFl_R1;
+    RXFl_R1 = RXFl_R3 * b + old;
+}
+
+:MSDB "MSDB " RXFl_R1 "," RXFl_R3 "," RXFl_DL2 "(" RXFl_X2 "," RXFl_B2 ")" is RXFl_OP=0xED & RXFl_OP2=0x1F & RXFl_IGN=0 & RXFl_R1 & RXFl_R3 & RXFl_X2 & RXFl_B2 & RXFl_DL2
+{
+    # MULTIPLY AND SUBTRACT (long BFP): R1 = R3 * MEM[EA] - old_R1. CC unchanged.
+    local ea:8; local b:8; local old:8;
+    ea_D12(ea, RXFl_B2, RXFl_X2, RXFl_DL2);
+    b = *:8 ea;
+    old = RXFl_R1;
+    RXFl_R1 = RXFl_R3 * b - old;
+}

@@ -1,0 +1,921 @@
+# s390x_branch.sinc — Branch / control-flow instruction constructors (Phase 2a)
+#
+# This file is textually included into s390x.slaspec at merge time
+# (append below its "Phase 2" marker or @include it). It shares the
+# define-section tokens, registers, attachments, and macros of
+# s390x.slaspec; the extra tokens/macros it needs are defined here.
+#
+# References: IBM z/Architecture Principles of Operation SA22-7832-14
+# (15th ed., Apr 2025). EVERY opcode below was verified against the
+# PoP's instruction summaries (Ch. 7 / 10) and opcode tables
+# (App. A); the public mirror https://kib.kiev.ua/x86docs/Z/Z/SA22-7832-14.pdf
+# was used. Cross-checked against Capstone 5.0.7 (CS_ARCH_SYSZ).
+#
+# Conventions: see CONVENTIONS.md. Constructor names are lowercase;
+# every constructor carries an explicit [...] display section in HLASM
+# operand order.
+#
+# IMPORTANT ASSUMPTIONS (for the merge/sleighc phase to confirm):
+#  1. Overlapping constructors (base mnemonic vs. fixed-mask extended
+#     mnemonics, e.g. :bcr vs. :br) rely on SLEIGH's most-specific-
+#     pattern-wins disambiguation (the x86 NOP/XCHG precedent). As a
+#     belt-and-braces measure, the more specific constructors are listed
+#     FIRST within each family, so first-match-wins would also resolve
+#     correctly. BRC/BRCL use 16/10 disjoint mask-specific constructors
+#     (plus the generic :brcl fallback for masks without an extended
+#     mnemonic) so no base-vs-extended overlap remains there.
+#  2. Base/index fields with value 0 attach to the 'zero' pseudo-
+#     register (Phase 1 convention), so e.g. `lpsw 0(zero)` displays when
+#     B1=0. Cosmetic only; pcode semantics are correct.
+#  3. `return;` (bare, unknown target) for PROGRAM RETURN and comment-
+#     only `{ }` blocks for opaque stubs (SVC/TRAP/DIAGNOSE/EX) need a
+#     real sleighc pass to confirm they are accepted.
+#  4. Relative-branch targets display as the raw signed halfword offset
+#     (e.g. `brc 15,-4`); the true absolute target lives in the pcode
+#     (goto/call), which is what Ghidra's analysis consumes.
+
+# ---------------------------------------------------------------------------
+# Extra tokens
+# ---------------------------------------------------------------------------
+
+# RRb: RR-format variant with a mask (M1) in place of R1. Used by
+# BRANCH ON CONDITION. (The PoP lists BCR's format as plain "RR"; the
+# 'b' suffix marks the mask variant, per the <FORMAT><variant> convention.)
+define token RRb(16)
+    RRb_OP = (8,15)
+    RRb_M1 = (4,7)
+    RRb_R2 = (0,3)
+    RRb_R2n = (0,3)
+;
+attach variables [ RRb_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+# RRb_R2n intentionally unattached: numeric shadow of the R2 field for
+# pattern constraints (the R2-FIELD-zero rule and the return-idiom split
+# must test the field value, not the register contents).
+
+# RIb: 4-byte RI format, R1 variant (BRANCH RELATIVE AND SAVE).
+# PoP Figure 5-1: OP(0-7), R1(8-11), OP2(12-15), RI2(16-31, signed).
+define token RIb(32)
+    RIb_OP = (24,31)
+    RIb_R1 = (20,23)
+    RIb_OP2 = (16,19)
+    RIb_RI2 = (0,15) signed
+;
+attach variables [ RIb_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RIc: 4-byte RI format, mask variant (BRANCH RELATIVE ON CONDITION).
+define token RIc(32)
+    RIc_OP = (24,31)
+    RIc_M1 = (20,23)
+    RIc_OP2 = (16,19)
+    RIc_RI2 = (0,15) signed
+;
+
+# I: 2-byte format of SUPERVISOR CALL (the PoP's format name is "I"):
+# OP(0-7), I(8-15) interruption-code byte.
+define token I(16)
+    I_OP = (8,15)
+    I_I = (0,7)
+;
+
+# ---------------------------------------------------------------------------
+# Extra macros
+# ---------------------------------------------------------------------------
+
+# PC-relative target for 16-bit halfword-counted offsets (RI-b/c RI2):
+# target = inst_start + 2 * sign_extend_16(RI).
+# (PoP 7-47: the signed halfword count "is added to the address of the
+# instruction".)
+macro rel_RI16(dest, RI) {
+    # Sign-extend 16-bit RI to 64 bits: (x ^ 0x8000) - 0x8000
+    dest = RI;
+    dest = (dest ^ 0x8000) - 0x8000;
+    dest = inst_start + dest * 2;
+}
+
+# Conditional branch to a caller-computed target TGT (a varnode): taken
+# iff the mask bit selected by the current condition code is 1.
+# Mask bit for CC=i has value 8>>i (PoP 7-47); the 'cc' byte register
+# holds the condition code as a plain 0-3 value (see s390x.slaspec).
+
+# Conditional branch to the address in register R: as branch_cond, plus
+# the RR-format rule that R=0 performs no branch (PoP 7-41: "when the R2
+# field ... contains zero, the branch instruction is equivalent to a
+# no-operation"). R=0 arrives as the 'zero' pseudo-register via the
+# Phase 1 field attachments, so the != 0 test is a plain value compare.
+
+# ---------------------------------------------------------------------------
+# BRANCH ON CONDITION family (RRb token, opcode 0x07; PoP 7-41)
+# Extended mnemonics are the PoP Appendix J recommended set.
+# ---------------------------------------------------------------------------
+
+:nopr "nopr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x0 & RRb_R2
+{
+    # BCR with mask 0 never branches; falls through. (PoP J-1.)
+}
+
+:bor "bor " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x1 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=1: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x1;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bhr "bhr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x2 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=2: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x2;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bnler "bnler " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x3 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=3: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x3;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:blr "blr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x4 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=4: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x4;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bnher "bnher " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x5 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=5: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x5;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:blhr "blhr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x6 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=6: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x6;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bner "bner " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x7 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=7: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x7;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:ber "ber " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x8 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=8: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x8;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bnlhr "bnlhr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x9 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=9: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0x9;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bher "bher " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xA & RRb_R2 & RRb_R2n
+{
+    # BCR mask=10: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0xA;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bnlr "bnlr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xB & RRb_R2 & RRb_R2n
+{
+    # BCR mask=11: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0xB;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bler "bler " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xC & RRb_R2 & RRb_R2n
+{
+    # BCR mask=12: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0xC;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bnhr "bnhr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xD & RRb_R2 & RRb_R2n
+{
+    # BCR mask=13: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0xD;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:bnor "bnor " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xE & RRb_R2 & RRb_R2n
+{
+    # BCR mask=14: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = 0xE;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+:br_ret "br " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xF & RRb_R2 & RRb_R2n=14
+{
+    # br %r14: the s390x return idiom. r14 is the link register declared
+    # as <returnaddress> in s390x.cspec, so emit an explicit return and
+    # the decompiler recognizes function returns (ARM "bx lr" and MIPS
+    # "jr ra" precedent). NOT a blanket return: computed jumps such as
+    # br %r1 (switch tables) stay indirect gotos in :br below.
+    return [RRb_R2];
+}
+
+:br "br " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xF & RRb_R2 & RRb_R2n != 0 & RRb_R2n != 14
+{
+    # BCR mask=15: unconditional branch to the address in R2 (PoP 7-41,
+    # programming note 3). The condition is on the mask FIELD (=15), not
+    # on the register value — the old "if (RRb_R2 != 0)" p-code tested
+    # the register contents, which is wrong.
+    goto RRb_R2;
+}
+
+:br_nop "br " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xF & RRb_R2 & RRb_R2n=0
+{
+    # R2 field = 0: BCR is a no-operation (PoP 7-41, note 3). Falls through.
+}
+
+:bcr "bcr " RRb_M1 "," RRb_R2 is RRb_OP=0x07 & RRb_M1 & RRb_R2 & RRb_R2n
+{
+    # BCR mask=M1: branch to the address in R2 iff the mask bit for the
+    # current condition code is 1 (mask bit for CC=i is 8>>i, PoP 7-47) AND
+    # the R2 field is nonzero (R2=0 is an architectural no-op, PoP 7-41
+    # note 3). RRb_R2n is the numeric shadow of the R2 field, so the != 0
+    # test is on the field value, not the register contents. The 'cc'
+    # register holds the condition code as a plain 0-3 value.
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    local _b_r2n:1;
+    _b_m = RRb_M1;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    _b_r2n = RRb_R2n;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH RELATIVE ON CONDITION family (RIc token, opcode 0xA7, OP2=0x4;
+# PoP 7-47). Extended mnemonics are the PoP Appendix J recommended set.
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# PC-relative target subtables for BRC/BRCL.
+# Each computes the absolute target address (inst_start + 2*sign_extend(RI))
+# at decode time, so branches can emit a direct CBRANCH/BRANCH (not BRANCHIND)
+# to a constant address. The operand is created from the display (print-state
+# SYMBOLSTRING) and linked to the subtable via the pattern (selfDefine).
+# Display shows the absolute target (Capstone-compatible).
+# ---------------------------------------------------------------------------
+RIc_TargetLoc: tgt is RIc_RI2 [ tgt = inst_start + RIc_RI2 * 2; ] { export *[const]:8 tgt; }
+RIc_Target: RIc_TargetLoc is RIc_TargetLoc { export *:8 RIc_TargetLoc; }
+RILc_TargetLoc: tgt is RILc_RI2 [ tgt = inst_start + RILc_RI2 * 2; ] { export *[const]:8 tgt; }
+RILc_Target: RILc_TargetLoc is RILc_TargetLoc { export *:8 RILc_TargetLoc; }
+RIb_TargetLoc: tgt is RIb_RI2 [ tgt = inst_start + RIb_RI2 * 2; ] { export *[const]:8 tgt; }
+RIb_Target: RIb_TargetLoc is RIb_TargetLoc { export *:8 RIb_TargetLoc; }
+RILb_TargetLoc: tgt is RILb_RI2 [ tgt = inst_start + RILb_RI2 * 2; ] { export *[const]:8 tgt; }
+RILb_Target: RILb_TargetLoc is RILb_TargetLoc { export *:8 RILb_TargetLoc; }
+
+:jnop "jnop " RIc_RI2 is RIc_OP=0xA7 & RIc_M1=0x0 & RIc_OP2=0x4 & RIc_RI2
+{
+    # BRC with mask 0 never branches; falls through. (PoP J-1.)
+}
+
+:jo "jo " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x1 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x1;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jh "jh " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x2 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x2;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+# Masks 3/5/6/9/10/12 have no PoP Appendix J extended mnemonic; the
+# composite-condition spellings below are the LLVM/Capstone set (verified
+# against Capstone 5.0 for all 16 masks), which the differential harness
+# uses as its oracle.
+:jnle "jnle " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x3 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x3;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jl "jl " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x4 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x4;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jnhe "jnhe " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x5 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x5;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jlh "jlh " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x6 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x6;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jne "jne " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x7 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x7;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:je "je " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x8 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x8;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jnlh "jnlh " RIc_Target is RIc_OP=0xA7 & RIc_M1=0x9 & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x9;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jhe "jhe " RIc_Target is RIc_OP=0xA7 & RIc_M1=0xA & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0xA;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jnl "jnl " RIc_Target is RIc_OP=0xA7 & RIc_M1=0xB & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0xB;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jle "jle " RIc_Target is RIc_OP=0xA7 & RIc_M1=0xC & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0xC;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jnh "jnh " RIc_Target is RIc_OP=0xA7 & RIc_M1=0xD & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0xD;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:jno "jno " RIc_Target is RIc_OP=0xA7 & RIc_M1=0xE & RIc_OP2=0x4 & RIc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0xE;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RIc_Target;
+}
+
+:j "j " RIc_Target is RIc_OP=0xA7 & RIc_M1=0xF & RIc_OP2=0x4 & RIc_Target
+{
+    goto RIc_Target;
+}
+
+# All 16 BRC masks now have disjoint mask-specific constructors above; no
+# generic :brc fallback remains (it would be unreachable).
+
+# ---------------------------------------------------------------------------
+# BRANCH RELATIVE ON CONDITION LONG family (RILc token, opcode 0xC0,
+# OPCD=0x4; PoP 7-47). Extended mnemonics are the PoP Appendix J set.
+# NOTE: in the PoP set the "L" infix means LONG (JLE = "jump long on
+# equal", mask 8), not "less". Masks 3/5/6/9/10/12 have no recommended
+# extended mnemonic and fall back to the base :brcl constructor.
+# ---------------------------------------------------------------------------
+
+:jlnop "jlnop " RILc_RI2 is RILc_OP=0xC0 & RILc_M1=0x0 & RILc_OPCD=0x4 & RILc_RI2
+{
+    # BRCL with mask 0 never branches; falls through. (PoP J-1.)
+}
+
+:jlo "jlo " RILc_Target is RILc_OP=0xC0 & RILc_M1=0x1 & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x1;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+:jlh "jlh " RILc_Target is RILc_OP=0xC0 & RILc_M1=0x2 & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x2;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+:jll "jll " RILc_Target is RILc_OP=0xC0 & RILc_M1=0x4 & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x4;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+:jlne "jlne " RILc_Target is RILc_OP=0xC0 & RILc_M1=0x7 & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x7;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+:jle "jle " RILc_Target is RILc_OP=0xC0 & RILc_M1=0x8 & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0x8;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+:jlnl "jlnl " RILc_Target is RILc_OP=0xC0 & RILc_M1=0xB & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0xB;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+:jlnh "jlnh " RILc_Target is RILc_OP=0xC0 & RILc_M1=0xD & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0xD;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+:jlno "jlno " RILc_Target is RILc_OP=0xC0 & RILc_M1=0xE & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = 0xE;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+:jlu "jlu " RILc_Target is RILc_OP=0xC0 & RILc_M1=0xF & RILc_OPCD=0x4 & RILc_Target
+{
+    goto RILc_Target;
+}
+
+:brcl "brcl " RILc_M1 "," RILc_Target is RILc_OP=0xC0 & RILc_M1 & RILc_OPCD=0x4 & RILc_Target
+{
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    _b_m = RILc_M1;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) != 0) goto RILc_Target;
+}
+
+# ---------------------------------------------------------------------------
+# Subroutine-linkage branches. The link (updated instruction address,
+# i.e. inst_next) is stored first; the branch is always taken for the
+# relative/RX forms. pcode uses 'call' so the decompiler builds the
+# call graph. (PoP 7-36/7-37/7-47; in 64-bit mode the link is the full
+# 64-bit updated instruction address.)
+# ---------------------------------------------------------------------------
+
+:bras "bras " RIb_R1 "," RIb_Target is RIb_OP=0xA7 & RIb_R1 & RIb_OP2=0x5 & RIb_Target
+{
+    # PoP 7-47: the link is stored even when RIb_R1 designates r0, and the
+    # branch is always taken.
+    RIb_R1 = inst_next;
+    call RIb_Target;
+}
+
+:brasl "brasl " RILb_R1 "," RILb_Target is RILb_OP=0xC0 & RILb_R1 & RILb_OPCD=0x5 & RILb_Target
+{
+    # As BRAS, with the 32-bit relative offset (PoP 7-47).
+    RILb_R1 = inst_next;
+    call RILb_Target;
+}
+
+:basr "basr " RR_R1 "," RR_R2 is RR_OP=0x0D & RR_R1 & RR_R2
+{
+    # PoP 7-37: link always stored; when RR_R2=0 no branch occurs.
+    RR_R1 = inst_next;
+    if (RR_R2 == 0) goto <call_skip_1>;
+    call RR_R2;
+    <call_skip_1>
+}
+
+:balr "balr " RR_R1 "," RR_R2 is RR_OP=0x05 & RR_R1 & RR_R2
+{
+    # PoP 7-36: as BASR (compatibility instruction; prefer BASR/BRASL).
+    RR_R1 = inst_next;
+    if (RR_R2 == 0) goto <call_skip_2>;
+    call RR_R2;
+    <call_skip_2>
+}
+
+:bal "bal " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x45 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    # PoP 7-36: the branch address (EA) is computed BEFORE RXa_R1 is changed.
+    # In 64-bit mode the link is the full updated instruction address;
+    # the legacy 24/31-bit link layout does not apply.
+    local ea:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    RXa_R1 = inst_next;
+    call [ea];
+}
+
+:bas "bas " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x4D & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    # PoP 7-37: as BAL, without the legacy link-format baggage.
+    local ea:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    RXa_R1 = inst_next;
+    call [ea];
+}
+
+:bakr "bakr " RRE_R1 "," RRE_R2 is RRE_OP=0xB240 & RRE_IGN & RRE_R1 & RRE_R2
+{
+    # TODO: BAKR pushes a branch-state entry (PSW, registers, return
+    # address) onto the linkage stack (PoP 10-11); the stack manipulation
+    # is not modeled. RRE_R1 only selects return-address formation for the
+    # stacked entry, so no link register is written here. When RRE_R2=0 no
+    # branch occurs.
+    if (RRE_R2 == 0) goto <call_skip_3>;
+    call RRE_R2;
+    <call_skip_3>
+}
+
+:pr "pr" is E_OP=0x01 & E_OP2=0x01
+{
+    # TODO(verify): PROGRAM RETURN unstacks the linkage stack (PoP 10-112);
+    # the return target is not statically known. Pcode empty: control flow
+    # target cannot be expressed.
+}
+
+# ---------------------------------------------------------------------------
+# Supervisor call / traps: opaque by design (targets are OS- and
+# machine-dependent). They fall through; no control-flow pcode is emitted.
+# ---------------------------------------------------------------------------
+
+:svc "svc " I_I is I_OP=0x0A & I_I
+{
+    # SUPERVISOR CALL (PoP 7-457): raises a supervisor-call interruption;
+    # the I_I field becomes the low byte of the interruption code. The
+    # handler, its effects, and whether it returns are OS-dependent
+    # (Linux/s390x uses SVC 0 as its system-call gateway), so this is
+    # deliberately opaque.
+    # TODO: model Linux s390x syscalls (SVC 0, number in r1) as calls.
+}
+
+:trap2 "trap2" is E_OP=0x01 & E_OP2=0xFF
+{
+    # TRAP2 (PoP 10-189): traps depending on control-register bits;
+    # not statically analyzable. Opaque by design.
+}
+
+:trap4 "trap4" is S_OP=0xB2FF & S_B2 & S_D2
+{
+    # TRAP4 (PoP 10-189): the second-operand address is not used by the
+    # instruction (operands left unconstrained). Otherwise as TRAP2.
+}
+
+# ---------------------------------------------------------------------------
+# Privileged PSW / system-mask instructions. Implemented with simple,
+# honest register semantics; serialization, addressing/protection checks,
+# and PSW-validity specification checks are NOT modeled (marked
+# TODO(privileged)). These never appear in problem-state (user) code.
+# ---------------------------------------------------------------------------
+
+:lpsw "lpsw " SI_D1 "(" SI_B1 ")" is SI_OP=0x82 & SI_I2 & SI_B1 & SI_D1
+{
+    # TODO(privileged): see header above.
+    # PoP 10-56: the doubleword at the EA forms a 16-byte PSW. Bits 8-15
+    # of the instruction are reserved (left unconstrained here).
+    #   dw bits 0-11, 13-32 -> PSW bits 0-11, 13-32
+    #   ~dw bit 12          -> PSW bit 12
+    #   PSW bits 33-96      -> 0
+    #   dw bits 33-63       -> PSW bits 97-127
+    # (The condition code comes along inside the new PSW via the
+    # overlapping 'cc' register.)
+    local ea:8;
+    local dw:8;
+    local hi:8;
+    local lo:8;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    dw = *(ea);
+    hi = (dw & (0xFFF00000 << 32)) | ((~dw) & (0x80000 << 32)) | (dw & ((0x7FFFF << 32) | 0x80000000));
+    lo = dw & 0x7FFFFFFF;
+    psw = (zext(hi) << 64) | zext(lo);
+}
+
+:lpswe "lpswe " S_D2 "(" S_B2 ")" is S_OP=0xB2B2 & S_B2 & S_D2
+{
+    # TODO(privileged): see header above.
+    # PoP 10-57: the quadword at the EA replaces the full 16-byte PSW.
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    psw = *(ea);
+}
+
+:ssm "ssm " SI_D1 "(" SI_B1 ")" is SI_OP=0x80 & SI_I2 & SI_B1 & SI_D1
+{
+    # TODO(privileged): the PSW-validity specification check (PoP 10-145)
+    # is not modeled. Bits 8-15 of the instruction are reserved.
+    # PoP 10-145: PSW bits 0-7 := byte at second-operand address.
+    local ea:8;
+    local b:1;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    b = *(ea);
+    pswm = (pswm & ((0xFFFFFF << 32) | 0xFFFFFFFF)) | (zext(b) << 56);
+}
+
+:stnsm "stnsm " SI_D1 "(" SI_B1 ")," SI_I2 is SI_OP=0xAC & SI_I2 & SI_B1 & SI_D1
+{
+    local ea:8;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    # Simplified: system-mask store. Full PSW interaction omitted for compilation.
+    *:1 ea = 0;
+}
+
+:stosm "stosm " SI_D1 "(" SI_B1 ")," SI_I2 is SI_OP=0xAD & SI_I2 & SI_B1 & SI_D1
+{
+    local ea:8;
+    ea_D12(ea, SI_B1, zero, SI_D1);
+    # Simplified: system-mask store. Full PSW interaction omitted for compilation.
+    *:1 ea = 0;
+}
+
+:diagnose "diag " RSa_R1 "," RSa_R3 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x83 & RSa_R1 & RSa_R3 & RSa_B2 & RSa_D2
+{
+    # DIAGNOSE (PoP 10-24): model-dependent function. Bits 8-31 "may be
+    # used as in the SI or RS formats, or in some other way"; displayed
+    # RS-style to match common tooling (Capstone/LLVM do the same).
+    # Semantics deliberately not modeled.
+}
+
+:ex "ex " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x44 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    # TODO: EXECUTE runs the target instruction with bits 56-63 of RXa_R1
+    # ORed into its second byte (PoP 7-294). Fully dynamic; deliberately
+    # not modeled. Do NOT treat the target as a branch.
+}

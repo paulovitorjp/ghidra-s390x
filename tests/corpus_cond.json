@@ -1,0 +1,802 @@
+[
+  {
+    "bytes_hex": "b9f20012",
+    "capstone_mnemonic": "locr",
+    "capstone_op_str": "%r1, %r2, 0",
+    "category": "cond",
+    "notes": "LOCR mask 0 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9f21012",
+    "capstone_mnemonic": "locro",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCR mask 1 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9f22012",
+    "capstone_mnemonic": "locrh",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCR mask 2 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9f24012",
+    "capstone_mnemonic": "locrl",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCR mask 4 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9f27012",
+    "capstone_mnemonic": "locrne",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCR mask 7 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9f28012",
+    "capstone_mnemonic": "locre",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCR mask 8 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9f2e012",
+    "capstone_mnemonic": "locrno",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCR mask E (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9f2f012",
+    "capstone_mnemonic": "locr",
+    "capstone_op_str": "%r1, %r2, 0xf",
+    "category": "cond",
+    "notes": "LOCR mask F (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9e20012",
+    "capstone_mnemonic": "locgr",
+    "capstone_op_str": "%r1, %r2, 0",
+    "category": "cond",
+    "notes": "LOCGR mask 0 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9e21012",
+    "capstone_mnemonic": "locgro",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCGR mask 1 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9e22012",
+    "capstone_mnemonic": "locgrh",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCGR mask 2 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9e24012",
+    "capstone_mnemonic": "locgrl",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCGR mask 4 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9e27012",
+    "capstone_mnemonic": "locgrne",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCGR mask 7 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9e28012",
+    "capstone_mnemonic": "locgre",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCGR mask 8 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9e2e012",
+    "capstone_mnemonic": "locgrno",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "LOCGR mask E (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9e2f012",
+    "capstone_mnemonic": "locgr",
+    "capstone_op_str": "%r1, %r2, 0xf",
+    "category": "cond",
+    "notes": "LOCGR mask F (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9c00012",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFHR mask 0 (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c02012",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFHR mask 2 (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c04012",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFHR mask 4 (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c08012",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFHR mask 8 (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c0f012",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFHR mask F (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "eb10210000f2",
+    "capstone_mnemonic": "loc",
+    "capstone_op_str": "%r1, 0x100(%r2), 0",
+    "category": "cond",
+    "notes": "LOC mask 0 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb17210000f2",
+    "capstone_mnemonic": "locne",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LOC mask 7 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb18210000f2",
+    "capstone_mnemonic": "loce",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LOC mask 8 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb1f210000f2",
+    "capstone_mnemonic": "loc",
+    "capstone_op_str": "%r1, 0x100(%r2), 0xf",
+    "category": "cond",
+    "notes": "LOC mask F (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb10210000e2",
+    "capstone_mnemonic": "locg",
+    "capstone_op_str": "%r1, 0x100(%r2), 0",
+    "category": "cond",
+    "notes": "LOCG mask 0 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb17210000e2",
+    "capstone_mnemonic": "locgne",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LOCG mask 7 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb18210000e2",
+    "capstone_mnemonic": "locge",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LOCG mask 8 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb1f210000e2",
+    "capstone_mnemonic": "locg",
+    "capstone_op_str": "%r1, 0x100(%r2), 0xf",
+    "category": "cond",
+    "notes": "LOCG mask F (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb10210000f3",
+    "capstone_mnemonic": "stoc",
+    "capstone_op_str": "%r1, 0x100(%r2), 0",
+    "category": "cond",
+    "notes": "STOC mask 0 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb17210000f3",
+    "capstone_mnemonic": "stocne",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "STOC mask 7 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb18210000f3",
+    "capstone_mnemonic": "stoce",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "STOC mask 8 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb1f210000f3",
+    "capstone_mnemonic": "stoc",
+    "capstone_op_str": "%r1, 0x100(%r2), 0xf",
+    "category": "cond",
+    "notes": "STOC mask F (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb10210000e3",
+    "capstone_mnemonic": "stocg",
+    "capstone_op_str": "%r1, 0x100(%r2), 0",
+    "category": "cond",
+    "notes": "STOCG mask 0 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb17210000e3",
+    "capstone_mnemonic": "stocgne",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "STOCG mask 7 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb18210000e3",
+    "capstone_mnemonic": "stocge",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "STOCG mask 8 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb1f210000e3",
+    "capstone_mnemonic": "stocg",
+    "capstone_op_str": "%r1, 0x100(%r2), 0xf",
+    "category": "cond",
+    "notes": "STOCG mask F (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb10210000e0",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFH mask 0 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks LOCFH",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb17210000e0",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFH mask 7 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks LOCFH",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb18210000e0",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFH mask 8 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks LOCFH",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb1f210000e0",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "LOCFH mask F (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks LOCFH",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb10210000e1",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "STOCFH mask 0 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks STOCFH",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb17210000e1",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "STOCFH mask 7 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks STOCFH",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb18210000e1",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "STOCFH mask 8 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks STOCFH",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "eb1f210000e1",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "STOCFH mask F (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks STOCFH",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "ec1012340042",
+    "capstone_mnemonic": "lochi",
+    "capstone_op_str": "%r1, 0x1234, 0",
+    "category": "cond",
+    "notes": "LOCHI mask 0 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec1712340042",
+    "capstone_mnemonic": "lochine",
+    "capstone_op_str": "%r1, 0x1234",
+    "category": "cond",
+    "notes": "LOCHI mask 7 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec1812340042",
+    "capstone_mnemonic": "lochie",
+    "capstone_op_str": "%r1, 0x1234",
+    "category": "cond",
+    "notes": "LOCHI mask 8 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec1f12340042",
+    "capstone_mnemonic": "lochi",
+    "capstone_op_str": "%r1, 0x1234, 0xf",
+    "category": "cond",
+    "notes": "LOCHI mask F (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec1012340046",
+    "capstone_mnemonic": "locghi",
+    "capstone_op_str": "%r1, 0x1234, 0",
+    "category": "cond",
+    "notes": "LOCGHI mask 0 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec1712340046",
+    "capstone_mnemonic": "locghine",
+    "capstone_op_str": "%r1, 0x1234",
+    "category": "cond",
+    "notes": "LOCGHI mask 7 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec1812340046",
+    "capstone_mnemonic": "locghie",
+    "capstone_op_str": "%r1, 0x1234",
+    "category": "cond",
+    "notes": "LOCGHI mask 8 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec1f12340046",
+    "capstone_mnemonic": "locghi",
+    "capstone_op_str": "%r1, 0x1234, 0xf",
+    "category": "cond",
+    "notes": "LOCGHI mask F (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec101234004e",
+    "capstone_mnemonic": "lochhi",
+    "capstone_op_str": "%r1, 0x1234, 0",
+    "category": "cond",
+    "notes": "LOCHHI mask 0 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec171234004e",
+    "capstone_mnemonic": "lochhine",
+    "capstone_op_str": "%r1, 0x1234",
+    "category": "cond",
+    "notes": "LOCHHI mask 7 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec181234004e",
+    "capstone_mnemonic": "lochhie",
+    "capstone_op_str": "%r1, 0x1234",
+    "category": "cond",
+    "notes": "LOCHHI mask 8 (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "ec1f1234004e",
+    "capstone_mnemonic": "lochhi",
+    "capstone_op_str": "%r1, 0x1234, 0xf",
+    "category": "cond",
+    "notes": "LOCHHI mask F (R1=1, I2=0x1234)"
+  },
+  {
+    "bytes_hex": "b9f01302",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELR M4=0 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9f01322",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELR M4=2 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9f01342",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELR M4=4 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9f01382",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELR M4=8 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9f013f2",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELR M4=F (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9e31302",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELGR M4=0 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9e31322",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELGR M4=2 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9e31342",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELGR M4=4 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9e31382",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELGR M4=8 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9e313f2",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELGR M4=F (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c01302",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELFHR M4=0 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c01322",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELFHR M4=2 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c01342",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELFHR M4=4 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c01382",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELFHR M4=8 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9c013f2",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "SELFHR M4=F (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b9722012",
+    "capstone_mnemonic": "crth",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CRT mask 2 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9724012",
+    "capstone_mnemonic": "crtl",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CRT mask 4 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9728012",
+    "capstone_mnemonic": "crte",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CRT mask 8 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9732012",
+    "capstone_mnemonic": "clrth",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CLRT mask 2 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9734012",
+    "capstone_mnemonic": "clrtl",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CLRT mask 4 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9738012",
+    "capstone_mnemonic": "clrte",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CLRT mask 8 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9602012",
+    "capstone_mnemonic": "cgrth",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CGRT mask 2 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9604012",
+    "capstone_mnemonic": "cgrtl",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CGRT mask 4 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9608012",
+    "capstone_mnemonic": "cgrte",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CGRT mask 8 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9612012",
+    "capstone_mnemonic": "clgrth",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CLGRT mask 2 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9614012",
+    "capstone_mnemonic": "clgrtl",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CLGRT mask 4 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "b9618012",
+    "capstone_mnemonic": "clgrte",
+    "capstone_op_str": "%r1, %r2",
+    "category": "cond",
+    "notes": "CLGRT mask 8 (R1=1,R2=2)"
+  },
+  {
+    "bytes_hex": "ec1000ff2072",
+    "capstone_mnemonic": "cith",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CIT mask 2 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff4072",
+    "capstone_mnemonic": "citl",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CIT mask 4 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff8072",
+    "capstone_mnemonic": "cite",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CIT mask 8 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff2070",
+    "capstone_mnemonic": "cgith",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CGIT mask 2 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff4070",
+    "capstone_mnemonic": "cgitl",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CGIT mask 4 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff8070",
+    "capstone_mnemonic": "cgite",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CGIT mask 8 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff2073",
+    "capstone_mnemonic": "clfith",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CLFIT mask 2 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff4073",
+    "capstone_mnemonic": "clfitl",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CLFIT mask 4 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff8073",
+    "capstone_mnemonic": "clfite",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CLFIT mask 8 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff2071",
+    "capstone_mnemonic": "clgith",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CLGIT mask 2 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff4071",
+    "capstone_mnemonic": "clgitl",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CLGIT mask 4 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "ec1000ff8071",
+    "capstone_mnemonic": "clgite",
+    "capstone_op_str": "%r1, 0xff",
+    "category": "cond",
+    "notes": "CLGIT mask 8 (R1=1, I2=0xFF)"
+  },
+  {
+    "bytes_hex": "eb1221000023",
+    "capstone_mnemonic": "clth",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "CLT mask 2 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb1421000023",
+    "capstone_mnemonic": "cltl",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "CLT mask 4 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb1821000023",
+    "capstone_mnemonic": "clte",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "CLT mask 8 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb122100002b",
+    "capstone_mnemonic": "clgth",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "CLGT mask 2 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb142100002b",
+    "capstone_mnemonic": "clgtl",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "CLGT mask 4 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "eb182100002b",
+    "capstone_mnemonic": "clgte",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "CLGT mask 8 (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "e3102100009f",
+    "capstone_mnemonic": "lat",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LAT (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "e31021000085",
+    "capstone_mnemonic": "lgat",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LGAT (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "e3102100009d",
+    "capstone_mnemonic": "llgfat",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LLGFAT (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "e3102100009c",
+    "capstone_mnemonic": "llgtat",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LLGTAT (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "e310210000c8",
+    "capstone_mnemonic": "lfhat",
+    "capstone_op_str": "%r1, 0x100(%r2)",
+    "category": "cond",
+    "notes": "LFHAT (R1=1, mem 0x100(R2))"
+  },
+  {
+    "bytes_hex": "e80011002200",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "MVCIN (L=0,B1=1,D1=0x100,B2=2,D2=0x200); decode-only: Capstone 5.0.7 lacks MVCIN",
+    "expected_len": 6
+  },
+  {
+    "bytes_hex": "b2540012",
+    "capstone_mnemonic": null,
+    "capstone_op_str": null,
+    "category": "cond",
+    "notes": "MVPG (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks MVPG; privileged stub",
+    "expected_len": 4
+  },
+  {
+    "bytes_hex": "b29d2100",
+    "capstone_mnemonic": "lfpc",
+    "capstone_op_str": "0x100(%r2)",
+    "category": "cond",
+    "notes": "LFPC (B2=1,D2=0x100)"
+  }
+]

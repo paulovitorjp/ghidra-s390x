@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- s390x-zos.cspec - z/OS Language Environment (classic non-XPLINK OS
+     linkage) calling convention for z/Architecture, 64-bit.
+
+     This is the "zos" compiler variant of the s390x language. It models
+     the classic MVS/LE linkage used by z/OS COBOL, PL/I, HLASM and
+     non-XPLINK C binaries (as opposed to the Linux s390x ABI in
+     s390x.cspec, which is the "default" compiler).
+
+     Conventions modeled (from IBM z/OS XL C/C++ Programming Guide,
+     "Register content at exit from a non-XPLINK ASM routine"):
+       * r15 holds the entry-point address on entry; on return r15 carries
+         the integer/pointer return value (0 if none).
+       * r14 is the return address (BALR/BASR target register).
+       * r13 points to the caller's save area; the callee stores r14/r15/
+         r0-r12 there. The save-area chain (offset 4 = back chain) is the
+         LE "stack", so r13 is the stack pointer here. (64-bit save areas
+         are 144 bytes; the classic 72-byte form is the 31-bit layout.)
+       * Parameters are NOT passed in registers: r1 points to a parameter
+         address list (each entry = address of one argument). The
+         decompiler cannot decompose an indirect arg list from the cspec
+         alone, so the prototype declares r1 as a single parameter-list
+         pointer; individual arguments must be recovered manually or by a
+         future analyzer. This is a documented simplification.
+       * Callee-saved (unaffected): r2-r13 (EDCEPIL/EDCPRLG restore them).
+         r0/r1 are volatile/scratch. f8-f15 are treated as preserved
+         (LE convention for non-XPLINK, FLOAT(AFP) mode).
+       * f0 returns float/double/long-double values; not modeled as a
+         named output in the default prototype (left for a future
+         float-returning prototype override).
+       * XPLINK is NOT modeled: XPLINK passes args in r1-r3 + stack, uses
+         r4 as the environment pointer and returns scalars in r3. XPLINK
+         binaries will decompile with wrong signatures under this cspec;
+         a future "zos_xplink" compiler variant could cover it.
+
+     Data sizes follow z/OS 64-bit C: int and long are 4 bytes even in
+     64-bit mode (unlike LP64), long long and pointers are 8 bytes,
+     wchar_t is 2 bytes (UTF-16). -->
+<compiler_spec>
+
+  <data_organization>
+    <absolute_max_alignment value="16"/>
+    <machine_alignment value="8"/>
+    <default_alignment value="1"/>
+    <default_pointer_alignment value="8"/>
+    <pointer_size value="8"/>
+    <wchar_size value="2"/>
+    <short_size value="2"/>
+    <integer_size value="4"/>
+    <long_size value="4"/>
+    <long_long_size value="8"/>
+    <float_size value="4"/>
+    <double_size value="8"/>
+    <long_double_size value="16"/>
+    <size_alignment_map>
+      <entry size="1" alignment="1"/>
+      <entry size="2" alignment="2"/>
+      <entry size="4" alignment="4"/>
+      <entry size="8" alignment="8"/>
+      <entry size="16" alignment="8"/>
+    </size_alignment_map>
+  </data_organization>
+
+  <!-- r13 = save-area (DSA) pointer: the LE "stack" -->
+  <stackpointer register="r13" space="ram"/>
+
+  <returnaddress>
+    <register name="r14"/>
+  </returnaddress>
+
+  <global>
+    <range space="ram"/>
+  </global>
+
+  <default_proto>
+    <prototype name="default" extrapop="unknown" stackshift="0">
+      <input>
+        <!-- r1 = address of the parameter address list (classic OS linkage).
+             Individual arguments are NOT decomposed (see header comment). -->
+        <pentry minsize="8" maxsize="8">
+          <register name="r1"/>
+        </pentry>
+      </input>
+      <output>
+        <!-- integer return value / return code in r15 (OS convention) -->
+        <pentry minsize="1" maxsize="8">
+          <register name="r15"/>
+        </pentry>
+      </output>
+      <unaffected>
+        <register name="r2"/>
+        <register name="r3"/>
+        <register name="r4"/>
+        <register name="r5"/>
+        <register name="r6"/>
+        <register name="r7"/>
+        <register name="r8"/>
+        <register name="r9"/>
+        <register name="r10"/>
+        <register name="r11"/>
+        <register name="r12"/>
+        <register name="r13"/>
+        <register name="f8"/>
+        <register name="f9"/>
+        <register name="f10"/>
+        <register name="f11"/>
+        <register name="f12"/>
+        <register name="f13"/>
+        <register name="f14"/>
+        <register name="f15"/>
+      </unaffected>
+    </prototype>
+  </default_proto>
+
+</compiler_spec>

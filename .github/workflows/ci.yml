@@ -1,0 +1,175 @@
+# CI for the s390x Ghidra language module.
+#
+# Jobs:
+#   1. `harness` -- builds tests/s390x_decode from tests/s390x_decode.cc plus
+#      the Ghidra decompiler C++ sources (pinned tag, cached), then runs
+#      `python3 tests/sleigh_diff.py` against the CHECKED-IN .sla.
+#      Fails on any differential-vector mismatch.
+#   2. `rebuild` -- downloads the Ghidra 12.1.3 binary release (cached),
+#      rebuilds data/languages/s390x.sla from the SLEIGH sources with
+#      `support/sleigh -a data/languages` (the README-documented command),
+#      re-runs the harness against the REBUILT .sla, and fails if the
+#      checked-in .sla differs from a fresh build (stale artifact).
+#
+# Assumptions (kept explicit so they can be fixed in one place):
+# - tests/sleigh_diff.py is self-contained: it compares decoder output
+#   against Capstone mnemonics recorded in tests/corpus.json, so neither
+#   job needs Capstone or any other network access at test time.
+# - tests/s390x_decode is gitignored, hence compiled in CI. The Ghidra
+#   source tag (GHIDRA_TAG) must match the Ghidra release used for the
+#   .sla rebuild so the decoder and the SLEIGH compiler agree on the
+#   .sla format.
+# - The Ghidra release asset URL is resolved at runtime via the GitHub API
+#   for the GHIDRA_TAG tag (asset ghidra_<version>_PUBLIC_*.zip). If the
+#   tag or asset naming changes, update GHIDRA_TAG / the jq filter below.
+# - The decoder build step is duplicated in both jobs; keep the two copies
+#   in sync.
+# - `support/sleigh` needs a Java 17+ runtime (setup-java below).
+
+name: s390x CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  GHIDRA_TAG: Ghidra_12.1.3_build
+  GHIDRA_VERSION: 12.1.3
+
+jobs:
+  harness:
+    name: differential harness (checked-in .sla)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache Ghidra decompiler sources
+        id: cache-src
+        uses: actions/cache@v4
+        with:
+          path: ~/ghidra-src
+          key: ghidra-src-${{ env.GHIDRA_TAG }}
+
+      - name: Fetch Ghidra decompiler sources (sparse)
+        if: steps.cache-src.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch "${GHIDRA_TAG}" \
+            --filter=blob:none --sparse \
+            https://github.com/NationalSecurityAgency/ghidra.git ~/ghidra-src
+          cd ~/ghidra-src
+          git sparse-checkout set Ghidra/Features/Decompiler/src/decompile/cpp
+
+      # Keep in sync with the `rebuild` job's copy below.
+      - name: Build tests/s390x_decode
+        run: |
+          CPP=~/ghidra-src/Ghidra/Features/Decompiler/src/decompile/cpp
+          # Minimal SLEIGH decoder file set: CORE + SLEIGH from Ghidra's
+          # decompile-cpp Makefile, plus loadimage.cc (used by
+          # tests/s390x_decode.cc). This avoids the standalone mains, the
+          # SLEIGH compiler frontend, BFD, and Ghidra-specific integration.
+          SRCS="xml marshal space float address pcoderaw translate opcodes globalcontext sleigh pcodeparse pcodecompile sleighbase slghsymbol slghpatexpress slghpattern semantics context slaformat compression filemanage loadimage"
+          SRCS=$(for f in $SRCS; do echo "$CPP/$f.cc"; done)
+          # shellcheck disable=SC2086
+          g++ -O2 -std=c++17 -I "$CPP" $SRCS tests/s390x_decode.cc -lz \
+            -o tests/s390x_decode
+
+      - name: Run differential harness
+        run: python3 tests/sleigh_diff.py
+
+  rebuild:
+    name: rebuild .sla from sources + re-run harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: harness
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Java 21 (for the SLEIGH compiler)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Cache Ghidra release zip
+        id: cache-ghidra
+        uses: actions/cache@v4
+        with:
+          path: ~/ghidra-dist/ghidra.zip
+          key: ghidra-dist-${{ env.GHIDRA_TAG }}
+
+      - name: Download Ghidra release
+        if: steps.cache-ghidra.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/ghidra-dist
+          VESC=$(printf '%s' "$GHIDRA_VERSION" | sed 's/\./\\./g')
+          URL=$(curl -s "https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/tags/${GHIDRA_TAG}" \
+            | jq -r --arg v "$VESC" '.assets[]
+                     | select(.name | test("ghidra_" + $v + "_PUBLIC_.*\\.zip$"))
+                     | .browser_download_url')
+          test -n "$URL" || { echo "could not resolve Ghidra asset URL"; exit 1; }
+          echo "downloading $URL"
+          curl -L -o ~/ghidra-dist/ghidra.zip "$URL"
+
+      - name: Unpack Ghidra release
+        run: unzip -q -o ~/ghidra-dist/ghidra.zip -d ~/ghidra-dist
+
+      - name: Rebuild s390x.sla from SLEIGH sources
+        run: |
+          GHIDRA=$(echo ~/ghidra-dist/ghidra_*_PUBLIC)
+          test -x "$GHIDRA/support/sleigh" || \
+            { echo "sleigh launcher not found under $GHIDRA/support"; exit 1; }
+          cp data/languages/s390x.sla /tmp/s390x.sla.checked-in
+          "$GHIDRA/support/sleigh" -a data/languages
+
+      - name: Cache Ghidra decompiler sources
+        id: cache-src
+        uses: actions/cache@v4
+        with:
+          path: ~/ghidra-src
+          key: ghidra-src-${{ env.GHIDRA_TAG }}
+
+      - name: Fetch Ghidra decompiler sources (sparse)
+        if: steps.cache-src.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch "${GHIDRA_TAG}" \
+            --filter=blob:none --sparse \
+            https://github.com/NationalSecurityAgency/ghidra.git ~/ghidra-src
+          cd ~/ghidra-src
+          git sparse-checkout set Ghidra/Features/Decompiler/src/decompile/cpp
+
+      # Keep in sync with the `harness` job's copy above.
+      - name: Build tests/s390x_decode
+        run: |
+          CPP=~/ghidra-src/Ghidra/Features/Decompiler/src/decompile/cpp
+          # Minimal SLEIGH decoder file set: CORE + SLEIGH from Ghidra's
+          # decompile-cpp Makefile, plus loadimage.cc (used by
+          # tests/s390x_decode.cc). This avoids the standalone mains, the
+          # SLEIGH compiler frontend, BFD, and Ghidra-specific integration.
+          SRCS="xml marshal space float address pcoderaw translate opcodes globalcontext sleigh pcodeparse pcodecompile sleighbase slghsymbol slghpatexpress slghpattern semantics context slaformat compression filemanage loadimage"
+          SRCS=$(for f in $SRCS; do echo "$CPP/$f.cc"; done)
+          # shellcheck disable=SC2086
+          g++ -O2 -std=c++17 -I "$CPP" $SRCS tests/s390x_decode.cc -lz \
+            -o tests/s390x_decode
+
+      - name: Re-run harness against rebuilt .sla
+        run: python3 tests/sleigh_diff.py
+
+      - name: Fail if the checked-in .sla was stale
+        run: |
+          if ! git diff --quiet -- data/languages/s390x.sla; then
+            echo "::error::data/languages/s390x.sla is stale: rebuild it with support/sleigh and commit the result"
+            git diff --stat -- data/languages/s390x.sla
+            exit 1
+          fi

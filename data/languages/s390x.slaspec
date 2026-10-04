@@ -1,0 +1,443 @@
+# s390x.slaspec — IBM z/Architecture (64-bit) processor specification, Phase 1
+#
+# FOUNDATION ONLY: address spaces, instruction-format tokens, register file,
+# field->register attachments, and effective-address pcode macros.
+# NO instruction constructors yet — those are added in Phase 2.
+#
+# References:
+#   * IBM z/Architecture Principles of Operation, SA22-7832-14
+#     (15th edition, April 2025), Chapter 5, Figure 5-1 "Basic Instruction
+#     Formats". Token bit layouts below are taken from that figure.
+#   * Ghidra Toy processor (NationalSecurityAgency/ghidra,
+#     Ghidra/Processors/Toy/data/languages/) for .ldefs/.pspec/.cspec/
+#     .slaspec file conventions.
+#
+# Naming conventions: see CONVENTIONS.md at the workdir root.
+
+define endian=big;
+define alignment=2;
+
+# ---------------------------------------------------------------------------
+# Address spaces
+# ---------------------------------------------------------------------------
+# ram: 64-bit byte-addressable main storage. z/Architecture is big-endian.
+define space ram type=ram_space size=8 wordsize=1 default;
+define space register type=register_space size=8;
+# 'register' space is implied by 'define register' below.
+# 'unique' and 'const' spaces are predefined by SLEIGH.
+
+# ---------------------------------------------------------------------------
+# Instruction-format tokens
+# (SA22-7832-14, Figure 5-1, where bit 0 is the most-significant bit.
+#  SLEIGH numbers bits with bit 0 = LEAST significant bit regardless of
+#  endianness, so every PoP range (s,e) on an N-bit token is written here
+#  as (N-1-e, N-1-s). E.g. RXa OP = PoP bits 0-7 = first byte = SLEIGH
+#  bits (24,31). The PoP bit numbers are kept in the comments above each
+#  token for cross-reference.)
+# Field names use the PoP's UPPERCASE spelling (R1, B2, X2, ...) so they can
+# never collide with the lowercase register symbols in SLEIGH's symbol table.
+# ---------------------------------------------------------------------------
+
+# E:  2 bytes. OP(0-7), OP2(8-15).
+define token E(16)
+    E_OP = (8,15)
+    E_OP2 = (0,7)
+;
+
+# RR: 2 bytes. OP(0-7), R1(8-11), R2(12-15).
+define token RR(16)
+    RR_OP = (8,15)
+    RR_R1 = (4,7)
+    RR_R2 = (0,3)
+;
+
+# RRE: 4 bytes. OP(0-15), ignored byte (16-23), R1(24-27), R2(28-31).
+define token RRE(32)
+    RRE_OP = (16,31)
+    RRE_IGN = (8,15)
+    RRE_R1 = (4,7)
+    RRE_R2 = (0,3)
+;
+
+# RXa: 4 bytes. OP(0-7), R1(8-11), X2(12-15), B2(16-19), D2(20-31).
+define token RXa(32)
+    RXa_OP = (24,31)
+    RXa_R1 = (20,23)
+    RXa_X2 = (16,19)
+    RXa_B2 = (12,15)
+    RXa_D2 = (0,11)
+;
+
+# RXb: 4 bytes, mask in place of R1 (branch-on-condition style).
+define token RXb(32)
+    RXb_OP = (24,31)
+    RXb_M1 = (20,23)
+    RXb_X2 = (16,19)
+    RXb_B2 = (12,15)
+    RXb_D2 = (0,11)
+;
+
+# RXYa: 6 bytes. OP(0-7), R1(8-11), X2(12-15), B2(16-19),
+#       DL2(20-31), DH2(32-39), OP2(40-47). 20-bit signed displacement.
+define token RXYa(48)
+    RXYa_OP = (40,47)
+    RXYa_R1 = (36,39)
+    RXYa_X2 = (32,35)
+    RXYa_B2 = (28,31)
+    RXYa_DL2 = (16,27)
+    RXYa_DH2 = (8,15)
+    RXYa_OP2 = (0,7)
+;
+
+# RXYb: 6 bytes, mask in place of R1.
+define token RXYb(48)
+    RXYb_OP = (40,47)
+    RXYb_M1 = (36,39)
+    RXYb_X2 = (32,35)
+    RXYb_B2 = (28,31)
+    RXYb_DL2 = (16,27)
+    RXYb_DH2 = (8,15)
+    RXYb_OP2 = (0,7)
+;
+
+# RXYc: 6 bytes, displacement fields named DXL2/DXH2 per the PoP figure.
+# Bit positions match RXYa; treat DXH2:DXL2 as the 20-bit signed displacement.
+define token RXYc(48)
+    RXYc_OP = (40,47)
+    RXYc_R1 = (36,39)
+    RXYc_X2 = (32,35)
+    RXYc_B2 = (28,31)
+    RXYc_DXL2 = (16,27)
+    RXYc_DXH2 = (8,15)
+    RXYc_OP2 = (0,7)
+;
+
+# RSa: 4 bytes. OP(0-7), R1(8-11), R3(12-15), B2(16-19), D2(20-31).
+define token RSa(32)
+    RSa_OP = (24,31)
+    RSa_R1 = (20,23)
+    RSa_R3 = (16,19)
+    RSa_B2 = (12,15)
+    RSa_D2 = (0,11)
+;
+
+# RSb: 4 bytes, mask M3 in place of R3 (shifts, etc.).
+define token RSb(32)
+    RSb_OP = (24,31)
+    RSb_R1 = (20,23)
+    RSb_M3 = (16,19)
+    RSb_B2 = (12,15)
+    RSb_D2 = (0,11)
+;
+
+# RSYa: 6 bytes. OP(0-7), R1(8-11), R3(12-15), B2(16-19),
+#       DL2(20-31), DH2(32-39), OP2(40-47). 20-bit signed displacement.
+define token RSYa(48)
+    RSYa_OP = (40,47)
+    RSYa_R1 = (36,39)
+    RSYa_R3 = (32,35)
+    RSYa_B2 = (28,31)
+    RSYa_DL2 = (16,27)
+    RSYa_DH2 = (8,15)
+    RSYa_OP2 = (0,7)
+;
+
+# RSYb: 6 bytes, mask M3 in place of R3.
+define token RSYb(48)
+    RSYb_OP = (40,47)
+    RSYb_R1 = (36,39)
+    RSYb_M3 = (32,35)
+    RSYb_B2 = (28,31)
+    RSYb_DL2 = (16,27)
+    RSYb_DH2 = (8,15)
+    RSYb_OP2 = (0,7)
+;
+
+# SI: 4 bytes. OP(0-7), I2(8-15), B1(16-19), D1(20-31).
+define token SI(32)
+    SI_OP = (24,31)
+    SI_I2 = (16,23)
+    SI_B1 = (12,15)
+    SI_D1 = (0,11)
+;
+
+# SIY: 6 bytes. OP(0-7), I2(8-15), B1(16-19),
+#      DL1(20-31), DH1(32-39), OP2(40-47). 20-bit signed displacement.
+define token SIY(48)
+    SIY_OP = (40,47)
+    SIY_I2 = (32,39)
+    SIY_B1 = (28,31)
+    SIY_DL1 = (16,27)
+    SIY_DH1 = (8,15)
+    SIY_OP2 = (0,7)
+;
+
+# S: 4 bytes. OP(0-15), B2(16-19), D2(20-31).
+define token S(32)
+    S_OP = (16,31)
+    S_B2 = (12,15)
+    S_D2 = (0,11)
+;
+
+# RILa: 6 bytes. OP(0-7), R1(8-11), OPCD(12-15), I2(16-47).
+define token RILa(48)
+    RILa_OP = (40,47)
+    RILa_R1 = (36,39)
+    RILa_OPCD = (32,35)
+    RILa_I2 = (0,31) signed
+;
+
+# RILb: 6 bytes. OP(0-7), R1(8-11), OPCD(12-15), RI2(16-47).
+# RI2 is the halfword-counted PC-relative offset (see rel_RI32 macro).
+define token RILb(48)
+    RILb_OP = (40,47)
+    RILb_R1 = (36,39)
+    RILb_OPCD = (32,35)
+    RILb_RI2 = (0,31)
+;
+
+# RILc: 6 bytes. OP(0-7), M1(8-11), OPCD(12-15), RI2(16-47).
+define token RILc(48)
+    RILc_OP = (40,47)
+    RILc_M1 = (36,39)
+    RILc_OPCD = (32,35)
+    RILc_RI2 = (0,31)
+;
+
+# SSa: 6 bytes. OP(0-7), L(8-15), B1(16-19), D1(20-31), B2(32-35), D2(36-47).
+define token SSa(48)
+    SSa_OP = (40,47)
+    SSa_L = (32,39)
+    SSa_B1 = (28,31)
+    SSa_D1 = (16,27)
+    SSa_B2 = (12,15)
+    SSa_D2 = (0,11)
+;
+
+# SSb: 6 bytes. OP(0-7), L1(8-11), L2(12-15), B1(16-19), D1(20-31),
+#      B2(32-35), D2(36-47).
+define token SSb(48)
+    SSb_OP = (40,47)
+    SSb_L1 = (36,39)
+    SSb_L2 = (32,35)
+    SSb_B1 = (28,31)
+    SSb_D1 = (16,27)
+    SSb_B2 = (12,15)
+    SSb_D2 = (0,11)
+;
+
+# SSc: 6 bytes. OP(0-7), L1(8-11), I3(12-15), B1(16-19), D1(20-31),
+#      B2(32-35), D2(36-47).
+define token SSc(48)
+    SSc_OP = (40,47)
+    SSc_L1 = (36,39)
+    SSc_I3 = (32,35)
+    SSc_B1 = (28,31)
+    SSc_D1 = (16,27)
+    SSc_B2 = (12,15)
+    SSc_D2 = (0,11)
+;
+
+# SSd: 6 bytes. OP(0-7), R1(8-11), R3(12-15), B1(16-19), D1(20-31),
+#      B2(32-35), D2(36-47).
+define token SSd(48)
+    SSd_OP = (40,47)
+    SSd_R1 = (36,39)
+    SSd_R3 = (32,35)
+    SSd_B1 = (28,31)
+    SSd_D1 = (16,27)
+    SSd_B2 = (12,15)
+    SSd_D2 = (0,11)
+;
+
+# SSe: 6 bytes. OP(0-7), R1(8-11), R3(12-15), B2(16-19), D2(20-31),
+#      B4(32-35), D4(36-47).
+define token SSe(48)
+    SSe_OP = (40,47)
+    SSe_R1 = (36,39)
+    SSe_R3 = (32,35)
+    SSe_B2 = (28,31)
+    SSe_D2 = (16,27)
+    SSe_B4 = (12,15)
+    SSe_D4 = (0,11)
+;
+
+# SSf: 6 bytes. OP(0-7), L2(8-15), B1(16-19), D1(20-31), B2(32-35), D2(36-47).
+define token SSf(48)
+    SSf_OP = (40,47)
+    SSf_L2 = (32,39)
+    SSf_B1 = (28,31)
+    SSf_D1 = (16,27)
+    SSf_B2 = (12,15)
+    SSf_D2 = (0,11)
+;
+
+# TODO(verify): tokens for the remaining Figure 5-1 formats (I, IE, RRF, RIE,
+# RI, RIS, RRS, RSI, RSL, RXE, RXF, SIL, SMI, SSE, SSF, MII, VRI, VRR, VRS,
+# VRV, VRX, VSI) are intentionally deferred to Phase 2.
+
+# ---------------------------------------------------------------------------
+# Register file
+# ---------------------------------------------------------------------------
+
+# 16 x 64-bit general registers.
+define register offset=0x000 size=8 [
+    r0  r1  r2  r3  r4  r5  r6  r7
+    r8  r9  r10 r11 r12 r13 r14 r15
+];
+
+# 16 x 32-bit access registers.
+define register offset=0x080 size=4 [
+    a0  a1  a2  a3  a4  a5  a6  a7
+    a8  a9  a10 a11 a12 a13 a14 a15
+];
+
+# 32 x 128-bit vector registers.
+define register offset=0x0c0 size=16 [
+    v0  v1  v2  v3  v4  v5  v6  v7
+    v8  v9  v10 v11 v12 v13 v14 v15
+    v16 v17 v18 v19 v20 v21 v22 v23
+    v24 v25 v26 v27 v28 v29 v30 v31
+];
+
+# 16 x 64-bit floating-point registers: the leftmost (most significant)
+# 64 bits of v0-v15, i.e. they overlap the low-address half of v0-v15
+# (big-endian: most significant bytes live at the lowest address).
+define register offset=0x0c0 size=8 [
+    f0  f1  f2  f3  f4  f5  f6  f7
+    f8  f9  f10 f11 f12 f13 f14 f15
+];
+
+# PSW pieces. The PSW is 128 bits: bits 0-63 hold masks/flags (including the
+# condition code in bits 18-19), bits 64-127 hold the instruction address.
+define register offset=0x2c0 size=16 [ psw  ];
+define register offset=0x2c0 size=8  [ pswm ];   # PSW mask/flags half
+define register offset=0x2c8 size=8  [ pswia ];  # instruction address; the program counter
+define register offset=0x2c2 size=1  [ cc   ];   # byte containing the condition code
+                                                # (PSW bits 18-19 live in bits 4-5 of this byte)
+
+# Constant-zero pseudo-register. In address fields, B=0 / X=0 means
+# "no base (index) register", NOT general register 0, so base/index fields
+# attach value 0 to this varnode. Constructors must never write it.
+define register offset=0x2d0 size=8 [ zero ];
+
+# Floating-point-control register (32 bits), written by LFPC. Lives at a
+# free offset after the constant-zero pseudo-register.
+define register offset=0x2d8 size=4 [ fpc ];
+
+# ---------------------------------------------------------------------------
+# Field -> register attachments
+# R1/R2/R3 are true register operands: value 0 selects r0 (a real register).
+attach variables [ RILa_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RILb_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RR_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRE_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYa_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYb_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSa_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSb_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYa_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYc_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXa_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSd_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSe_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RR_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRE_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYa_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSa_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSd_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSe_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+# B1/B2/B4/X2 are base/index fields: value 0 means "no register", attached
+# to the constant-zero pseudo-register so EA math stays branch-free.
+attach variables [ SI_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SIY_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSa_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSb_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSc_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSd_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSf_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYa_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYb_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSa_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSb_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYa_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYb_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYc_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXa_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXb_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ S_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSa_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSb_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSc_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSd_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSe_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSf_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ SSe_B4 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYa_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYb_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXYc_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXa_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RXb_X2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+# M1/M3 mask fields, I2/I3 immediates, D/DX/DL/DH displacement fields and
+# L/L1/L2 length fields stay numeric (no attachment).
+
+# ---------------------------------------------------------------------------
+# Effective-address pcode macros
+# ---------------------------------------------------------------------------
+# Calling convention for these macros: dest is a varnode supplied by the
+# caller (typically a constructor-local); B and X are attached base/index
+# varnodes (B=0/X=0 already resolve to the zero pseudo-register); the
+# remaining arguments are numeric fields.
+
+# 12-bit unsigned displacement: EA = base + index + D.
+# Covers RX, RS, SI, S, SS formats (D2/D1 are unsigned, 0..4095).
+macro ea_D12(dest, B, X, D) {
+    dest = B + X + D;
+}
+
+# 20-bit signed displacement: EA = base + index + sign_extend_20(DH:DL).
+# Covers RXY, RSY, SIY formats. DH holds bits 12-19 (sign in DH bit 7),
+# DL holds bits 0-11.
+macro ea_D20(dest, B, X, DH, DL) {
+    local raw:8;
+    local bias:8;
+    raw = (DH << 12) | DL;
+    bias = 0x100000;
+    if ((raw & 0x80000) == 0) goto <ea_d20_done>;
+    raw = raw - bias;
+    <ea_d20_done>
+    dest = B + X + raw;
+}
+
+# PC-relative target for 32-bit halfword-counted offsets (RIL-b/c RI2,
+# RI-b/c RI2): target = inst_start + 2 * sign_extend_32(RI).
+# (PoP: the offset is "a signed binary integer specifying the number of
+# halfwords that is added to the address of the instruction".)
+macro rel_RI32(dest, RI) {
+    # Sign-extend 32-bit RI to 64 bits: (x ^ 0x80000000) - 0x80000000
+    dest = RI;
+    dest = (dest ^ 0x80000000) - 0x80000000;
+    dest = inst_start + dest * 2;
+}
+
+# ---------------------------------------------------------------------------
+# Phase 2: instruction constructors go below this line.
+# See CONVENTIONS.md for the recipe for adding one constructor.
+# ---------------------------------------------------------------------------
+
+@include "s390x_loadstore.sinc"
+@include "s390x_loadstore_gen.sinc"
+@include "s390x_arith.sinc"
+@include "s390x_dblshift_gen.sinc"
+@include "s390x_branch.sinc"
+@include "s390x_system.sinc"
+@include "s390x_branch2.sinc"
+@include "s390x_muldiv.sinc"
+@include "s390x_muldiv_gen.sinc"
+@include "s390x_fp.sinc"
+@include "s390x_fp2.sinc"
+@include "s390x_vector.sinc"
+@include "s390x_decimal.sinc"
+@include "s390x_gaps.sinc"
+@include "s390x_gaps2.sinc"
+@include "s390x_cond.sinc"

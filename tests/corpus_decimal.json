@@ -1,0 +1,226 @@
+[
+  {
+    "bytes_hex": "fa2101234567",
+    "expected_len": 6,
+    "capstone_mnemonic": "ap",
+    "category": "ssc",
+    "notes": "AP basic"
+  },
+  {
+    "bytes_hex": "fa1012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "ap",
+    "category": "ssc",
+    "notes": "AP L1=1 L2=0"
+  },
+  {
+    "bytes_hex": "fb3212345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "sp",
+    "category": "ssc",
+    "notes": "SP basic"
+  },
+  {
+    "bytes_hex": "fc2101234567",
+    "expected_len": 6,
+    "capstone_mnemonic": "mp",
+    "category": "ssc",
+    "notes": "MP basic"
+  },
+  {
+    "bytes_hex": "fd2101234567",
+    "expected_len": 6,
+    "capstone_mnemonic": "dp",
+    "category": "ssc",
+    "notes": "DP basic"
+  },
+  {
+    "bytes_hex": "f92101234567",
+    "expected_len": 6,
+    "capstone_mnemonic": "cp",
+    "category": "ssc",
+    "notes": "CP basic"
+  },
+  {
+    "bytes_hex": "f82101234567",
+    "expected_len": 6,
+    "capstone_mnemonic": "zap",
+    "category": "ssc",
+    "notes": "ZAP basic"
+  },
+  {
+    "bytes_hex": "f02101234567",
+    "expected_len": 6,
+    "capstone_mnemonic": "srp",
+    "category": "ssc",
+    "notes": "SRP (uses SSc token, I3=1)"
+  },
+  {
+    "bytes_hex": "f21012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "pack",
+    "category": "ssb",
+    "notes": "PACK basic"
+  },
+  {
+    "bytes_hex": "f31012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "unpk",
+    "category": "ssb",
+    "notes": "UNPK basic"
+  },
+  {
+    "bytes_hex": "f11012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "mvo",
+    "category": "ssb",
+    "notes": "MVO basic"
+  },
+  {
+    "bytes_hex": "e91234012345",
+    "expected_len": 6,
+    "capstone_mnemonic": "pka",
+    "category": "ssf",
+    "notes": "PKA basic"
+  },
+  {
+    "bytes_hex": "e11234012345",
+    "expected_len": 6,
+    "capstone_mnemonic": "pku",
+    "category": "ssf",
+    "notes": "PKU basic"
+  },
+  {
+    "bytes_hex": "dc1012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "tr",
+    "category": "ssa",
+    "notes": "TR basic"
+  },
+  {
+    "bytes_hex": "dd1012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "trt",
+    "category": "ssa",
+    "notes": "TRT basic"
+  },
+  {
+    "bytes_hex": "d01012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "trtr",
+    "category": "ssa",
+    "notes": "TRTR basic"
+  },
+  {
+    "bytes_hex": "d11012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "mvn",
+    "category": "ssa",
+    "notes": "MVN basic"
+  },
+  {
+    "bytes_hex": "d31012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "mvz",
+    "category": "ssa",
+    "notes": "MVZ basic"
+  },
+  {
+    "bytes_hex": "ea1012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "unpka",
+    "category": "ssa",
+    "notes": "UNPKA basic"
+  },
+  {
+    "bytes_hex": "de1012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "ed",
+    "category": "ssa",
+    "notes": "ED basic"
+  },
+  {
+    "bytes_hex": "df1012345678",
+    "expected_len": 6,
+    "capstone_mnemonic": "edmk",
+    "category": "ssa",
+    "notes": "EDMK basic"
+  },
+  {
+    "bytes_hex": "b2550012",
+    "expected_len": 4,
+    "capstone_mnemonic": "mvst",
+    "category": "rre",
+    "notes": "MVST basic"
+  },
+  {
+    "bytes_hex": "b25d0012",
+    "expected_len": 4,
+    "capstone_mnemonic": "clst",
+    "category": "rre",
+    "notes": "CLST basic"
+  },
+  {
+    "bytes_hex": "b25e0012",
+    "expected_len": 4,
+    "capstone_mnemonic": "srst",
+    "category": "rre",
+    "notes": "SRST basic"
+  },
+  {
+    "bytes_hex": "b2a50012",
+    "expected_len": 4,
+    "capstone_mnemonic": null,
+    "category": "rre",
+    "notes": "TRE basic"
+  },
+  {
+    "bytes_hex": "b9bf0046",
+    "expected_len": 4,
+    "capstone_mnemonic": "trte",
+    "category": "rrfc",
+    "notes": "TRTE M3=0"
+  },
+  {
+    "bytes_hex": "b9910046",
+    "expected_len": 4,
+    "capstone_mnemonic": "trto",
+    "category": "rrfc",
+    "notes": "TRTO M3=0"
+  },
+  {
+    "bytes_hex": "b9920046",
+    "expected_len": 4,
+    "capstone_mnemonic": "trot",
+    "category": "rrfc",
+    "notes": "TROT M3=0"
+  },
+  {
+    "bytes_hex": "b9930046",
+    "expected_len": 4,
+    "capstone_mnemonic": "troo",
+    "category": "rrfc",
+    "notes": "TROO M3=0"
+  },
+  {
+    "bytes_hex": "a9243456",
+    "expected_len": 4,
+    "capstone_mnemonic": "clcle",
+    "category": "rsa",
+    "notes": "CLCLE basic"
+  },
+  {
+    "bytes_hex": "eb243456788f",
+    "expected_len": 6,
+    "capstone_mnemonic": "clclu",
+    "category": "rsya",
+    "notes": "CLCLU basic"
+  },
+  {
+    "bytes_hex": "eb10003000c0",
+    "expected_len": 6,
+    "capstone_mnemonic": "tp",
+    "category": "rsla",
+    "notes": "TP basic"
+  }
+]

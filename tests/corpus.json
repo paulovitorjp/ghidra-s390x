@@ -1,0 +1,5856 @@
+[
+ {
+  "bytes_hex": "0400",
+  "capstone_mnemonic": "spm",
+  "capstone_op_str": "%r0",
+  "category": "system",
+  "notes": "SET PROGRAM MASK: 04, R1=0"
+ },
+ {
+  "bytes_hex": "0410",
+  "capstone_mnemonic": "spm",
+  "capstone_op_str": "%r1",
+  "category": "priv",
+  "notes": "set program mask; low nibble of RR byte must be 0"
+ },
+ {
+  "bytes_hex": "0430",
+  "capstone_mnemonic": "spm",
+  "capstone_op_str": "%r3",
+  "category": "system",
+  "notes": "SET PROGRAM MASK: 04, R1=3"
+ },
+ {
+  "bytes_hex": "0512",
+  "capstone_mnemonic": "balr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "branch",
+  "notes": "branch and link reg (05)"
+ },
+ {
+  "bytes_hex": "0600",
+  "capstone_mnemonic": "bctr",
+  "capstone_op_str": "%r0, %r0",
+  "category": "branch",
+  "notes": "BCTR: R2 field = 0 -> count without branching"
+ },
+ {
+  "bytes_hex": "0601",
+  "capstone_mnemonic": "bctr",
+  "capstone_op_str": "%r0, %r1",
+  "category": "branch",
+  "notes": "BCTR: R1=0 still decrements r0 (no R1=0 exception per PoP)"
+ },
+ {
+  "bytes_hex": "0612",
+  "capstone_mnemonic": "bctr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "branch",
+  "notes": "BCTR: R2 field != 0 (branching form)"
+ },
+ {
+  "bytes_hex": "0700",
+  "capstone_mnemonic": "bcr",
+  "capstone_op_str": "0, %r0",
+  "category": "branch",
+  "notes": "NOPR = BCR 0,0"
+ },
+ {
+  "bytes_hex": "07f1",
+  "capstone_mnemonic": "br",
+  "capstone_op_str": "%r1",
+  "category": "branch",
+  "notes": "BCR 15,r1; Capstone prints extended 'br'"
+ },
+ {
+  "bytes_hex": "07fe",
+  "capstone_mnemonic": "br",
+  "capstone_op_str": "%r14",
+  "category": "branch",
+  "notes": "BR r14"
+ },
+ {
+  "bytes_hex": "0a00",
+  "capstone_mnemonic": "svc",
+  "capstone_op_str": "0",
+  "category": "priv",
+  "notes": "supervisor call 0"
+ },
+ {
+  "bytes_hex": "0aab",
+  "capstone_mnemonic": "svc",
+  "capstone_op_str": "0xab",
+  "category": "priv",
+  "notes": "SVCab"
+ },
+ {
+  "bytes_hex": "0d12",
+  "capstone_mnemonic": "basr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "branch",
+  "notes": "BASR"
+ },
+ {
+  "bytes_hex": "0e02",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r0, %r2",
+  "category": "rr",
+  "notes": "MVCL r0,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f02",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r0, %r2",
+  "category": "rr",
+  "notes": "CLCL r0,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "1012",
+  "capstone_mnemonic": "lpr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "load positive"
+ },
+ {
+  "bytes_hex": "1112",
+  "capstone_mnemonic": "lnr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "load negative"
+ },
+ {
+  "bytes_hex": "1212",
+  "capstone_mnemonic": "ltr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cmp",
+  "notes": "load and test"
+ },
+ {
+  "bytes_hex": "1312",
+  "capstone_mnemonic": "lcr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "load complement"
+ },
+ {
+  "bytes_hex": "1412",
+  "capstone_mnemonic": "nr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "logic",
+  "notes": "NR"
+ },
+ {
+  "bytes_hex": "1512",
+  "capstone_mnemonic": "clr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cmp",
+  "notes": "compare logical reg"
+ },
+ {
+  "bytes_hex": "1612",
+  "capstone_mnemonic": "or",
+  "capstone_op_str": "%r1, %r2",
+  "category": "logic",
+  "notes": "OR"
+ },
+ {
+  "bytes_hex": "1712",
+  "capstone_mnemonic": "xr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "logic",
+  "notes": "XR"
+ },
+ {
+  "bytes_hex": "181f",
+  "capstone_mnemonic": "lr",
+  "capstone_op_str": "%r1, %r15",
+  "category": "load",
+  "notes": "load register 32-bit"
+ },
+ {
+  "bytes_hex": "1912",
+  "capstone_mnemonic": "cr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cmp",
+  "notes": "CR"
+ },
+ {
+  "bytes_hex": "1a1f",
+  "capstone_mnemonic": "ar",
+  "capstone_op_str": "%r1, %r15",
+  "category": "arith",
+  "notes": "AR"
+ },
+ {
+  "bytes_hex": "1b12",
+  "capstone_mnemonic": "sr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "SR"
+ },
+ {
+  "bytes_hex": "1c01",
+  "capstone_mnemonic": "mr",
+  "capstone_op_str": "%r0, %r1",
+  "category": "muldiv_pair",
+  "notes": "MR r0 even"
+ },
+ {
+  "bytes_hex": "1c02",
+  "capstone_mnemonic": "mr",
+  "capstone_op_str": "%r0, %r2",
+  "category": "arith",
+  "notes": "even R1 required (even-odd pair)"
+ },
+ {
+  "bytes_hex": "1c92",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "muldiv_pair",
+  "notes": "MR r9. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it"
+ },
+ {
+  "bytes_hex": "1caf",
+  "capstone_mnemonic": "mr",
+  "capstone_op_str": "%r10, %r15",
+  "category": "muldiv_pair",
+  "notes": "MR r10 even"
+ },
+ {
+  "bytes_hex": "1d02",
+  "capstone_mnemonic": "dr",
+  "capstone_op_str": "%r0, %r2",
+  "category": "arith",
+  "notes": "even R1 required (even-odd pair)"
+ },
+ {
+  "bytes_hex": "1d27",
+  "capstone_mnemonic": "dr",
+  "capstone_op_str": "%r2, %r7",
+  "category": "muldiv_pair",
+  "notes": "DR r2 even"
+ },
+ {
+  "bytes_hex": "1dee",
+  "capstone_mnemonic": "dr",
+  "capstone_op_str": "%r14, %r14",
+  "category": "muldiv_pair",
+  "notes": "DR r14 even"
+ },
+ {
+  "bytes_hex": "1e12",
+  "capstone_mnemonic": "alr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "add logical reg"
+ },
+ {
+  "bytes_hex": "1f12",
+  "capstone_mnemonic": "slr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "SLR"
+ },
+ {
+  "bytes_hex": "2812",
+  "capstone_mnemonic": "ldr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp",
+  "notes": "LDR"
+ },
+ {
+  "bytes_hex": "2823",
+  "capstone_mnemonic": "ldr",
+  "capstone_op_str": "%f2, %f3",
+  "category": "fp-load",
+  "notes": "LDR: long HFP load register"
+ },
+ {
+  "bytes_hex": "2912",
+  "capstone_mnemonic": "cdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-compare",
+  "notes": "CDR: long HFP compare register"
+ },
+ {
+  "bytes_hex": "2a12",
+  "capstone_mnemonic": "adr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "ADR: long HFP add register"
+ },
+ {
+  "bytes_hex": "2b12",
+  "capstone_mnemonic": "sdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "SDR: long HFP subtract register"
+ },
+ {
+  "bytes_hex": "2c12",
+  "capstone_mnemonic": "mdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "MDR: long HFP multiply register"
+ },
+ {
+  "bytes_hex": "2d12",
+  "capstone_mnemonic": "ddr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "DDR: long HFP divide register"
+ },
+ {
+  "bytes_hex": "3812",
+  "capstone_mnemonic": "ler",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-load",
+  "notes": "LER: short HFP load register"
+ },
+ {
+  "bytes_hex": "3912",
+  "capstone_mnemonic": "cer",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-compare",
+  "notes": "CER: short HFP compare register"
+ },
+ {
+  "bytes_hex": "3a12",
+  "capstone_mnemonic": "aer",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "AER: short HFP add register"
+ },
+ {
+  "bytes_hex": "3b12",
+  "capstone_mnemonic": "ser",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "SER: short HFP subtract register"
+ },
+ {
+  "bytes_hex": "3c12",
+  "capstone_mnemonic": "mder",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "MDER: short->long HFP multiply register"
+ },
+ {
+  "bytes_hex": "3d12",
+  "capstone_mnemonic": "der",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "DER: short HFP divide register"
+ },
+ {
+  "bytes_hex": "40203000",
+  "capstone_mnemonic": "sth",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "store",
+  "notes": "STH"
+ },
+ {
+  "bytes_hex": "4110f000",
+  "capstone_mnemonic": "la",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "load",
+  "notes": "load address"
+ },
+ {
+  "bytes_hex": "42203000",
+  "capstone_mnemonic": "stc",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "store",
+  "notes": "STC"
+ },
+ {
+  "bytes_hex": "4410f000",
+  "capstone_mnemonic": "ex",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "load",
+  "notes": "execute (target modifier)"
+ },
+ {
+  "bytes_hex": "4510f020",
+  "capstone_mnemonic": "bal",
+  "capstone_op_str": "%r1, 0x20(%r15)",
+  "category": "branch",
+  "notes": "BAL"
+ },
+ {
+  "bytes_hex": "4610c100",
+  "capstone_mnemonic": "bct",
+  "capstone_op_str": "%r1, 0x100(%r12)",
+  "category": "branch",
+  "notes": "BCT: 32-bit count, RX EA"
+ },
+ {
+  "bytes_hex": "4700c000",
+  "capstone_mnemonic": "bc",
+  "capstone_op_str": "0, 0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 0: never branches; Capstone prints the mask operand"
+ },
+ {
+  "bytes_hex": "4710c000",
+  "capstone_mnemonic": "bo",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 1: branch on overflow"
+ },
+ {
+  "bytes_hex": "4720c000",
+  "capstone_mnemonic": "bh",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 2: branch on high"
+ },
+ {
+  "bytes_hex": "4730c000",
+  "capstone_mnemonic": "bnle",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 3"
+ },
+ {
+  "bytes_hex": "4740c000",
+  "capstone_mnemonic": "bl",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 4: branch on low"
+ },
+ {
+  "bytes_hex": "4750c000",
+  "capstone_mnemonic": "bnhe",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 5"
+ },
+ {
+  "bytes_hex": "4760c000",
+  "capstone_mnemonic": "blh",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 6"
+ },
+ {
+  "bytes_hex": "4770c000",
+  "capstone_mnemonic": "bne",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 7"
+ },
+ {
+  "bytes_hex": "4780c000",
+  "capstone_mnemonic": "be",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 8: branch on equal"
+ },
+ {
+  "bytes_hex": "4780f010",
+  "capstone_mnemonic": "be",
+  "capstone_op_str": "0x10(%r15)",
+  "category": "branch",
+  "notes": "BC 8,...; Capstone prints extended 'be'"
+ },
+ {
+  "bytes_hex": "4790c000",
+  "capstone_mnemonic": "bnlh",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 9"
+ },
+ {
+  "bytes_hex": "47a0c000",
+  "capstone_mnemonic": "bhe",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 10"
+ },
+ {
+  "bytes_hex": "47b0c000",
+  "capstone_mnemonic": "bnl",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 11"
+ },
+ {
+  "bytes_hex": "47c0c000",
+  "capstone_mnemonic": "ble",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 12"
+ },
+ {
+  "bytes_hex": "47d0c000",
+  "capstone_mnemonic": "bnh",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 13"
+ },
+ {
+  "bytes_hex": "47e0c000",
+  "capstone_mnemonic": "bno",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 14"
+ },
+ {
+  "bytes_hex": "47f0c000",
+  "capstone_mnemonic": "b",
+  "capstone_op_str": "0(%r12)",
+  "category": "branch",
+  "notes": "BC mask 15: unconditional"
+ },
+ {
+  "bytes_hex": "47f1c010",
+  "capstone_mnemonic": "b",
+  "capstone_op_str": "0x10(%r1, %r12)",
+  "category": "branch",
+  "notes": "BC with index register and nonzero displacement"
+ },
+ {
+  "bytes_hex": "47f2f030",
+  "capstone_mnemonic": "b",
+  "capstone_op_str": "0x30(%r2, %r15)",
+  "category": "branch",
+  "notes": "BC 15 with index reg; Capstone prints 'b'"
+ },
+ {
+  "bytes_hex": "48203000",
+  "capstone_mnemonic": "lh",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "LH"
+ },
+ {
+  "bytes_hex": "4910f000",
+  "capstone_mnemonic": "ch",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "CH"
+ },
+ {
+  "bytes_hex": "4c10f020",
+  "capstone_mnemonic": "mh",
+  "capstone_op_str": "%r1, 0x20(%r15)",
+  "category": "muldiv",
+  "notes": "MH"
+ },
+ {
+  "bytes_hex": "4c720ff8",
+  "capstone_mnemonic": "mh",
+  "capstone_op_str": "%r7, 0xff8(%r2)",
+  "category": "muldiv",
+  "notes": "MH negative disp"
+ },
+ {
+  "bytes_hex": "4d10f020",
+  "capstone_mnemonic": "bas",
+  "capstone_op_str": "%r1, 0x20(%r15)",
+  "category": "branch",
+  "notes": "BAS"
+ },
+ {
+  "bytes_hex": "4e10f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r1 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f10f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r1 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "5010f000",
+  "capstone_mnemonic": "st",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "store",
+  "notes": "ST"
+ },
+ {
+  "bytes_hex": "5410f000",
+  "capstone_mnemonic": "n",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "logic",
+  "notes": "N"
+ },
+ {
+  "bytes_hex": "5510f000",
+  "capstone_mnemonic": "cl",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "CL"
+ },
+ {
+  "bytes_hex": "5610f000",
+  "capstone_mnemonic": "o",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "logic",
+  "notes": "O"
+ },
+ {
+  "bytes_hex": "5710f000",
+  "capstone_mnemonic": "x",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "logic",
+  "notes": "X"
+ },
+ {
+  "bytes_hex": "5810f000",
+  "capstone_mnemonic": "l",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "load",
+  "notes": "load 32-bit, RX"
+ },
+ {
+  "bytes_hex": "5910f000",
+  "capstone_mnemonic": "c",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "C"
+ },
+ {
+  "bytes_hex": "5a10f000",
+  "capstone_mnemonic": "a",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "A"
+ },
+ {
+  "bytes_hex": "5b10f000",
+  "capstone_mnemonic": "s",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "S"
+ },
+ {
+  "bytes_hex": "5c00f000",
+  "capstone_mnemonic": "m",
+  "capstone_op_str": "%r0, 0(%r15)",
+  "category": "arith",
+  "notes": "even R1 required (even-odd pair)"
+ },
+ {
+  "bytes_hex": "5c00f123",
+  "capstone_mnemonic": "m",
+  "capstone_op_str": "%r0, 0x123(%r15)",
+  "category": "muldiv_pair",
+  "notes": "M r0 even, D12 disp"
+ },
+ {
+  "bytes_hex": "5c50f010",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "muldiv_pair",
+  "notes": "M r5. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it"
+ },
+ {
+  "bytes_hex": "5c630fff",
+  "capstone_mnemonic": "m",
+  "capstone_op_str": "%r6, 0xfff(%r3)",
+  "category": "muldiv_pair",
+  "notes": "M r6 even, negative disp -1"
+ },
+ {
+  "bytes_hex": "5ce00000",
+  "capstone_mnemonic": "m",
+  "capstone_op_str": "%r14, 0",
+  "category": "muldiv_pair",
+  "notes": "M r14 even, zero addr"
+ },
+ {
+  "bytes_hex": "5d00f000",
+  "capstone_mnemonic": "d",
+  "capstone_op_str": "%r0, 0(%r15)",
+  "category": "arith",
+  "notes": "even R1 required (even-odd pair)"
+ },
+ {
+  "bytes_hex": "5d00f040",
+  "capstone_mnemonic": "d",
+  "capstone_op_str": "%r0, 0x40(%r15)",
+  "category": "muldiv_pair",
+  "notes": "D r0 even"
+ },
+ {
+  "bytes_hex": "5d300000",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "muldiv_pair",
+  "notes": "D r3. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it"
+ },
+ {
+  "bytes_hex": "5dc45800",
+  "capstone_mnemonic": "d",
+  "capstone_op_str": "%r12, 0x800(%r4, %r5)",
+  "category": "muldiv_pair",
+  "notes": "D r12 even, negative disp"
+ },
+ {
+  "bytes_hex": "5e10f000",
+  "capstone_mnemonic": "al",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "AL"
+ },
+ {
+  "bytes_hex": "5f10f000",
+  "capstone_mnemonic": "sl",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "SL"
+ },
+ {
+  "bytes_hex": "6010f000",
+  "capstone_mnemonic": "std",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "STD"
+ },
+ {
+  "bytes_hex": "6810f000",
+  "capstone_mnemonic": "ld",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "LD"
+ },
+ {
+  "bytes_hex": "68122034",
+  "capstone_mnemonic": "ld",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-load",
+  "notes": "LD: long HFP load"
+ },
+ {
+  "bytes_hex": "6910f000",
+  "capstone_mnemonic": "cd",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "CD"
+ },
+ {
+  "bytes_hex": "69122034",
+  "capstone_mnemonic": "cd",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-compare",
+  "notes": "CD: long HFP compare"
+ },
+ {
+  "bytes_hex": "6a10f000",
+  "capstone_mnemonic": "ad",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "AD"
+ },
+ {
+  "bytes_hex": "6a122034",
+  "capstone_mnemonic": "ad",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-arith",
+  "notes": "AD: long HFP add"
+ },
+ {
+  "bytes_hex": "6b10f000",
+  "capstone_mnemonic": "sd",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "SD"
+ },
+ {
+  "bytes_hex": "6b122034",
+  "capstone_mnemonic": "sd",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-arith",
+  "notes": "SD: long HFP subtract"
+ },
+ {
+  "bytes_hex": "6c122034",
+  "capstone_mnemonic": "md",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-arith",
+  "notes": "MD: long HFP multiply"
+ },
+ {
+  "bytes_hex": "6d122034",
+  "capstone_mnemonic": "dd",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-arith",
+  "notes": "DD: long HFP divide"
+ },
+ {
+  "bytes_hex": "7010f000",
+  "capstone_mnemonic": "ste",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "STE"
+ },
+ {
+  "bytes_hex": "7120f070",
+  "capstone_mnemonic": "ms",
+  "capstone_op_str": "%r2, 0x70(%r15)",
+  "category": "muldiv",
+  "notes": "MS"
+ },
+ {
+  "bytes_hex": "7810f000",
+  "capstone_mnemonic": "le",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "LE"
+ },
+ {
+  "bytes_hex": "78122034",
+  "capstone_mnemonic": "le",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-load",
+  "notes": "LE: short HFP load"
+ },
+ {
+  "bytes_hex": "7910f000",
+  "capstone_mnemonic": "ce",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "CE"
+ },
+ {
+  "bytes_hex": "79122034",
+  "capstone_mnemonic": "ce",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-compare",
+  "notes": "CE: short HFP compare"
+ },
+ {
+  "bytes_hex": "7a10f000",
+  "capstone_mnemonic": "ae",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "AE"
+ },
+ {
+  "bytes_hex": "7a122034",
+  "capstone_mnemonic": "ae",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-arith",
+  "notes": "AE: short HFP add"
+ },
+ {
+  "bytes_hex": "7b10f000",
+  "capstone_mnemonic": "se",
+  "capstone_op_str": "%f1, 0(%r15)",
+  "category": "fp",
+  "notes": "SE"
+ },
+ {
+  "bytes_hex": "7b122034",
+  "capstone_mnemonic": "se",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-arith",
+  "notes": "SE: short HFP subtract"
+ },
+ {
+  "bytes_hex": "7c122034",
+  "capstone_mnemonic": "mde",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-arith",
+  "notes": "MDE: short->long HFP multiply"
+ },
+ {
+  "bytes_hex": "7d122034",
+  "capstone_mnemonic": "de",
+  "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+  "category": "fp-arith",
+  "notes": "DE: short HFP divide"
+ },
+ {
+  "bytes_hex": "8000f000",
+  "capstone_mnemonic": "ssm",
+  "capstone_op_str": "0(%r15)",
+  "category": "priv",
+  "notes": "set system mask"
+ },
+ {
+  "bytes_hex": "8200f000",
+  "capstone_mnemonic": "lpsw",
+  "capstone_op_str": "0(%r15)",
+  "category": "priv",
+  "notes": "load PSW, S-format (82)"
+ },
+ {
+  "bytes_hex": "84120004",
+  "capstone_mnemonic": "brxh",
+  "capstone_op_str": "%r1, %r2, 8",
+  "category": "branch",
+  "notes": "BRXH: forward, RSI relative"
+ },
+ {
+  "bytes_hex": "8412fffe",
+  "capstone_mnemonic": "brxh",
+  "capstone_op_str": "%r1, %r2, -4",
+  "category": "branch",
+  "notes": "BRXH: backward, RSI relative"
+ },
+ {
+  "bytes_hex": "8512fffe",
+  "capstone_mnemonic": "brxle",
+  "capstone_op_str": "%r1, %r2, -4",
+  "category": "branch",
+  "notes": "BRXLE: backward, low-or-equal"
+ },
+ {
+  "bytes_hex": "8612c000",
+  "capstone_mnemonic": "bxh",
+  "capstone_op_str": "%r1, %r2, 0(%r12)",
+  "category": "branch",
+  "notes": "BXH: R3=2 (even) -> increment r2, compare r3"
+ },
+ {
+  "bytes_hex": "8614c000",
+  "capstone_mnemonic": "bxh",
+  "capstone_op_str": "%r1, %r4, 0(%r12)",
+  "category": "branch",
+  "notes": "BXH: R3=4 (even) -> increment r4, compare r5"
+ },
+ {
+  "bytes_hex": "8615c000",
+  "capstone_mnemonic": "bxh",
+  "capstone_op_str": "%r1, %r5, 0(%r12)",
+  "category": "branch",
+  "notes": "BXH: R3=5 (odd) -> r5 is both increment and compare"
+ },
+ {
+  "bytes_hex": "8712c000",
+  "capstone_mnemonic": "bxle",
+  "capstone_op_str": "%r1, %r2, 0(%r12)",
+  "category": "branch",
+  "notes": "BXLE: 32-bit low-or-equal"
+ },
+ {
+  "bytes_hex": "88103000",
+  "capstone_mnemonic": "srl",
+  "capstone_op_str": "%r1, 0(%r3)",
+  "category": "logic",
+  "notes": "SRL"
+ },
+ {
+  "bytes_hex": "89103000",
+  "capstone_mnemonic": "sll",
+  "capstone_op_str": "%r1, 0(%r3)",
+  "category": "logic",
+  "notes": "shift left logical"
+ },
+ {
+  "bytes_hex": "8a103000",
+  "capstone_mnemonic": "sra",
+  "capstone_op_str": "%r1, 0(%r3)",
+  "category": "logic",
+  "notes": "SRA"
+ },
+ {
+  "bytes_hex": "8b103000",
+  "capstone_mnemonic": "sla",
+  "capstone_op_str": "%r1, 0(%r3)",
+  "category": "logic",
+  "notes": "shift left arith"
+ },
+ {
+  "bytes_hex": "9037f000",
+  "capstone_mnemonic": "stm",
+  "capstone_op_str": "%r3, %r7, 0(%r15)",
+  "category": "store",
+  "notes": "store multiple r3-r7"
+ },
+ {
+  "bytes_hex": "910ff000",
+  "capstone_mnemonic": "tm",
+  "capstone_op_str": "0(%r15), 0xf",
+  "category": "cmp",
+  "notes": "test under mask"
+ },
+ {
+  "bytes_hex": "92abf000",
+  "capstone_mnemonic": "mvi",
+  "capstone_op_str": "0(%r15), 0xab",
+  "category": "store",
+  "notes": "move immediate"
+ },
+ {
+  "bytes_hex": "940ff000",
+  "capstone_mnemonic": "ni",
+  "capstone_op_str": "0(%r15), 0xf",
+  "category": "logic",
+  "notes": "NI"
+ },
+ {
+  "bytes_hex": "9505f000",
+  "capstone_mnemonic": "cli",
+  "capstone_op_str": "0(%r15), 5",
+  "category": "cmp",
+  "notes": "CLI"
+ },
+ {
+  "bytes_hex": "960ff000",
+  "capstone_mnemonic": "oi",
+  "capstone_op_str": "0(%r15), 0xf",
+  "category": "logic",
+  "notes": "OI"
+ },
+ {
+  "bytes_hex": "970ff000",
+  "capstone_mnemonic": "xi",
+  "capstone_op_str": "0(%r15), 0xf",
+  "category": "logic",
+  "notes": "XI"
+ },
+ {
+  "bytes_hex": "9837f000",
+  "capstone_mnemonic": "lm",
+  "capstone_op_str": "%r3, %r7, 0(%r15)",
+  "category": "load",
+  "notes": "load multiple r3-r7"
+ },
+ {
+  "bytes_hex": "a5101234",
+  "capstone_mnemonic": "iihh",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "load",
+  "notes": "insert imm high-high"
+ },
+ {
+  "bytes_hex": "a51600ff",
+  "capstone_mnemonic": "nilh",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "logic",
+  "notes": "NILH"
+ },
+ {
+  "bytes_hex": "a51700ff",
+  "capstone_mnemonic": "nill",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "logic",
+  "notes": "and imm low-low"
+ },
+ {
+  "bytes_hex": "a51b00ff",
+  "capstone_mnemonic": "oill",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "logic",
+  "notes": "OILL"
+ },
+ {
+  "bytes_hex": "a70c8000",
+  "capstone_mnemonic": "mhi",
+  "capstone_op_str": "%r0, -0x8000",
+  "category": "muldiv",
+  "notes": "MHI min imm"
+ },
+ {
+  "bytes_hex": "a7150010",
+  "capstone_mnemonic": "bras",
+  "capstone_op_str": "%r1, 0x20",
+  "category": "branch",
+  "notes": "branch rel and save"
+ },
+ {
+  "bytes_hex": "a7160004",
+  "capstone_mnemonic": "brct",
+  "capstone_op_str": "%r1, 8",
+  "category": "branch",
+  "notes": "BRCT: forward, RI2=4 -> target 8 at pc 0"
+ },
+ {
+  "bytes_hex": "a7160010",
+  "capstone_mnemonic": "brct",
+  "capstone_op_str": "%r1, 0x20",
+  "category": "branch",
+  "notes": "branch on count"
+ },
+ {
+  "bytes_hex": "a716fffe",
+  "capstone_mnemonic": "brct",
+  "capstone_op_str": "%r1, -4",
+  "category": "branch",
+  "notes": "BRCT: backward, RI2=-2 -> target -4 at pc 0"
+ },
+ {
+  "bytes_hex": "a7170010",
+  "capstone_mnemonic": "brctg",
+  "capstone_op_str": "%r1, 0x20",
+  "category": "branch",
+  "notes": "BRCTG"
+ },
+ {
+  "bytes_hex": "a718fffb",
+  "capstone_mnemonic": "lhi",
+  "capstone_op_str": "%r1, -5",
+  "category": "load",
+  "notes": "LHI r1,-5"
+ },
+ {
+  "bytes_hex": "a71a0005",
+  "capstone_mnemonic": "ahi",
+  "capstone_op_str": "%r1, 5",
+  "category": "arith",
+  "notes": "add halfword imm"
+ },
+ {
+  "bytes_hex": "a71afffb",
+  "capstone_mnemonic": "ahi",
+  "capstone_op_str": "%r1, -5",
+  "category": "arith",
+  "notes": "AHI r1,-5"
+ },
+ {
+  "bytes_hex": "a71b0005",
+  "capstone_mnemonic": "aghi",
+  "capstone_op_str": "%r1, 5",
+  "category": "arith",
+  "notes": "AGHI"
+ },
+ {
+  "bytes_hex": "a71c0005",
+  "capstone_mnemonic": "mhi",
+  "capstone_op_str": "%r1, 5",
+  "category": "arith",
+  "notes": "MHI"
+ },
+ {
+  "bytes_hex": "a71d0005",
+  "capstone_mnemonic": "mghi",
+  "capstone_op_str": "%r1, 5",
+  "category": "arith",
+  "notes": "MGHI"
+ },
+ {
+  "bytes_hex": "a71e0005",
+  "capstone_mnemonic": "chi",
+  "capstone_op_str": "%r1, 5",
+  "category": "cmp",
+  "notes": "CHI"
+ },
+ {
+  "bytes_hex": "a71f0005",
+  "capstone_mnemonic": "cghi",
+  "capstone_op_str": "%r1, 5",
+  "category": "cmp",
+  "notes": "CGHI"
+ },
+ {
+  "bytes_hex": "a7270004",
+  "capstone_mnemonic": "brctg",
+  "capstone_op_str": "%r2, 8",
+  "category": "branch",
+  "notes": "BRCTG: forward, 64-bit count"
+ },
+ {
+  "bytes_hex": "a727fffe",
+  "capstone_mnemonic": "brctg",
+  "capstone_op_str": "%r2, -4",
+  "category": "branch",
+  "notes": "BRCTG: backward, 64-bit count"
+ },
+ {
+  "bytes_hex": "a75c1234",
+  "capstone_mnemonic": "mhi",
+  "capstone_op_str": "%r5, 0x1234",
+  "category": "muldiv",
+  "notes": "MHI positive imm"
+ },
+ {
+  "bytes_hex": "a7780005",
+  "capstone_mnemonic": "lhi",
+  "capstone_op_str": "%r7, 5",
+  "category": "load",
+  "notes": "load halfword immediate +5"
+ },
+ {
+  "bytes_hex": "a7840010",
+  "capstone_mnemonic": "je",
+  "capstone_op_str": "0x20",
+  "category": "branch",
+  "notes": "BRC mask 8; Capstone prints extended 'je'"
+ },
+ {
+  "bytes_hex": "a7990005",
+  "capstone_mnemonic": "lghi",
+  "capstone_op_str": "%r9, 5",
+  "category": "load",
+  "notes": "LGHI"
+ },
+ {
+  "bytes_hex": "a79dffff",
+  "capstone_mnemonic": "mghi",
+  "capstone_op_str": "%r9, -1",
+  "category": "muldiv",
+  "notes": "MGHI -1"
+ },
+ {
+  "bytes_hex": "a9243456",
+  "capstone_mnemonic": "clcle",
+  "capstone_op_str": "%r2, %r4, 0x456(%r3)",
+  "category": "rsa",
+  "notes": "CLCLE basic"
+ },
+ {
+  "bytes_hex": "b2021000",
+  "capstone_mnemonic": "stidp",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "STORE CPU ID: B202"
+ },
+ {
+  "bytes_hex": "b2041000",
+  "capstone_mnemonic": "sck",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "SET CLOCK: B204, B2=1, D2=0"
+ },
+ {
+  "bytes_hex": "b2050000",
+  "capstone_mnemonic": "stck",
+  "capstone_op_str": "0",
+  "category": "priv",
+  "notes": "store clock (semipriv)"
+ },
+ {
+  "bytes_hex": "b2051000",
+  "capstone_mnemonic": "stck",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "STORE CLOCK: B205, B2=1, D2=0"
+ },
+ {
+  "bytes_hex": "b2051234",
+  "capstone_mnemonic": "stck",
+  "capstone_op_str": "0x234(%r1)",
+  "category": "system",
+  "notes": "STORE CLOCK with nonzero displacement D2=0x234"
+ },
+ {
+  "bytes_hex": "b2061000",
+  "capstone_mnemonic": "sckc",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "SET CLOCK COMPARATOR: B206"
+ },
+ {
+  "bytes_hex": "b2071000",
+  "capstone_mnemonic": "stckc",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "STORE CLOCK COMPARATOR: B207"
+ },
+ {
+  "bytes_hex": "b2081000",
+  "capstone_mnemonic": "spt",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "SET CPU TIMER: B208"
+ },
+ {
+  "bytes_hex": "b2091000",
+  "capstone_mnemonic": "stpt",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "STORE CPU TIMER: B209"
+ },
+ {
+  "bytes_hex": "b20a1000",
+  "capstone_mnemonic": "spka",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "SET PSW KEY FROM ADDRESS: B20A"
+ },
+ {
+  "bytes_hex": "b2121000",
+  "capstone_mnemonic": "stap",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "STORE CPU ADDRESS: B212"
+ },
+ {
+  "bytes_hex": "b2181000",
+  "capstone_mnemonic": "pc",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "PROGRAM CALL: B218 (not program counter)"
+ },
+ {
+  "bytes_hex": "b2220010",
+  "capstone_mnemonic": "ipm",
+  "capstone_op_str": "%r1",
+  "category": "misc",
+  "notes": "insert program mask"
+ },
+ {
+  "bytes_hex": "b2220030",
+  "capstone_mnemonic": "ipm",
+  "capstone_op_str": "%r3",
+  "category": "system",
+  "notes": "INSERT PROGRAM MASK: B222, R1=3"
+ },
+ {
+  "bytes_hex": "b2400012",
+  "capstone_mnemonic": "bakr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "priv",
+  "notes": "branch and stack (B240)"
+ },
+ {
+  "bytes_hex": "b2520012",
+  "capstone_mnemonic": "msr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "multiply single reg (B252)"
+ },
+ {
+  "bytes_hex": "b2520039",
+  "capstone_mnemonic": "msr",
+  "capstone_op_str": "%r3, %r9",
+  "category": "muldiv",
+  "notes": "MSR (opcode B252, verified vs Capstone cdlgtr=B952)"
+ },
+ {
+  "bytes_hex": "b2550012",
+  "capstone_mnemonic": "mvst",
+  "capstone_op_str": "%r1, %r2",
+  "category": "rre",
+  "notes": "MVST basic"
+ },
+ {
+  "bytes_hex": "b25d0012",
+  "capstone_mnemonic": "clst",
+  "capstone_op_str": "%r1, %r2",
+  "category": "rre",
+  "notes": "CLST basic"
+ },
+ {
+  "bytes_hex": "b25e0012",
+  "capstone_mnemonic": "srst",
+  "capstone_op_str": "%r1, %r2",
+  "category": "rre",
+  "notes": "SRST basic"
+ },
+ {
+  "bytes_hex": "b2781000",
+  "capstone_mnemonic": "stcke",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "STORE CLOCK EXTENDED: B278"
+ },
+ {
+  "bytes_hex": "b2791000",
+  "capstone_mnemonic": "sacf",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "SET ADDRESS SPACE CONTROL FAST: B279"
+ },
+ {
+  "bytes_hex": "b27c1000",
+  "capstone_mnemonic": "stckf",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "STORE CLOCK FAST: B27C"
+ },
+ {
+  "bytes_hex": "b27d1000",
+  "capstone_mnemonic": "stsi",
+  "capstone_op_str": "0(%r1)",
+  "category": "system",
+  "notes": "STORE SYSTEM INFORMATION: B27D"
+ },
+ {
+  "bytes_hex": "b2a50012",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "rre",
+  "notes": "TRE basic"
+ },
+ {
+  "bytes_hex": "b2b2f000",
+  "capstone_mnemonic": "lpswe",
+  "capstone_op_str": "0(%r15)",
+  "category": "priv",
+  "notes": "LPSWE"
+ },
+ {
+  "bytes_hex": "b3000012",
+  "capstone_mnemonic": "lpebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "LPEBR: load positive short BFP"
+ },
+ {
+  "bytes_hex": "b3010012",
+  "capstone_mnemonic": "lnebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "LNEBR: load negative short BFP"
+ },
+ {
+  "bytes_hex": "b3020012",
+  "capstone_mnemonic": "ltebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-compare",
+  "notes": "LTEBR: load and test short BFP"
+ },
+ {
+  "bytes_hex": "b3040012",
+  "capstone_mnemonic": "ldebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-load",
+  "notes": "LDEBR: short->long BFP load lengthened register"
+ },
+ {
+  "bytes_hex": "b3050002",
+  "capstone_mnemonic": "lxdbr",
+  "capstone_op_str": "%f0, %f2",
+  "category": "fp-load",
+  "notes": "LXDBR: long->extended BFP load lengthened (pair 0)"
+ },
+ {
+  "bytes_hex": "b3090012",
+  "capstone_mnemonic": "cebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-compare",
+  "notes": "CEBR: short BFP compare register"
+ },
+ {
+  "bytes_hex": "b30a0012",
+  "capstone_mnemonic": "aebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "AEBR: short BFP add register"
+ },
+ {
+  "bytes_hex": "b30b0012",
+  "capstone_mnemonic": "sebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "SEBR: short BFP subtract register"
+ },
+ {
+  "bytes_hex": "b30c0012",
+  "capstone_mnemonic": "mdebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "MDEBR: short->long BFP multiply register"
+ },
+ {
+  "bytes_hex": "b30d0012",
+  "capstone_mnemonic": "debr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "DEBR: short BFP divide register"
+ },
+ {
+  "bytes_hex": "b3190012",
+  "capstone_mnemonic": "cdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-compare",
+  "notes": "CDBR: long BFP compare register"
+ },
+ {
+  "bytes_hex": "b31a0012",
+  "capstone_mnemonic": "adbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "ADBR: long BFP add register"
+ },
+ {
+  "bytes_hex": "b31b0012",
+  "capstone_mnemonic": "sdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "SDBR: long BFP subtract register"
+ },
+ {
+  "bytes_hex": "b31c0012",
+  "capstone_mnemonic": "mdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "MDBR: long BFP multiply register"
+ },
+ {
+  "bytes_hex": "b31d0012",
+  "capstone_mnemonic": "ddbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-arith",
+  "notes": "DDBR: long BFP divide register"
+ },
+ {
+  "bytes_hex": "b3250042",
+  "capstone_mnemonic": "lxdr",
+  "capstone_op_str": "%f4, %f2",
+  "category": "fp-load",
+  "notes": "LXDR: long->extended HFP load lengthened (pair 4)"
+ },
+ {
+  "bytes_hex": "b3474004",
+  "capstone_mnemonic": "fixbr",
+  "capstone_op_str": "%f0, 4, %f4",
+  "category": "fp-convert",
+  "notes": "FIXBR: load FP integer extended BFP (pair 0 <- pair 4)"
+ },
+ {
+  "bytes_hex": "b3570012",
+  "capstone_mnemonic": "fiebr",
+  "capstone_op_str": "%f1, 0, %f2",
+  "category": "fp-convert",
+  "notes": "FIEBR: load FP integer short BFP"
+ },
+ {
+  "bytes_hex": "b35f0012",
+  "capstone_mnemonic": "fidbr",
+  "capstone_op_str": "%f1, 0, %f2",
+  "category": "fp-convert",
+  "notes": "FIDBR: load FP integer long BFP"
+ },
+ {
+  "bytes_hex": "b3900012",
+  "capstone_mnemonic": "celfbr",
+  "capstone_op_str": "%f1, 0, %r2, 0",
+  "category": "fp-convert",
+  "notes": "CELFBR: 32-bit logical -> short BFP"
+ },
+ {
+  "bytes_hex": "b3910012",
+  "capstone_mnemonic": "cdlfbr",
+  "capstone_op_str": "%f1, 0, %r2, 0",
+  "category": "fp-convert",
+  "notes": "CDLFBR: 32-bit logical -> long BFP"
+ },
+ {
+  "bytes_hex": "b3940012",
+  "capstone_mnemonic": "cefbr",
+  "capstone_op_str": "%f1, %r2",
+  "category": "fp-convert",
+  "notes": "CEFBR: 32-bit fixed -> short BFP"
+ },
+ {
+  "bytes_hex": "b3950012",
+  "capstone_mnemonic": "cdfbr",
+  "capstone_op_str": "%f1, %r2",
+  "category": "fp-convert",
+  "notes": "CDFBR: 32-bit fixed -> long BFP"
+ },
+ {
+  "bytes_hex": "b3a40012",
+  "capstone_mnemonic": "cegbr",
+  "capstone_op_str": "%f1, %r2",
+  "category": "fp-convert",
+  "notes": "CEGBR: 64-bit fixed -> short BFP"
+ },
+ {
+  "bytes_hex": "b3a50012",
+  "capstone_mnemonic": "cdgbr",
+  "capstone_op_str": "%f1, %r2",
+  "category": "fp-convert",
+  "notes": "CDGBR: 64-bit fixed -> long BFP"
+ },
+ {
+  "bytes_hex": "b3c40012",
+  "capstone_mnemonic": "cegr",
+  "capstone_op_str": "%f1, %r2",
+  "category": "fp-convert",
+  "notes": "CEGR: 64-bit fixed -> short HFP"
+ },
+ {
+  "bytes_hex": "b3c50012",
+  "capstone_mnemonic": "cdgr",
+  "capstone_op_str": "%f1, %r2",
+  "category": "fp-convert",
+  "notes": "CDGR: 64-bit fixed -> long HFP"
+ },
+ {
+  "bytes_hex": "b9000012",
+  "capstone_mnemonic": "lpgr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "load positive 64 (B900)"
+ },
+ {
+  "bytes_hex": "b9010012",
+  "capstone_mnemonic": "lngr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "load negative 64 (B901)"
+ },
+ {
+  "bytes_hex": "b9020012",
+  "capstone_mnemonic": "ltgr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cmp",
+  "notes": "LTGR"
+ },
+ {
+  "bytes_hex": "b9030012",
+  "capstone_mnemonic": "lcgr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "load complement 64 (B903)"
+ },
+ {
+  "bytes_hex": "b9040023",
+  "capstone_mnemonic": "lgr",
+  "capstone_op_str": "%r2, %r3",
+  "category": "load",
+  "notes": "load register 64-bit"
+ },
+ {
+  "bytes_hex": "b9080023",
+  "capstone_mnemonic": "agr",
+  "capstone_op_str": "%r2, %r3",
+  "category": "arith",
+  "notes": "AGR"
+ },
+ {
+  "bytes_hex": "b9090023",
+  "capstone_mnemonic": "sgr",
+  "capstone_op_str": "%r2, %r3",
+  "category": "arith",
+  "notes": "SGR"
+ },
+ {
+  "bytes_hex": "b90a0012",
+  "capstone_mnemonic": "algr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "ALGR"
+ },
+ {
+  "bytes_hex": "b90b0012",
+  "capstone_mnemonic": "slgr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "SLGR"
+ },
+ {
+  "bytes_hex": "b90c0023",
+  "capstone_mnemonic": "msgr",
+  "capstone_op_str": "%r2, %r3",
+  "category": "arith",
+  "notes": "MSGR"
+ },
+ {
+  "bytes_hex": "b90c0067",
+  "capstone_mnemonic": "msgr",
+  "capstone_op_str": "%r6, %r7",
+  "category": "muldiv",
+  "notes": "MSGR"
+ },
+ {
+  "bytes_hex": "b90d00ab",
+  "capstone_mnemonic": "dsgr",
+  "capstone_op_str": "%r10, %r11",
+  "category": "muldiv_pair",
+  "notes": "DSGR r10 even"
+ },
+ {
+  "bytes_hex": "b90d00cc",
+  "capstone_mnemonic": "dsgr",
+  "capstone_op_str": "%r12, %r12",
+  "category": "muldiv_pair",
+  "notes": "DSGR r12 even"
+ },
+ {
+  "bytes_hex": "b9100012",
+  "capstone_mnemonic": "lpgfr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "LPGFR"
+ },
+ {
+  "bytes_hex": "b9110012",
+  "capstone_mnemonic": "lngfr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "LNGFR"
+ },
+ {
+  "bytes_hex": "b9130012",
+  "capstone_mnemonic": "lcgfr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "arith",
+  "notes": "load complement 64<-32"
+ },
+ {
+  "bytes_hex": "b9180023",
+  "capstone_mnemonic": "agfr",
+  "capstone_op_str": "%r2, %r3",
+  "category": "arith",
+  "notes": "AGFR"
+ },
+ {
+  "bytes_hex": "b91c00ab",
+  "capstone_mnemonic": "msgfr",
+  "capstone_op_str": "%r10, %r11",
+  "category": "muldiv",
+  "notes": "MSGFR"
+ },
+ {
+  "bytes_hex": "b91d0003",
+  "capstone_mnemonic": "dsgfr",
+  "capstone_op_str": "%r0, %r3",
+  "category": "muldiv_pair",
+  "notes": "DSGFR r0 even"
+ },
+ {
+  "bytes_hex": "b91d00d4",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "muldiv_pair",
+  "notes": "DSGFR r13. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it"
+ },
+ {
+  "bytes_hex": "b91e0012",
+  "capstone_mnemonic": "kmac",
+  "capstone_op_str": "%r1, %r2",
+  "category": "crypto",
+  "notes": "COMPUTE MESSAGE AUTHENTICATION CODE: B91E, R1=1, R2=2"
+ },
+ {
+  "bytes_hex": "b9200012",
+  "capstone_mnemonic": "cgr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cmp",
+  "notes": "CGR"
+ },
+ {
+  "bytes_hex": "b9210012",
+  "capstone_mnemonic": "clgr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cmp",
+  "notes": "CLGR"
+ },
+ {
+  "bytes_hex": "b9280000",
+  "capstone_mnemonic": "pckmo",
+  "capstone_op_str": "",
+  "category": "crypto",
+  "notes": "PERFORM CRYPTOGRAPHIC KEY MGMT OP: B928, no operands"
+ },
+ {
+  "bytes_hex": "b9290000",
+  "capstone_mnemonic": "kma",
+  "capstone_op_str": "%r0, %r0, %r0",
+  "category": "crypto",
+  "notes": "CIPHER MESSAGE WITH AUTHENTICATION: B929"
+ },
+ {
+  "bytes_hex": "b92a0000",
+  "capstone_mnemonic": "kmf",
+  "capstone_op_str": "%r0, %r0",
+  "category": "crypto",
+  "notes": "CIPHER MESSAGE WITH CIPHER FEEDBACK: B92A"
+ },
+ {
+  "bytes_hex": "b92b0000",
+  "capstone_mnemonic": "kmo",
+  "capstone_op_str": "%r0, %r0",
+  "category": "crypto",
+  "notes": "CIPHER MESSAGE WITH OUTPUT FEEDBACK: B92B"
+ },
+ {
+  "bytes_hex": "b92c0000",
+  "capstone_mnemonic": "pcc",
+  "capstone_op_str": "",
+  "category": "crypto",
+  "notes": "PERFORM CRYPTOGRAPHIC COMPUTATION: B92C, no operands"
+ },
+ {
+  "bytes_hex": "b92d0000",
+  "capstone_mnemonic": "kmctr",
+  "capstone_op_str": "%r0, %r0, %r0",
+  "category": "crypto",
+  "notes": "CIPHER MESSAGE WITH COUNTER: B92D"
+ },
+ {
+  "bytes_hex": "b92e0000",
+  "capstone_mnemonic": "km",
+  "capstone_op_str": "%r0, %r0",
+  "category": "crypto",
+  "notes": "CIPHER MESSAGE: B92E"
+ },
+ {
+  "bytes_hex": "b92f0000",
+  "capstone_mnemonic": "kmc",
+  "capstone_op_str": "%r0, %r0",
+  "category": "crypto",
+  "notes": "CIPHER MESSAGE WITH CHAINING: B92F"
+ },
+ {
+  "bytes_hex": "b93c0000",
+  "capstone_mnemonic": "ppno",
+  "capstone_op_str": "%r0, %r0",
+  "category": "crypto",
+  "notes": "PERFORM RANDOM NUMBER OP: B93C (PoP alias PRNO; Capstone prints ppno)"
+ },
+ {
+  "bytes_hex": "b93e0000",
+  "capstone_mnemonic": "kimd",
+  "capstone_op_str": "%r0, %r0",
+  "category": "crypto",
+  "notes": "COMPUTE INTERMEDIATE MESSAGE DIGEST: B93E, M3=0 (not displayed)"
+ },
+ {
+  "bytes_hex": "b93f0000",
+  "capstone_mnemonic": "klmd",
+  "capstone_op_str": "%r0, %r0",
+  "category": "crypto",
+  "notes": "COMPUTE LAST MESSAGE DIGEST: B93F, M3=0 (not displayed)"
+ },
+ {
+  "bytes_hex": "b9460000",
+  "capstone_mnemonic": "bctgr",
+  "capstone_op_str": "%r0, %r0",
+  "category": "branch",
+  "notes": "BCTGR: R2 field = 0 -> count without branching"
+ },
+ {
+  "bytes_hex": "b9460012",
+  "capstone_mnemonic": "bctgr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "branch",
+  "notes": "BCTGR: R2 field != 0 (branching form)"
+ },
+ {
+  "bytes_hex": "b9800023",
+  "capstone_mnemonic": "ngr",
+  "capstone_op_str": "%r2, %r3",
+  "category": "logic",
+  "notes": "NGR"
+ },
+ {
+  "bytes_hex": "b9810012",
+  "capstone_mnemonic": "ogr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "logic",
+  "notes": "OGR"
+ },
+ {
+  "bytes_hex": "b9820012",
+  "capstone_mnemonic": "xgr",
+  "capstone_op_str": "%r1, %r2",
+  "category": "logic",
+  "notes": "XGR"
+ },
+ {
+  "bytes_hex": "b986002f",
+  "capstone_mnemonic": "mlgr",
+  "capstone_op_str": "%r2, %r15",
+  "category": "muldiv_pair",
+  "notes": "MLGR r2 even"
+ },
+ {
+  "bytes_hex": "b9860089",
+  "capstone_mnemonic": "mlgr",
+  "capstone_op_str": "%r8, %r9",
+  "category": "muldiv_pair",
+  "notes": "MLGR r8 even"
+ },
+ {
+  "bytes_hex": "b9870001",
+  "capstone_mnemonic": "dlgr",
+  "capstone_op_str": "%r0, %r1",
+  "category": "muldiv_pair",
+  "notes": "DLGR r0 even"
+ },
+ {
+  "bytes_hex": "b9910046",
+  "capstone_mnemonic": "trto",
+  "capstone_op_str": "%r4, %r6",
+  "category": "rrfc",
+  "notes": "TRTO M3=0"
+ },
+ {
+  "bytes_hex": "b9920046",
+  "capstone_mnemonic": "trot",
+  "capstone_op_str": "%r4, %r6",
+  "category": "rrfc",
+  "notes": "TROT M3=0"
+ },
+ {
+  "bytes_hex": "b9930046",
+  "capstone_mnemonic": "troo",
+  "capstone_op_str": "%r4, %r6",
+  "category": "rrfc",
+  "notes": "TROO M3=0"
+ },
+ {
+  "bytes_hex": "b9960042",
+  "capstone_mnemonic": "mlr",
+  "capstone_op_str": "%r4, %r2",
+  "category": "muldiv_pair",
+  "notes": "MLR r4 even"
+ },
+ {
+  "bytes_hex": "b99600bd",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "muldiv_pair",
+  "notes": "MLR r11. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it"
+ },
+ {
+  "bytes_hex": "b9970056",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "muldiv_pair",
+  "notes": "DLR r5. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it"
+ },
+ {
+  "bytes_hex": "b9970066",
+  "capstone_mnemonic": "dlr",
+  "capstone_op_str": "%r6, %r6",
+  "category": "muldiv_pair",
+  "notes": "DLR r6 even"
+ },
+ {
+  "bytes_hex": "b9bf0046",
+  "capstone_mnemonic": "trte",
+  "capstone_op_str": "%r4, %r6",
+  "category": "rrfc",
+  "notes": "TRTE M3=0"
+ },
+ {
+  "bytes_hex": "bd13f000",
+  "capstone_mnemonic": "clm",
+  "capstone_op_str": "%r1, 3, 0(%r15)",
+  "category": "cmp",
+  "notes": "compare under mask (RS BD)"
+ },
+ {
+  "bytes_hex": "be13f000",
+  "capstone_mnemonic": "stcm",
+  "capstone_op_str": "%r1, 3, 0(%r15)",
+  "category": "store",
+  "notes": "STCM"
+ },
+ {
+  "bytes_hex": "bf13f000",
+  "capstone_mnemonic": "icm",
+  "capstone_op_str": "%r1, 3, 0(%r15)",
+  "category": "load",
+  "notes": "insert chars under mask"
+ },
+ {
+  "bytes_hex": "c01000000000",
+  "capstone_mnemonic": "larl",
+  "capstone_op_str": "%r1, 0",
+  "category": "load",
+  "notes": "load addr relative long"
+ },
+ {
+  "bytes_hex": "c01500000000",
+  "capstone_mnemonic": "brasl",
+  "capstone_op_str": "%r1, 0",
+  "category": "branch",
+  "notes": "branch rel and save long"
+ },
+ {
+  "bytes_hex": "c01812345678",
+  "capstone_mnemonic": "iihf",
+  "capstone_op_str": "%r1, 0x12345678",
+  "category": "load",
+  "notes": "IIHF"
+ },
+ {
+  "bytes_hex": "c01912345678",
+  "capstone_mnemonic": "iilf",
+  "capstone_op_str": "%r1, 0x12345678",
+  "category": "load",
+  "notes": "insert imm low full"
+ },
+ {
+  "bytes_hex": "c01a12345678",
+  "capstone_mnemonic": "nihf",
+  "capstone_op_str": "%r1, 0x12345678",
+  "category": "logic",
+  "notes": "NIHF"
+ },
+ {
+  "bytes_hex": "c01d12345678",
+  "capstone_mnemonic": "oilf",
+  "capstone_op_str": "%r1, 0x12345678",
+  "category": "logic",
+  "notes": "OILF"
+ },
+ {
+  "bytes_hex": "c02400000000",
+  "capstone_mnemonic": "jgh",
+  "capstone_op_str": "0",
+  "category": "branch",
+  "notes": "BRCL mask 2; Capstone prints 'jgh' (IBM: JH)"
+ },
+ {
+  "bytes_hex": "c04400000000",
+  "capstone_mnemonic": "jgl",
+  "capstone_op_str": "0",
+  "category": "branch",
+  "notes": "BRCL mask 4; Capstone prints 'jgl' (IBM: JL)"
+ },
+ {
+  "bytes_hex": "c07400000000",
+  "capstone_mnemonic": "jgne",
+  "capstone_op_str": "0",
+  "category": "branch",
+  "notes": "BRCL mask 7; Capstone prints 'jgne' (IBM: JNE)"
+ },
+ {
+  "bytes_hex": "c08400000000",
+  "capstone_mnemonic": "jge",
+  "capstone_op_str": "0",
+  "category": "branch",
+  "notes": "BRCL mask 8; Capstone 5.0.7 prints 'jge' (IBM: JE) - see header notes"
+ },
+ {
+  "bytes_hex": "c0a400000000",
+  "capstone_mnemonic": "jghe",
+  "capstone_op_str": "0",
+  "category": "branch",
+  "notes": "BRCL mask 10; Capstone prints 'jghe' (IBM: JGE)"
+ },
+ {
+  "bytes_hex": "c0f400000000",
+  "capstone_mnemonic": "jg",
+  "capstone_op_str": "0",
+  "category": "branch",
+  "notes": "BRCL mask 15; Capstone prints 'jg' (IBM: J)"
+ },
+ {
+  "bytes_hex": "c2117fffffff",
+  "capstone_mnemonic": "msfi",
+  "capstone_op_str": "%r1, 0x7fffffff",
+  "category": "muldiv",
+  "notes": "MSFI max imm"
+ },
+ {
+  "bytes_hex": "c21812345678",
+  "capstone_mnemonic": "agfi",
+  "capstone_op_str": "%r1, 0x12345678",
+  "category": "arith",
+  "notes": "AGFI"
+ },
+ {
+  "bytes_hex": "c21912345678",
+  "capstone_mnemonic": "afi",
+  "capstone_op_str": "%r1, 0x12345678",
+  "category": "arith",
+  "notes": "add fullword imm"
+ },
+ {
+  "bytes_hex": "c290ffffffff",
+  "capstone_mnemonic": "msgfi",
+  "capstone_op_str": "%r9, -1",
+  "category": "muldiv",
+  "notes": "MSGFI -1"
+ },
+ {
+  "bytes_hex": "c2f180000000",
+  "capstone_mnemonic": "msfi",
+  "capstone_op_str": "%r15, -0x80000000",
+  "category": "muldiv",
+  "notes": "MSFI min imm"
+ },
+ {
+  "bytes_hex": "c41f00000000",
+  "capstone_mnemonic": "strl",
+  "capstone_op_str": "%r1, 0",
+  "category": "store",
+  "notes": "store relative long"
+ },
+ {
+  "bytes_hex": "d01012345678",
+  "capstone_mnemonic": "trtr",
+  "capstone_op_str": "0x234(0x11, %r1), 0x678(%r5)",
+  "category": "ssa",
+  "notes": "TRTR basic"
+ },
+ {
+  "bytes_hex": "d11012345678",
+  "capstone_mnemonic": "mvn",
+  "capstone_op_str": "0x234(0x11, %r1), 0x678(%r5)",
+  "category": "ssa",
+  "notes": "MVN basic"
+ },
+ {
+  "bytes_hex": "d200f000e000",
+  "capstone_mnemonic": "mvc",
+  "capstone_op_str": "0(1, %r15), 0(%r14)",
+  "category": "store",
+  "notes": "move 1 byte"
+ },
+ {
+  "bytes_hex": "d207f000e000",
+  "capstone_mnemonic": "mvc",
+  "capstone_op_str": "0(8, %r15), 0(%r14)",
+  "category": "store",
+  "notes": "move 8 bytes"
+ },
+ {
+  "bytes_hex": "d31012345678",
+  "capstone_mnemonic": "mvz",
+  "capstone_op_str": "0x234(0x11, %r1), 0x678(%r5)",
+  "category": "ssa",
+  "notes": "MVZ basic"
+ },
+ {
+  "bytes_hex": "d403f000e000",
+  "capstone_mnemonic": "nc",
+  "capstone_op_str": "0(4, %r15), 0(%r14)",
+  "category": "store",
+  "notes": "NC"
+ },
+ {
+  "bytes_hex": "d503f000e000",
+  "capstone_mnemonic": "clc",
+  "capstone_op_str": "0(4, %r15), 0(%r14)",
+  "category": "cmp",
+  "notes": "compare logical char"
+ },
+ {
+  "bytes_hex": "d603f000e000",
+  "capstone_mnemonic": "oc",
+  "capstone_op_str": "0(4, %r15), 0(%r14)",
+  "category": "store",
+  "notes": "OC"
+ },
+ {
+  "bytes_hex": "d703f000e000",
+  "capstone_mnemonic": "xc",
+  "capstone_op_str": "0(4, %r15), 0(%r14)",
+  "category": "store",
+  "notes": "xor mem (zeroing idiom)"
+ },
+ {
+  "bytes_hex": "dc03f000e000",
+  "capstone_mnemonic": "tr",
+  "capstone_op_str": "0(4, %r15), 0(%r14)",
+  "category": "store",
+  "notes": "translate"
+ },
+ {
+  "bytes_hex": "dc1012345678",
+  "capstone_mnemonic": "tr",
+  "capstone_op_str": "0x234(0x11, %r1), 0x678(%r5)",
+  "category": "ssa",
+  "notes": "TR basic"
+ },
+ {
+  "bytes_hex": "dd03f000e000",
+  "capstone_mnemonic": "trt",
+  "capstone_op_str": "0(4, %r15), 0(%r14)",
+  "category": "store",
+  "notes": "translate and test"
+ },
+ {
+  "bytes_hex": "dd1012345678",
+  "capstone_mnemonic": "trt",
+  "capstone_op_str": "0x234(0x11, %r1), 0x678(%r5)",
+  "category": "ssa",
+  "notes": "TRT basic"
+ },
+ {
+  "bytes_hex": "de1012345678",
+  "capstone_mnemonic": "ed",
+  "capstone_op_str": "0x234(0x11, %r1), 0x678(%r5)",
+  "category": "ssa",
+  "notes": "ED basic"
+ },
+ {
+  "bytes_hex": "df1012345678",
+  "capstone_mnemonic": "edmk",
+  "capstone_op_str": "0x234(0x11, %r1), 0x678(%r5)",
+  "category": "ssa",
+  "notes": "EDMK basic"
+ },
+ {
+  "bytes_hex": "e11234012345",
+  "capstone_mnemonic": "pku",
+  "capstone_op_str": "0x401(%r3), 0x345(0x13, %r2)",
+  "category": "ssf",
+  "notes": "PKU basic"
+ },
+ {
+  "bytes_hex": "e30000000086",
+  "capstone_mnemonic": "mlg",
+  "capstone_op_str": "%r0, 0",
+  "category": "muldiv_pair",
+  "notes": "MLG r0 even"
+ },
+ {
+  "bytes_hex": "e300fcdeab97",
+  "capstone_mnemonic": "dl",
+  "capstone_op_str": "%r0, -0x54322(%r15)",
+  "category": "muldiv_pair",
+  "notes": "DL r0 even"
+ },
+ {
+  "bytes_hex": "e300ffff7f84",
+  "capstone_mnemonic": "mg",
+  "capstone_op_str": "%r0, 0x7ffff(%r15)",
+  "category": "muldiv_pair",
+  "notes": "MG r0 even, max disp"
+ },
+ {
+  "bytes_hex": "e31000000084",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "muldiv_pair",
+  "notes": "MG r1. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it"
+ },
+ {
+  "bytes_hex": "e310c0080046",
+  "capstone_mnemonic": "bctg",
+  "capstone_op_str": "%r1, 8(%r12)",
+  "category": "branch",
+  "notes": "BCTG: 64-bit count, RXY EA, DH2=0"
+ },
+ {
+  "bytes_hex": "e310f0000002",
+  "capstone_mnemonic": "ltg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "LTG"
+ },
+ {
+  "bytes_hex": "e310f0000004",
+  "capstone_mnemonic": "lg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "load",
+  "notes": "load 64-bit"
+ },
+ {
+  "bytes_hex": "e310f0000008",
+  "capstone_mnemonic": "ag",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "add 64-bit (E308)"
+ },
+ {
+  "bytes_hex": "e310f0000009",
+  "capstone_mnemonic": "sg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "subtract 64-bit (E309)"
+ },
+ {
+  "bytes_hex": "e310f000000a",
+  "capstone_mnemonic": "alg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "add logical 64"
+ },
+ {
+  "bytes_hex": "e310f000000b",
+  "capstone_mnemonic": "slg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "subtract logical 64"
+ },
+ {
+  "bytes_hex": "e310f000000c",
+  "capstone_mnemonic": "msg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "MSG"
+ },
+ {
+  "bytes_hex": "e310f0000012",
+  "capstone_mnemonic": "lt",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "LT"
+ },
+ {
+  "bytes_hex": "e310f0000018",
+  "capstone_mnemonic": "agf",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "add 64<-32"
+ },
+ {
+  "bytes_hex": "e310f0000019",
+  "capstone_mnemonic": "sgf",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "SGF"
+ },
+ {
+  "bytes_hex": "e310f000001a",
+  "capstone_mnemonic": "algf",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "ALGF"
+ },
+ {
+  "bytes_hex": "e310f000001b",
+  "capstone_mnemonic": "slgf",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "SLGF"
+ },
+ {
+  "bytes_hex": "e310f0000020",
+  "capstone_mnemonic": "cg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "CG"
+ },
+ {
+  "bytes_hex": "e310f0000021",
+  "capstone_mnemonic": "clg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "CLG"
+ },
+ {
+  "bytes_hex": "e310f0000024",
+  "capstone_mnemonic": "stg",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "store",
+  "notes": "STG"
+ },
+ {
+  "bytes_hex": "e310f0000030",
+  "capstone_mnemonic": "cgf",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "compare 64<-32"
+ },
+ {
+  "bytes_hex": "e310f0000031",
+  "capstone_mnemonic": "clgf",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "CLGF"
+ },
+ {
+  "bytes_hex": "e310f0000032",
+  "capstone_mnemonic": "ltgf",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "cmp",
+  "notes": "LTGF"
+ },
+ {
+  "bytes_hex": "e310f0000050",
+  "capstone_mnemonic": "sty",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "store",
+  "notes": "STY"
+ },
+ {
+  "bytes_hex": "e310f0000051",
+  "capstone_mnemonic": "msy",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "MSY"
+ },
+ {
+  "bytes_hex": "e310f0000054",
+  "capstone_mnemonic": "ny",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "logic",
+  "notes": "NY"
+ },
+ {
+  "bytes_hex": "e310f0000056",
+  "capstone_mnemonic": "oy",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "logic",
+  "notes": "OY"
+ },
+ {
+  "bytes_hex": "e310f0000057",
+  "capstone_mnemonic": "xy",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "logic",
+  "notes": "XY"
+ },
+ {
+  "bytes_hex": "e310f0000058",
+  "capstone_mnemonic": "ly",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "load",
+  "notes": "load 32-bit, 20-bit disp"
+ },
+ {
+  "bytes_hex": "e310f0000071",
+  "capstone_mnemonic": "lay",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "load",
+  "notes": "LAY"
+ },
+ {
+  "bytes_hex": "e310f000007c",
+  "capstone_mnemonic": "mhy",
+  "capstone_op_str": "%r1, 0(%r15)",
+  "category": "arith",
+  "notes": "multiply halfword"
+ },
+ {
+  "bytes_hex": "e32030000014",
+  "capstone_mnemonic": "lgf",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "load word -> 64 sign-ext"
+ },
+ {
+  "bytes_hex": "e32030000015",
+  "capstone_mnemonic": "lgh",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "LGH"
+ },
+ {
+  "bytes_hex": "e32030000016",
+  "capstone_mnemonic": "llgf",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "load logical word"
+ },
+ {
+  "bytes_hex": "e32030000070",
+  "capstone_mnemonic": "sthy",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "store",
+  "notes": "STHY"
+ },
+ {
+  "bytes_hex": "e32030000072",
+  "capstone_mnemonic": "stcy",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "store",
+  "notes": "STCY"
+ },
+ {
+  "bytes_hex": "e32030000076",
+  "capstone_mnemonic": "lb",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "load byte sign-extended"
+ },
+ {
+  "bytes_hex": "e32030000077",
+  "capstone_mnemonic": "lgb",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "LGB"
+ },
+ {
+  "bytes_hex": "e32030000078",
+  "capstone_mnemonic": "lhy",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "LHY"
+ },
+ {
+  "bytes_hex": "e32030000090",
+  "capstone_mnemonic": "llgc",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "LLGC"
+ },
+ {
+  "bytes_hex": "e32030000091",
+  "capstone_mnemonic": "llgh",
+  "capstone_op_str": "%r2, 0(%r3)",
+  "category": "load",
+  "notes": "LLGH"
+ },
+ {
+  "bytes_hex": "e320f1111187",
+  "capstone_mnemonic": "dlg",
+  "capstone_op_str": "%r2, 0x11111(%r15)",
+  "category": "muldiv_pair",
+  "notes": "DLG r2 even"
+ },
+ {
+  "bytes_hex": "e320f345125c",
+  "capstone_mnemonic": "mfy",
+  "capstone_op_str": "%r2, 0x12345(%r15)",
+  "category": "muldiv_pair",
+  "notes": "MFY r2 even, 20-bit disp"
+ },
+ {
+  "bytes_hex": "e330f500007c",
+  "capstone_mnemonic": "mhy",
+  "capstone_op_str": "%r3, 0x500(%r15)",
+  "category": "muldiv",
+  "notes": "MHY"
+ },
+ {
+  "bytes_hex": "e340f0018051",
+  "capstone_mnemonic": "msy",
+  "capstone_op_str": "%r4, -0x7ffff(%r15)",
+  "category": "muldiv",
+  "notes": "MSY negative 20-bit disp"
+ },
+ {
+  "bytes_hex": "e340f1000096",
+  "capstone_mnemonic": "ml",
+  "capstone_op_str": "%r4, 0x100(%r15)",
+  "category": "muldiv_pair",
+  "notes": "ML r4 even"
+ },
+ {
+  "bytes_hex": "e340f300000d",
+  "capstone_mnemonic": "dsg",
+  "capstone_op_str": "%r4, 0x300(%r15)",
+  "category": "muldiv_pair",
+  "notes": "DSG r4 even"
+ },
+ {
+  "bytes_hex": "e350f700000c",
+  "capstone_mnemonic": "msg",
+  "capstone_op_str": "%r5, 0x700(%r15)",
+  "category": "muldiv",
+  "notes": "MSG"
+ },
+ {
+  "bytes_hex": "e360f2000086",
+  "capstone_mnemonic": "mlg",
+  "capstone_op_str": "%r6, 0x200(%r15)",
+  "category": "muldiv_pair",
+  "notes": "MLG r6 even"
+ },
+ {
+  "bytes_hex": "e360f400001d",
+  "capstone_mnemonic": "dsgf",
+  "capstone_op_str": "%r6, 0x400(%r15)",
+  "category": "muldiv_pair",
+  "notes": "DSGF r6 even"
+ },
+ {
+  "bytes_hex": "e3700000005c",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "muldiv_pair",
+  "notes": "MFY r7. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it"
+ },
+ {
+  "bytes_hex": "e380f800001c",
+  "capstone_mnemonic": "msgf",
+  "capstone_op_str": "%r8, 0x800(%r15)",
+  "category": "muldiv",
+  "notes": "MSGF"
+ },
+ {
+  "bytes_hex": "e3812000805c",
+  "capstone_mnemonic": "mfy",
+  "capstone_op_str": "%r8, -0x80000(%r1, %r2)",
+  "category": "muldiv_pair",
+  "notes": "MFY r8 even, min disp"
+ },
+ {
+  "bytes_hex": "e3830cbbed0d",
+  "capstone_mnemonic": "dsg",
+  "capstone_op_str": "%r8, -0x12345(%r3)",
+  "category": "muldiv_pair",
+  "notes": "DSG r8 even, negative disp"
+ },
+ {
+  "bytes_hex": "e3a000000097",
+  "capstone_mnemonic": "dl",
+  "capstone_op_str": "%r10, 0",
+  "category": "muldiv_pair",
+  "notes": "DL r10 even"
+ },
+ {
+  "bytes_hex": "e3b0f600003c",
+  "capstone_mnemonic": "mgh",
+  "capstone_op_str": "%r11, 0x600(%r15)",
+  "category": "muldiv",
+  "notes": "MGH"
+ },
+ {
+  "bytes_hex": "e3c000000096",
+  "capstone_mnemonic": "ml",
+  "capstone_op_str": "%r12, 0",
+  "category": "muldiv_pair",
+  "notes": "ML r12 even"
+ },
+ {
+  "bytes_hex": "e3e000000087",
+  "capstone_mnemonic": "dlg",
+  "capstone_op_str": "%r14, 0",
+  "category": "muldiv_pair",
+  "notes": "DLG r14 even"
+ },
+ {
+  "bytes_hex": "e3e23fffff84",
+  "capstone_mnemonic": "mg",
+  "capstone_op_str": "%r14, -1(%r2, %r3)",
+  "category": "muldiv_pair",
+  "notes": "MG r14 even"
+ },
+ {
+  "bytes_hex": "e54cf0000005",
+  "capstone_mnemonic": "mvhi",
+  "capstone_op_str": "0(%r15), 5",
+  "category": "store",
+  "notes": "move halfword imm, SIL"
+ },
+ {
+  "bytes_hex": "e70012340844",
+  "capstone_mnemonic": "vgbm",
+  "capstone_op_str": "%v16, 0x1234",
+  "category": "vector",
+  "notes": "VGBM_v16"
+ },
+ {
+  "bytes_hex": "e71010000006",
+  "capstone_mnemonic": "vl",
+  "capstone_op_str": "%v1, 0(%r1)",
+  "category": "vector",
+  "notes": "VL_v1"
+ },
+ {
+  "bytes_hex": "e71010000806",
+  "capstone_mnemonic": "vl",
+  "capstone_op_str": "%v17, 0(%r1)",
+  "category": "vector",
+  "notes": "VL_v17"
+ },
+ {
+  "bytes_hex": "e71012340044",
+  "capstone_mnemonic": "vgbm",
+  "capstone_op_str": "%v1, 0x1234",
+  "category": "vector",
+  "notes": "VGBM"
+ },
+ {
+  "bytes_hex": "e71200000056",
+  "capstone_mnemonic": "vlr",
+  "capstone_op_str": "%v1, %v2",
+  "category": "vector",
+  "notes": "VLR"
+ },
+ {
+  "bytes_hex": "e71200000c56",
+  "capstone_mnemonic": "vlr",
+  "capstone_op_str": "%v17, %v18",
+  "category": "vector",
+  "notes": "VLR_hi"
+ },
+ {
+  "bytes_hex": "e712300000f3",
+  "capstone_mnemonic": "vab",
+  "capstone_op_str": "%v1, %v2, %v3",
+  "category": "vector",
+  "notes": "VAB"
+ },
+ {
+  "bytes_hex": "e712300000f7",
+  "capstone_mnemonic": "vsb",
+  "capstone_op_str": "%v1, %v2, %v3",
+  "category": "vector",
+  "notes": "VSB"
+ },
+ {
+  "bytes_hex": "e712300010f3",
+  "capstone_mnemonic": "vah",
+  "capstone_op_str": "%v1, %v2, %v3",
+  "category": "vector",
+  "notes": "VAH"
+ },
+ {
+  "bytes_hex": "e712300010f7",
+  "capstone_mnemonic": "vsh",
+  "capstone_op_str": "%v1, %v2, %v3",
+  "category": "vector",
+  "notes": "VSH"
+ },
+ {
+  "bytes_hex": "e712300020f3",
+  "capstone_mnemonic": "vaf",
+  "capstone_op_str": "%v1, %v2, %v3",
+  "category": "vector",
+  "notes": "VAF"
+ },
+ {
+  "bytes_hex": "e712300020f7",
+  "capstone_mnemonic": "vsf",
+  "capstone_op_str": "%v1, %v2, %v3",
+  "category": "vector",
+  "notes": "VSF"
+ },
+ {
+  "bytes_hex": "e712300030f3",
+  "capstone_mnemonic": "vag",
+  "capstone_op_str": "%v1, %v2, %v3",
+  "category": "vector",
+  "notes": "VAG"
+ },
+ {
+  "bytes_hex": "e712300030f7",
+  "capstone_mnemonic": "vsg",
+  "capstone_op_str": "%v1, %v2, %v3",
+  "category": "vector",
+  "notes": "VSG"
+ },
+ {
+  "bytes_hex": "e7201000000e",
+  "capstone_mnemonic": "vst",
+  "capstone_op_str": "%v2, 0(%r1)",
+  "category": "vector",
+  "notes": "VST_v2"
+ },
+ {
+  "bytes_hex": "e7201000080e",
+  "capstone_mnemonic": "vst",
+  "capstone_op_str": "%v18, 0(%r1)",
+  "category": "vector",
+  "notes": "VST_v18"
+ },
+ {
+  "bytes_hex": "e7f010000806",
+  "capstone_mnemonic": "vl",
+  "capstone_op_str": "%v31, 0(%r1)",
+  "category": "vector",
+  "notes": "VL_v31"
+ },
+ {
+  "bytes_hex": "e91234012345",
+  "capstone_mnemonic": "pka",
+  "capstone_op_str": "0x401(%r3), 0x345(0x13, %r2)",
+  "category": "ssf",
+  "notes": "PKA basic"
+ },
+ {
+  "bytes_hex": "ea1012345678",
+  "capstone_mnemonic": "unpka",
+  "capstone_op_str": "0x234(0x11, %r1), 0x678(%r5)",
+  "category": "ssa",
+  "notes": "UNPKA basic"
+ },
+ {
+  "bytes_hex": "eb10003000c0",
+  "capstone_mnemonic": "tp",
+  "capstone_op_str": "0x30(2)",
+  "category": "rsla",
+  "notes": "TP basic"
+ },
+ {
+  "bytes_hex": "eb12c0000044",
+  "capstone_mnemonic": "bxhg",
+  "capstone_op_str": "%r1, %r2, 0(%r12)",
+  "category": "branch",
+  "notes": "BXHG: 64-bit, RSY EA"
+ },
+ {
+  "bytes_hex": "eb12c0000045",
+  "capstone_mnemonic": "bxleg",
+  "capstone_op_str": "%r1, %r2, 0(%r12)",
+  "category": "branch",
+  "notes": "BXLEG: 64-bit low-or-equal"
+ },
+ {
+  "bytes_hex": "eb12f0000021",
+  "capstone_mnemonic": "clmy",
+  "capstone_op_str": "%r1, 2, 0(%r15)",
+  "category": "cmp",
+  "notes": "compare under mask, 20-bit disp (RSY EB21)"
+ },
+ {
+  "bytes_hex": "eb130000000a",
+  "capstone_mnemonic": "srag",
+  "capstone_op_str": "%r1, %r3, 0",
+  "category": "logic",
+  "notes": "SRAG"
+ },
+ {
+  "bytes_hex": "eb130000000b",
+  "capstone_mnemonic": "slag",
+  "capstone_op_str": "%r1, %r3, 0",
+  "category": "logic",
+  "notes": "SLAG"
+ },
+ {
+  "bytes_hex": "eb130000000c",
+  "capstone_mnemonic": "srlg",
+  "capstone_op_str": "%r1, %r3, 0",
+  "category": "logic",
+  "notes": "SRLG"
+ },
+ {
+  "bytes_hex": "eb130000000d",
+  "capstone_mnemonic": "sllg",
+  "capstone_op_str": "%r1, %r3, 0",
+  "category": "logic",
+  "notes": "SLLG"
+ },
+ {
+  "bytes_hex": "eb13f0000090",
+  "capstone_mnemonic": "stmy",
+  "capstone_op_str": "%r1, %r3, 0(%r15)",
+  "category": "store",
+  "notes": "STMY"
+ },
+ {
+  "bytes_hex": "eb243456788f",
+  "capstone_mnemonic": "clclu",
+  "capstone_op_str": "%r2, %r4, 0x78456(%r3)",
+  "category": "rsya",
+  "notes": "CLCLU basic"
+ },
+ {
+  "bytes_hex": "eb37f0000004",
+  "capstone_mnemonic": "lmg",
+  "capstone_op_str": "%r3, %r7, 0(%r15)",
+  "category": "load",
+  "notes": "LMG"
+ },
+ {
+  "bytes_hex": "eb37f0000024",
+  "capstone_mnemonic": "stmg",
+  "capstone_op_str": "%r3, %r7, 0(%r15)",
+  "category": "store",
+  "notes": "STMG"
+ },
+ {
+  "bytes_hex": "eb37f0000026",
+  "capstone_mnemonic": "stmh",
+  "capstone_op_str": "%r3, %r7, 0(%r15)",
+  "category": "store",
+  "notes": "STMH"
+ },
+ {
+  "bytes_hex": "eb37f0000096",
+  "capstone_mnemonic": "lmh",
+  "capstone_op_str": "%r3, %r7, 0(%r15)",
+  "category": "load",
+  "notes": "high halves"
+ },
+ {
+  "bytes_hex": "ec1200040044",
+  "capstone_mnemonic": "brxhg",
+  "capstone_op_str": "%r1, %r2, 8",
+  "category": "branch",
+  "notes": "BRXHG: forward, RIEe relative"
+ },
+ {
+  "bytes_hex": "ec12fffe0044",
+  "capstone_mnemonic": "brxhg",
+  "capstone_op_str": "%r1, %r2, -4",
+  "category": "branch",
+  "notes": "BRXHG: backward, RIEe relative, 64-bit"
+ },
+ {
+  "bytes_hex": "ec12fffe0045",
+  "capstone_mnemonic": "brxlg",
+  "capstone_op_str": "%r1, %r2, -4",
+  "category": "branch",
+  "notes": "BRXLG: backward, low-or-equal, 64-bit"
+ },
+ {
+  "bytes_hex": "ed0020340025",
+  "capstone_mnemonic": "lxd",
+  "capstone_op_str": "%f0, 0x34(%r2)",
+  "category": "fp-load",
+  "notes": "LXD: long->extended HFP load lengthened (pair 0)"
+ },
+ {
+  "bytes_hex": "ed1020340009",
+  "capstone_mnemonic": "ceb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-compare",
+  "notes": "CEB: short BFP compare"
+ },
+ {
+  "bytes_hex": "ed102034000a",
+  "capstone_mnemonic": "aeb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-arith",
+  "notes": "AEB: short BFP add"
+ },
+ {
+  "bytes_hex": "ed102034000b",
+  "capstone_mnemonic": "seb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-arith",
+  "notes": "SEB: short BFP subtract"
+ },
+ {
+  "bytes_hex": "ed102034000c",
+  "capstone_mnemonic": "mdeb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-arith",
+  "notes": "MDEB: short->long BFP multiply"
+ },
+ {
+  "bytes_hex": "ed102034000d",
+  "capstone_mnemonic": "deb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-arith",
+  "notes": "DEB: short BFP divide"
+ },
+ {
+  "bytes_hex": "ed1020340019",
+  "capstone_mnemonic": "cdb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-compare",
+  "notes": "CDB: long BFP compare"
+ },
+ {
+  "bytes_hex": "ed102034001a",
+  "capstone_mnemonic": "adb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-arith",
+  "notes": "ADB: long BFP add"
+ },
+ {
+  "bytes_hex": "ed102034001b",
+  "capstone_mnemonic": "sdb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-arith",
+  "notes": "SDB: long BFP subtract"
+ },
+ {
+  "bytes_hex": "ed102034001c",
+  "capstone_mnemonic": "mdb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-arith",
+  "notes": "MDB: long BFP multiply"
+ },
+ {
+  "bytes_hex": "ed102034001d",
+  "capstone_mnemonic": "ddb",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-arith",
+  "notes": "DDB: long BFP divide"
+ },
+ {
+  "bytes_hex": "ed1020340024",
+  "capstone_mnemonic": "lde",
+  "capstone_op_str": "%f1, 0x34(%r2)",
+  "category": "fp-load",
+  "notes": "LDE: short->long HFP load lengthened"
+ },
+ {
+  "bytes_hex": "f02101234567",
+  "capstone_mnemonic": "srp",
+  "capstone_op_str": "0x123(3), 0x567(%r4), 1",
+  "category": "ssc",
+  "notes": "SRP (uses SSc token, I3=1)"
+ },
+ {
+  "bytes_hex": "f11012345678",
+  "capstone_mnemonic": "mvo",
+  "capstone_op_str": "0x234(2, %r1), 0x678(1, %r5)",
+  "category": "ssb",
+  "notes": "MVO basic"
+ },
+ {
+  "bytes_hex": "f21012345678",
+  "capstone_mnemonic": "pack",
+  "capstone_op_str": "0x234(2, %r1), 0x678(1, %r5)",
+  "category": "ssb",
+  "notes": "PACK basic"
+ },
+ {
+  "bytes_hex": "f212f000e000",
+  "capstone_mnemonic": "pack",
+  "capstone_op_str": "0(2, %r15), 0(3, %r14)",
+  "category": "store",
+  "notes": "PACK"
+ },
+ {
+  "bytes_hex": "f31012345678",
+  "capstone_mnemonic": "unpk",
+  "capstone_op_str": "0x234(2, %r1), 0x678(1, %r5)",
+  "category": "ssb",
+  "notes": "UNPK basic"
+ },
+ {
+  "bytes_hex": "f321f000e000",
+  "capstone_mnemonic": "unpk",
+  "capstone_op_str": "0(3, %r15), 0(2, %r14)",
+  "category": "store",
+  "notes": "unpack L1=2,L2=1"
+ },
+ {
+  "bytes_hex": "f82101234567",
+  "capstone_mnemonic": "zap",
+  "capstone_op_str": "0x123(3), 0x567(2, %r4)",
+  "category": "ssc",
+  "notes": "ZAP basic"
+ },
+ {
+  "bytes_hex": "f92101234567",
+  "capstone_mnemonic": "cp",
+  "capstone_op_str": "0x123(3), 0x567(2, %r4)",
+  "category": "ssc",
+  "notes": "CP basic"
+ },
+ {
+  "bytes_hex": "fa1012345678",
+  "capstone_mnemonic": "ap",
+  "capstone_op_str": "0x234(2, %r1), 0x678(1, %r5)",
+  "category": "ssc",
+  "notes": "AP L1=1 L2=0"
+ },
+ {
+  "bytes_hex": "fa2101234567",
+  "capstone_mnemonic": "ap",
+  "capstone_op_str": "0x123(3), 0x567(2, %r4)",
+  "category": "ssc",
+  "notes": "AP basic"
+ },
+ {
+  "bytes_hex": "fb3212345678",
+  "capstone_mnemonic": "sp",
+  "capstone_op_str": "0x234(4, %r1), 0x678(3, %r5)",
+  "category": "ssc",
+  "notes": "SP basic"
+ },
+ {
+  "bytes_hex": "fc2101234567",
+  "capstone_mnemonic": "mp",
+  "capstone_op_str": "0x123(3), 0x567(2, %r4)",
+  "category": "ssc",
+  "notes": "MP basic"
+ },
+ {
+  "bytes_hex": "fd2101234567",
+  "capstone_mnemonic": "dp",
+  "capstone_op_str": "0x123(3), 0x567(2, %r4)",
+  "category": "ssc",
+  "notes": "DP basic"
+ },
+ {
+  "bytes_hex": "b9f20012",
+  "capstone_mnemonic": "locr",
+  "capstone_op_str": "%r1, %r2, 0",
+  "category": "cond",
+  "notes": "LOCR mask 0 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9f21012",
+  "capstone_mnemonic": "locro",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCR mask 1 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9f22012",
+  "capstone_mnemonic": "locrh",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCR mask 2 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9f24012",
+  "capstone_mnemonic": "locrl",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCR mask 4 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9f27012",
+  "capstone_mnemonic": "locrne",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCR mask 7 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9f28012",
+  "capstone_mnemonic": "locre",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCR mask 8 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9f2e012",
+  "capstone_mnemonic": "locrno",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCR mask E (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9f2f012",
+  "capstone_mnemonic": "locr",
+  "capstone_op_str": "%r1, %r2, 0xf",
+  "category": "cond",
+  "notes": "LOCR mask F (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9e20012",
+  "capstone_mnemonic": "locgr",
+  "capstone_op_str": "%r1, %r2, 0",
+  "category": "cond",
+  "notes": "LOCGR mask 0 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9e21012",
+  "capstone_mnemonic": "locgro",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCGR mask 1 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9e22012",
+  "capstone_mnemonic": "locgrh",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCGR mask 2 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9e24012",
+  "capstone_mnemonic": "locgrl",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCGR mask 4 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9e27012",
+  "capstone_mnemonic": "locgrne",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCGR mask 7 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9e28012",
+  "capstone_mnemonic": "locgre",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCGR mask 8 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9e2e012",
+  "capstone_mnemonic": "locgrno",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "LOCGR mask E (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9e2f012",
+  "capstone_mnemonic": "locgr",
+  "capstone_op_str": "%r1, %r2, 0xf",
+  "category": "cond",
+  "notes": "LOCGR mask F (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9c00012",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFHR mask 0 (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c02012",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFHR mask 2 (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c04012",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFHR mask 4 (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c08012",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFHR mask 8 (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c0f012",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFHR mask F (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks LOCFHR",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "eb10210000f2",
+  "capstone_mnemonic": "loc",
+  "capstone_op_str": "%r1, 0x100(%r2), 0",
+  "category": "cond",
+  "notes": "LOC mask 0 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb17210000f2",
+  "capstone_mnemonic": "locne",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LOC mask 7 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb18210000f2",
+  "capstone_mnemonic": "loce",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LOC mask 8 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb1f210000f2",
+  "capstone_mnemonic": "loc",
+  "capstone_op_str": "%r1, 0x100(%r2), 0xf",
+  "category": "cond",
+  "notes": "LOC mask F (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb10210000e2",
+  "capstone_mnemonic": "locg",
+  "capstone_op_str": "%r1, 0x100(%r2), 0",
+  "category": "cond",
+  "notes": "LOCG mask 0 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb17210000e2",
+  "capstone_mnemonic": "locgne",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LOCG mask 7 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb18210000e2",
+  "capstone_mnemonic": "locge",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LOCG mask 8 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb1f210000e2",
+  "capstone_mnemonic": "locg",
+  "capstone_op_str": "%r1, 0x100(%r2), 0xf",
+  "category": "cond",
+  "notes": "LOCG mask F (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb10210000f3",
+  "capstone_mnemonic": "stoc",
+  "capstone_op_str": "%r1, 0x100(%r2), 0",
+  "category": "cond",
+  "notes": "STOC mask 0 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb17210000f3",
+  "capstone_mnemonic": "stocne",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "STOC mask 7 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb18210000f3",
+  "capstone_mnemonic": "stoce",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "STOC mask 8 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb1f210000f3",
+  "capstone_mnemonic": "stoc",
+  "capstone_op_str": "%r1, 0x100(%r2), 0xf",
+  "category": "cond",
+  "notes": "STOC mask F (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb10210000e3",
+  "capstone_mnemonic": "stocg",
+  "capstone_op_str": "%r1, 0x100(%r2), 0",
+  "category": "cond",
+  "notes": "STOCG mask 0 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb17210000e3",
+  "capstone_mnemonic": "stocgne",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "STOCG mask 7 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb18210000e3",
+  "capstone_mnemonic": "stocge",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "STOCG mask 8 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb1f210000e3",
+  "capstone_mnemonic": "stocg",
+  "capstone_op_str": "%r1, 0x100(%r2), 0xf",
+  "category": "cond",
+  "notes": "STOCG mask F (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb10210000e0",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFH mask 0 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks LOCFH",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "eb17210000e0",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFH mask 7 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks LOCFH",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "eb18210000e0",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFH mask 8 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks LOCFH",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "eb1f210000e0",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "LOCFH mask F (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks LOCFH",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "eb10210000e1",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "STOCFH mask 0 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks STOCFH",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "eb17210000e1",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "STOCFH mask 7 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks STOCFH",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "eb18210000e1",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "STOCFH mask 8 (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks STOCFH",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "eb1f210000e1",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "STOCFH mask F (R1=1, mem 0x100(R2)); decode-only: Capstone 5.0.7 lacks STOCFH",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "ec1012340042",
+  "capstone_mnemonic": "lochi",
+  "capstone_op_str": "%r1, 0x1234, 0",
+  "category": "cond",
+  "notes": "LOCHI mask 0 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec1712340042",
+  "capstone_mnemonic": "lochine",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "cond",
+  "notes": "LOCHI mask 7 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec1812340042",
+  "capstone_mnemonic": "lochie",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "cond",
+  "notes": "LOCHI mask 8 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec1f12340042",
+  "capstone_mnemonic": "lochi",
+  "capstone_op_str": "%r1, 0x1234, 0xf",
+  "category": "cond",
+  "notes": "LOCHI mask F (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec1012340046",
+  "capstone_mnemonic": "locghi",
+  "capstone_op_str": "%r1, 0x1234, 0",
+  "category": "cond",
+  "notes": "LOCGHI mask 0 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec1712340046",
+  "capstone_mnemonic": "locghine",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "cond",
+  "notes": "LOCGHI mask 7 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec1812340046",
+  "capstone_mnemonic": "locghie",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "cond",
+  "notes": "LOCGHI mask 8 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec1f12340046",
+  "capstone_mnemonic": "locghi",
+  "capstone_op_str": "%r1, 0x1234, 0xf",
+  "category": "cond",
+  "notes": "LOCGHI mask F (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec101234004e",
+  "capstone_mnemonic": "lochhi",
+  "capstone_op_str": "%r1, 0x1234, 0",
+  "category": "cond",
+  "notes": "LOCHHI mask 0 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec171234004e",
+  "capstone_mnemonic": "lochhine",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "cond",
+  "notes": "LOCHHI mask 7 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec181234004e",
+  "capstone_mnemonic": "lochhie",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "cond",
+  "notes": "LOCHHI mask 8 (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "ec1f1234004e",
+  "capstone_mnemonic": "lochhi",
+  "capstone_op_str": "%r1, 0x1234, 0xf",
+  "category": "cond",
+  "notes": "LOCHHI mask F (R1=1, I2=0x1234)"
+ },
+ {
+  "bytes_hex": "b9f01302",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELR M4=0 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9f01322",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELR M4=2 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9f01342",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELR M4=4 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9f01382",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELR M4=8 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9f013f2",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELR M4=F (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9e31302",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELGR M4=0 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9e31322",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELGR M4=2 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9e31342",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELGR M4=4 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9e31382",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELGR M4=8 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9e313f2",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELGR M4=F (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c01302",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELFHR M4=0 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c01322",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELFHR M4=2 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c01342",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELFHR M4=4 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c01382",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELFHR M4=8 (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9c013f2",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "SELFHR M4=F (R1=1,R3=3,R2=2); decode-only: Capstone 5.0.7 lacks SEL*",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b9722012",
+  "capstone_mnemonic": "crth",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CRT mask 2 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9724012",
+  "capstone_mnemonic": "crtl",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CRT mask 4 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9728012",
+  "capstone_mnemonic": "crte",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CRT mask 8 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9732012",
+  "capstone_mnemonic": "clrth",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CLRT mask 2 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9734012",
+  "capstone_mnemonic": "clrtl",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CLRT mask 4 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9738012",
+  "capstone_mnemonic": "clrte",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CLRT mask 8 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9602012",
+  "capstone_mnemonic": "cgrth",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CGRT mask 2 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9604012",
+  "capstone_mnemonic": "cgrtl",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CGRT mask 4 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9608012",
+  "capstone_mnemonic": "cgrte",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CGRT mask 8 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9612012",
+  "capstone_mnemonic": "clgrth",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CLGRT mask 2 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9614012",
+  "capstone_mnemonic": "clgrtl",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CLGRT mask 4 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "b9618012",
+  "capstone_mnemonic": "clgrte",
+  "capstone_op_str": "%r1, %r2",
+  "category": "cond",
+  "notes": "CLGRT mask 8 (R1=1,R2=2)"
+ },
+ {
+  "bytes_hex": "ec1000ff2072",
+  "capstone_mnemonic": "cith",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CIT mask 2 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff4072",
+  "capstone_mnemonic": "citl",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CIT mask 4 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff8072",
+  "capstone_mnemonic": "cite",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CIT mask 8 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff2070",
+  "capstone_mnemonic": "cgith",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CGIT mask 2 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff4070",
+  "capstone_mnemonic": "cgitl",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CGIT mask 4 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff8070",
+  "capstone_mnemonic": "cgite",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CGIT mask 8 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff2073",
+  "capstone_mnemonic": "clfith",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CLFIT mask 2 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff4073",
+  "capstone_mnemonic": "clfitl",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CLFIT mask 4 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff8073",
+  "capstone_mnemonic": "clfite",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CLFIT mask 8 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff2071",
+  "capstone_mnemonic": "clgith",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CLGIT mask 2 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff4071",
+  "capstone_mnemonic": "clgitl",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CLGIT mask 4 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "ec1000ff8071",
+  "capstone_mnemonic": "clgite",
+  "capstone_op_str": "%r1, 0xff",
+  "category": "cond",
+  "notes": "CLGIT mask 8 (R1=1, I2=0xFF)"
+ },
+ {
+  "bytes_hex": "eb1221000023",
+  "capstone_mnemonic": "clth",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "CLT mask 2 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb1421000023",
+  "capstone_mnemonic": "cltl",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "CLT mask 4 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb1821000023",
+  "capstone_mnemonic": "clte",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "CLT mask 8 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb122100002b",
+  "capstone_mnemonic": "clgth",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "CLGT mask 2 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb142100002b",
+  "capstone_mnemonic": "clgtl",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "CLGT mask 4 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "eb182100002b",
+  "capstone_mnemonic": "clgte",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "CLGT mask 8 (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "e3102100009f",
+  "capstone_mnemonic": "lat",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LAT (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "e31021000085",
+  "capstone_mnemonic": "lgat",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LGAT (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "e3102100009d",
+  "capstone_mnemonic": "llgfat",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LLGFAT (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "e3102100009c",
+  "capstone_mnemonic": "llgtat",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LLGTAT (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "e310210000c8",
+  "capstone_mnemonic": "lfhat",
+  "capstone_op_str": "%r1, 0x100(%r2)",
+  "category": "cond",
+  "notes": "LFHAT (R1=1, mem 0x100(R2))"
+ },
+ {
+  "bytes_hex": "e80011002200",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "MVCIN (L=0,B1=1,D1=0x100,B2=2,D2=0x200); decode-only: Capstone 5.0.7 lacks MVCIN",
+  "expected_len": 6
+ },
+ {
+  "bytes_hex": "b2540012",
+  "capstone_mnemonic": null,
+  "capstone_op_str": null,
+  "category": "cond",
+  "notes": "MVPG (R1=1,R2=2); decode-only: Capstone 5.0.7 lacks MVPG; privileged stub",
+  "expected_len": 4
+ },
+ {
+  "bytes_hex": "b29d2100",
+  "capstone_mnemonic": "lfpc",
+  "capstone_op_str": "0x100(%r2)",
+  "category": "cond",
+  "notes": "LFPC (B2=1,D2=0x100)"
+ },
+ {
+  "bytes_hex": "2012",
+  "capstone_mnemonic": "lpdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "LPDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "2112",
+  "capstone_mnemonic": "lndr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "LNDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "2212",
+  "capstone_mnemonic": "ltdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "LTDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "2312",
+  "capstone_mnemonic": "lcdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "LCDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "2412",
+  "capstone_mnemonic": "hdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "HDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "2712",
+  "capstone_mnemonic": "mxdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "MXDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "2e12",
+  "capstone_mnemonic": "awr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "AWR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "2f12",
+  "capstone_mnemonic": "swr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "SWR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "3012",
+  "capstone_mnemonic": "lper",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "LPER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "3112",
+  "capstone_mnemonic": "lner",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "LNER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "3212",
+  "capstone_mnemonic": "lter",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "LTER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "3312",
+  "capstone_mnemonic": "lcer",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "LCER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "3412",
+  "capstone_mnemonic": "her",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "HER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "3e12",
+  "capstone_mnemonic": "aur",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "AUR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "3f12",
+  "capstone_mnemonic": "sur",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rr",
+  "notes": "SUR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "6e122123",
+  "capstone_mnemonic": "aw",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rx",
+  "notes": "AW: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "6f122123",
+  "capstone_mnemonic": "sw",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rx",
+  "notes": "SW: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "7e122123",
+  "capstone_mnemonic": "au",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rx",
+  "notes": "AU: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "7f122123",
+  "capstone_mnemonic": "su",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rx",
+  "notes": "SU: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3240012",
+  "capstone_mnemonic": "lder",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LDER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3260012",
+  "capstone_mnemonic": "lxer",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LXER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3370012",
+  "capstone_mnemonic": "meer",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "MEER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b2450012",
+  "capstone_mnemonic": "sqer",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "SQER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b2440012",
+  "capstone_mnemonic": "sqdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "SQDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3770012",
+  "capstone_mnemonic": "fier",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "FIER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b37f0012",
+  "capstone_mnemonic": "fidr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "FIDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230026",
+  "capstone_mnemonic": "lxe",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "LXE: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230034",
+  "capstone_mnemonic": "sqe",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "SQE: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230035",
+  "capstone_mnemonic": "sqd",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "SQD: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230037",
+  "capstone_mnemonic": "mee",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "MEE: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3b80012",
+  "capstone_mnemonic": "cfer",
+  "capstone_op_str": "%r1, 0, %f2",
+  "category": "fp-rrf",
+  "notes": "CFER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3b90012",
+  "capstone_mnemonic": "cfdr",
+  "capstone_op_str": "%r1, 0, %f2",
+  "category": "fp-rrf",
+  "notes": "CFDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3c80012",
+  "capstone_mnemonic": "cger",
+  "capstone_op_str": "%r1, 0, %f2",
+  "category": "fp-rrf",
+  "notes": "CGER: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3c90012",
+  "capstone_mnemonic": "cgdr",
+  "capstone_op_str": "%r1, 0, %f2",
+  "category": "fp-rrf",
+  "notes": "CGDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed322123103c",
+  "capstone_mnemonic": "mayh",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MAYH: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed322123103d",
+  "capstone_mnemonic": "myh",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MYH: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed322123103a",
+  "capstone_mnemonic": "may",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MAY: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed322123103b",
+  "capstone_mnemonic": "my",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MY: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed3221231038",
+  "capstone_mnemonic": "mayl",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MAYL: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed3221231039",
+  "capstone_mnemonic": "myl",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MYL: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3030012",
+  "capstone_mnemonic": "lcebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LCEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3060012",
+  "capstone_mnemonic": "lxebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LXEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3070012",
+  "capstone_mnemonic": "mxdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "MXDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3080012",
+  "capstone_mnemonic": "kebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "KEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3100012",
+  "capstone_mnemonic": "lpdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LPDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3110012",
+  "capstone_mnemonic": "lndbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LNDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3120012",
+  "capstone_mnemonic": "ltdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LTDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3130012",
+  "capstone_mnemonic": "lcdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LCDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3170012",
+  "capstone_mnemonic": "meebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "MEEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3180012",
+  "capstone_mnemonic": "kdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "KDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3140012",
+  "capstone_mnemonic": "sqebr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "SQEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3150012",
+  "capstone_mnemonic": "sqdbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "SQDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b30e1032",
+  "capstone_mnemonic": "maebr",
+  "capstone_op_str": "%f1, %f3, %f2",
+  "category": "fp-rrd",
+  "notes": "MAEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b30f1032",
+  "capstone_mnemonic": "msebr",
+  "capstone_op_str": "%f1, %f3, %f2",
+  "category": "fp-rrd",
+  "notes": "MSEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b31e1032",
+  "capstone_mnemonic": "madbr",
+  "capstone_op_str": "%f1, %f3, %f2",
+  "category": "fp-rrd",
+  "notes": "MADBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b31f1032",
+  "capstone_mnemonic": "msdbr",
+  "capstone_op_str": "%f1, %f3, %f2",
+  "category": "fp-rrd",
+  "notes": "MSDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230004",
+  "capstone_mnemonic": "ldeb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "LDEB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230005",
+  "capstone_mnemonic": "lxdb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "LXDB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230006",
+  "capstone_mnemonic": "lxeb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "LXEB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230007",
+  "capstone_mnemonic": "mxdb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "MXDB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230008",
+  "capstone_mnemonic": "keb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "KEB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230014",
+  "capstone_mnemonic": "sqeb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "SQEB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230015",
+  "capstone_mnemonic": "sqdb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "SQDB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230017",
+  "capstone_mnemonic": "meeb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "MEEB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230018",
+  "capstone_mnemonic": "kdb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "KDB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230010",
+  "capstone_mnemonic": "tceb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "TCEB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230011",
+  "capstone_mnemonic": "tcdb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "TCDB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "ed1221230012",
+  "capstone_mnemonic": "tcxb",
+  "capstone_op_str": "%f1, 0x123(%r2, %r2)",
+  "category": "fp-rxe",
+  "notes": "TCXB: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3530012",
+  "capstone_mnemonic": "diebr",
+  "capstone_op_str": "%f1, %f0, %f2, 0",
+  "category": "fp-rrf",
+  "notes": "DIEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b35b0012",
+  "capstone_mnemonic": "didbr",
+  "capstone_op_str": "%f1, %f0, %f2, 0",
+  "category": "fp-rrf",
+  "notes": "DIDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3720012",
+  "capstone_mnemonic": "cpsdr",
+  "capstone_op_str": "%f1, %f0, %f2",
+  "category": "fp-rrf",
+  "notes": "CPSDR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3980012",
+  "capstone_mnemonic": "cfebr",
+  "capstone_op_str": "%r1, 0, %f2",
+  "category": "fp-rrf",
+  "notes": "CFEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3982012",
+  "capstone_mnemonic": "cfebr",
+  "capstone_op_str": "%r1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "CFEBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3990012",
+  "capstone_mnemonic": "cfdbr",
+  "capstone_op_str": "%r1, 0, %f2",
+  "category": "fp-rrf",
+  "notes": "CFDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3992012",
+  "capstone_mnemonic": "cfdbr",
+  "capstone_op_str": "%r1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "CFDBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3a80012",
+  "capstone_mnemonic": "cgebr",
+  "capstone_op_str": "%r1, 0, %f2",
+  "category": "fp-rrf",
+  "notes": "CGEBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3a82012",
+  "capstone_mnemonic": "cgebr",
+  "capstone_op_str": "%r1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "CGEBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3a90012",
+  "capstone_mnemonic": "cgdbr",
+  "capstone_op_str": "%r1, 0, %f2",
+  "category": "fp-rrf",
+  "notes": "CGDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3a92012",
+  "capstone_mnemonic": "cgdbr",
+  "capstone_op_str": "%r1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "CGDBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3960012",
+  "capstone_mnemonic": "cxfbr",
+  "capstone_op_str": "%f1, %r2",
+  "category": "fp-rre",
+  "notes": "CXFBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3962012",
+  "capstone_mnemonic": "cxfbra",
+  "capstone_op_str": "%f1, 2, %r2, 0",
+  "category": "fp-rrf",
+  "notes": "CXFBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3a60012",
+  "capstone_mnemonic": "cxgbr",
+  "capstone_op_str": "%f1, %r2",
+  "category": "fp-rre",
+  "notes": "CXGBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3a62012",
+  "capstone_mnemonic": "cxgbra",
+  "capstone_op_str": "%f1, 2, %r2, 0",
+  "category": "fp-rrf",
+  "notes": "CXGBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3942012",
+  "capstone_mnemonic": "cefbra",
+  "capstone_op_str": "%f1, 2, %r2, 0",
+  "category": "fp-rrf",
+  "notes": "CEFBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3a42012",
+  "capstone_mnemonic": "cegbra",
+  "capstone_op_str": "%f1, 2, %r2, 0",
+  "category": "fp-rrf",
+  "notes": "CEGBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3952012",
+  "capstone_mnemonic": "cdfbra",
+  "capstone_op_str": "%f1, 2, %r2, 0",
+  "category": "fp-rrf",
+  "notes": "CDFBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3a52012",
+  "capstone_mnemonic": "cdgbra",
+  "capstone_op_str": "%f1, 2, %r2, 0",
+  "category": "fp-rrf",
+  "notes": "CDGBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3572012",
+  "capstone_mnemonic": "fiebr",
+  "capstone_op_str": "%f1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "FIEBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b35f2012",
+  "capstone_mnemonic": "fidbr",
+  "capstone_op_str": "%f1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "FIDBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3b82012",
+  "capstone_mnemonic": "cfer",
+  "capstone_op_str": "%r1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "CFERA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3b92012",
+  "capstone_mnemonic": "cfdr",
+  "capstone_op_str": "%r1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "CFDRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3c82012",
+  "capstone_mnemonic": "cger",
+  "capstone_op_str": "%r1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "CGERA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3c92012",
+  "capstone_mnemonic": "cgdr",
+  "capstone_op_str": "%r1, 2, %f2",
+  "category": "fp-rrf",
+  "notes": "CGDRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3440012",
+  "capstone_mnemonic": "ledbr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LEDBR: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3442012",
+  "capstone_mnemonic": "ledbra",
+  "capstone_op_str": "%f1, 2, %f2, 0",
+  "category": "fp-rrf",
+  "notes": "LEDBRA: Phase 7 FP extension"
+ },
+ {
+  "bytes_hex": "b3700012",
+  "capstone_mnemonic": "lpdfr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LPDFR: load positive long HFP"
+ },
+ {
+  "bytes_hex": "b3710012",
+  "capstone_mnemonic": "lndfr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LNDFR: load negative long HFP"
+ },
+ {
+  "bytes_hex": "b3730012",
+  "capstone_mnemonic": "lcdfr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "LCDFR: load complement long HFP"
+ },
+ {
+  "bytes_hex": "b3580012",
+  "capstone_mnemonic": "thder",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "THDER: convert BFP to HFP short->long"
+ },
+ {
+  "bytes_hex": "b3590012",
+  "capstone_mnemonic": "thdr",
+  "capstone_op_str": "%f1, %f2",
+  "category": "fp-rre",
+  "notes": "THDR: convert BFP to HFP long"
+ },
+ {
+  "bytes_hex": "ed322123100e",
+  "capstone_mnemonic": "maeb",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MAEB: multiply and add short BFP"
+ },
+ {
+  "bytes_hex": "ed322123100f",
+  "capstone_mnemonic": "mseb",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MSEB: multiply and subtract short BFP"
+ },
+ {
+  "bytes_hex": "ed322123101e",
+  "capstone_mnemonic": "madb",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MADB: multiply and add long BFP"
+ },
+ {
+  "bytes_hex": "ed322123101f",
+  "capstone_mnemonic": "msdb",
+  "capstone_op_str": "%f1, %f3, 0x123(%r2, %r2)",
+  "category": "fp-rxf",
+  "notes": "MSDB: multiply and subtract long BFP"
+ },
+ {
+  "bytes_hex": "fc3222345678",
+  "capstone_mnemonic": "mp",
+  "capstone_op_str": "0x234(4, %r2), 0x678(3, %r5)",
+  "category": "ssc",
+  "notes": "MP real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "fd3222345678",
+  "capstone_mnemonic": "dp",
+  "capstone_op_str": "0x234(4, %r2), 0x678(3, %r5)",
+  "category": "ssc",
+  "notes": "DP real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "b2a50004",
+  "capstone_mnemonic": "tre",
+  "capstone_op_str": "%r0, %r4",
+  "category": "rre",
+  "notes": "TRE real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e00f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r0, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e20f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r2, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e30f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r3, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r3 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e40f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r4, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e50f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r5, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r5 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e60f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r6, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e70f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r7, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r7 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e80f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r8, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4e90f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r9, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r9 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4ea0f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r10, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4eb0f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r11, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r11 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4ec0f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r12, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4ed0f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r13, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r13 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4ee0f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r14, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4ef0f000",
+  "capstone_mnemonic": "cvd",
+  "capstone_op_str": "%r15, 0(%r15)",
+  "category": "rx",
+  "notes": "CVD r15 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f00f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r0, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f20f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r2, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f30f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r3, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r3 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f40f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r4, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f50f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r5, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r5 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f60f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r6, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f70f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r7, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r7 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f80f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r8, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4f90f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r9, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r9 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4fa0f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r10, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4fb0f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r11, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r11 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4fc0f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r12, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4fd0f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r13, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r13 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4fe0f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r14, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "4ff0f000",
+  "capstone_mnemonic": "cvb",
+  "capstone_op_str": "%r15, 0(%r15)",
+  "category": "rx",
+  "notes": "CVB r15 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e00",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r0, %r0",
+  "category": "rr",
+  "notes": "MVCL r0,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e04",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r0, %r4",
+  "category": "rr",
+  "notes": "MVCL r0,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e06",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r0, %r6",
+  "category": "rr",
+  "notes": "MVCL r0,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e08",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r0, %r8",
+  "category": "rr",
+  "notes": "MVCL r0,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e0a",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r0, %r10",
+  "category": "rr",
+  "notes": "MVCL r0,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e0c",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r0, %r12",
+  "category": "rr",
+  "notes": "MVCL r0,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e0e",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r0, %r14",
+  "category": "rr",
+  "notes": "MVCL r0,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e20",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r2, %r0",
+  "category": "rr",
+  "notes": "MVCL r2,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e22",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r2, %r2",
+  "category": "rr",
+  "notes": "MVCL r2,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e24",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r2, %r4",
+  "category": "rr",
+  "notes": "MVCL r2,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e26",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r2, %r6",
+  "category": "rr",
+  "notes": "MVCL r2,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e28",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r2, %r8",
+  "category": "rr",
+  "notes": "MVCL r2,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e2a",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r2, %r10",
+  "category": "rr",
+  "notes": "MVCL r2,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e2c",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r2, %r12",
+  "category": "rr",
+  "notes": "MVCL r2,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e2e",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r2, %r14",
+  "category": "rr",
+  "notes": "MVCL r2,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e40",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r4, %r0",
+  "category": "rr",
+  "notes": "MVCL r4,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e42",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r4, %r2",
+  "category": "rr",
+  "notes": "MVCL r4,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e44",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r4, %r4",
+  "category": "rr",
+  "notes": "MVCL r4,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e46",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r4, %r6",
+  "category": "rr",
+  "notes": "MVCL r4,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e48",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r4, %r8",
+  "category": "rr",
+  "notes": "MVCL r4,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e4a",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r4, %r10",
+  "category": "rr",
+  "notes": "MVCL r4,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e4c",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r4, %r12",
+  "category": "rr",
+  "notes": "MVCL r4,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e4e",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r4, %r14",
+  "category": "rr",
+  "notes": "MVCL r4,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e60",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r6, %r0",
+  "category": "rr",
+  "notes": "MVCL r6,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e62",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r6, %r2",
+  "category": "rr",
+  "notes": "MVCL r6,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e64",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r6, %r4",
+  "category": "rr",
+  "notes": "MVCL r6,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e66",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r6, %r6",
+  "category": "rr",
+  "notes": "MVCL r6,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e68",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r6, %r8",
+  "category": "rr",
+  "notes": "MVCL r6,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e6a",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r6, %r10",
+  "category": "rr",
+  "notes": "MVCL r6,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e6c",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r6, %r12",
+  "category": "rr",
+  "notes": "MVCL r6,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e6e",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r6, %r14",
+  "category": "rr",
+  "notes": "MVCL r6,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e80",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r8, %r0",
+  "category": "rr",
+  "notes": "MVCL r8,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e82",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r8, %r2",
+  "category": "rr",
+  "notes": "MVCL r8,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e84",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r8, %r4",
+  "category": "rr",
+  "notes": "MVCL r8,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e86",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r8, %r6",
+  "category": "rr",
+  "notes": "MVCL r8,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e88",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r8, %r8",
+  "category": "rr",
+  "notes": "MVCL r8,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e8a",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r8, %r10",
+  "category": "rr",
+  "notes": "MVCL r8,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e8c",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r8, %r12",
+  "category": "rr",
+  "notes": "MVCL r8,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0e8e",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r8, %r14",
+  "category": "rr",
+  "notes": "MVCL r8,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ea0",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r10, %r0",
+  "category": "rr",
+  "notes": "MVCL r10,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ea2",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r10, %r2",
+  "category": "rr",
+  "notes": "MVCL r10,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ea4",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r10, %r4",
+  "category": "rr",
+  "notes": "MVCL r10,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ea6",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r10, %r6",
+  "category": "rr",
+  "notes": "MVCL r10,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ea8",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r10, %r8",
+  "category": "rr",
+  "notes": "MVCL r10,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0eaa",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r10, %r10",
+  "category": "rr",
+  "notes": "MVCL r10,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0eac",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r10, %r12",
+  "category": "rr",
+  "notes": "MVCL r10,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0eae",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r10, %r14",
+  "category": "rr",
+  "notes": "MVCL r10,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ec0",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r12, %r0",
+  "category": "rr",
+  "notes": "MVCL r12,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ec2",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r12, %r2",
+  "category": "rr",
+  "notes": "MVCL r12,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ec4",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r12, %r4",
+  "category": "rr",
+  "notes": "MVCL r12,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ec6",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r12, %r6",
+  "category": "rr",
+  "notes": "MVCL r12,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ec8",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r12, %r8",
+  "category": "rr",
+  "notes": "MVCL r12,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0eca",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r12, %r10",
+  "category": "rr",
+  "notes": "MVCL r12,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ecc",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r12, %r12",
+  "category": "rr",
+  "notes": "MVCL r12,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ece",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r12, %r14",
+  "category": "rr",
+  "notes": "MVCL r12,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ee0",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r14, %r0",
+  "category": "rr",
+  "notes": "MVCL r14,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ee2",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r14, %r2",
+  "category": "rr",
+  "notes": "MVCL r14,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ee4",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r14, %r4",
+  "category": "rr",
+  "notes": "MVCL r14,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ee6",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r14, %r6",
+  "category": "rr",
+  "notes": "MVCL r14,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0ee8",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r14, %r8",
+  "category": "rr",
+  "notes": "MVCL r14,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0eea",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r14, %r10",
+  "category": "rr",
+  "notes": "MVCL r14,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0eec",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r14, %r12",
+  "category": "rr",
+  "notes": "MVCL r14,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0eee",
+  "capstone_mnemonic": "mvcl",
+  "capstone_op_str": "%r14, %r14",
+  "category": "rr",
+  "notes": "MVCL r14,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f00",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r0, %r0",
+  "category": "rr",
+  "notes": "CLCL r0,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f04",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r0, %r4",
+  "category": "rr",
+  "notes": "CLCL r0,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f06",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r0, %r6",
+  "category": "rr",
+  "notes": "CLCL r0,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f08",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r0, %r8",
+  "category": "rr",
+  "notes": "CLCL r0,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f0a",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r0, %r10",
+  "category": "rr",
+  "notes": "CLCL r0,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f0c",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r0, %r12",
+  "category": "rr",
+  "notes": "CLCL r0,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f0e",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r0, %r14",
+  "category": "rr",
+  "notes": "CLCL r0,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f20",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r2, %r0",
+  "category": "rr",
+  "notes": "CLCL r2,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f22",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r2, %r2",
+  "category": "rr",
+  "notes": "CLCL r2,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f24",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r2, %r4",
+  "category": "rr",
+  "notes": "CLCL r2,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f26",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r2, %r6",
+  "category": "rr",
+  "notes": "CLCL r2,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f28",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r2, %r8",
+  "category": "rr",
+  "notes": "CLCL r2,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f2a",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r2, %r10",
+  "category": "rr",
+  "notes": "CLCL r2,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f2c",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r2, %r12",
+  "category": "rr",
+  "notes": "CLCL r2,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f2e",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r2, %r14",
+  "category": "rr",
+  "notes": "CLCL r2,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f40",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r4, %r0",
+  "category": "rr",
+  "notes": "CLCL r4,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f42",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r4, %r2",
+  "category": "rr",
+  "notes": "CLCL r4,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f44",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r4, %r4",
+  "category": "rr",
+  "notes": "CLCL r4,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f46",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r4, %r6",
+  "category": "rr",
+  "notes": "CLCL r4,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f48",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r4, %r8",
+  "category": "rr",
+  "notes": "CLCL r4,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f4a",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r4, %r10",
+  "category": "rr",
+  "notes": "CLCL r4,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f4c",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r4, %r12",
+  "category": "rr",
+  "notes": "CLCL r4,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f4e",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r4, %r14",
+  "category": "rr",
+  "notes": "CLCL r4,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f60",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r6, %r0",
+  "category": "rr",
+  "notes": "CLCL r6,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f62",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r6, %r2",
+  "category": "rr",
+  "notes": "CLCL r6,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f64",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r6, %r4",
+  "category": "rr",
+  "notes": "CLCL r6,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f66",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r6, %r6",
+  "category": "rr",
+  "notes": "CLCL r6,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f68",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r6, %r8",
+  "category": "rr",
+  "notes": "CLCL r6,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f6a",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r6, %r10",
+  "category": "rr",
+  "notes": "CLCL r6,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f6c",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r6, %r12",
+  "category": "rr",
+  "notes": "CLCL r6,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f6e",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r6, %r14",
+  "category": "rr",
+  "notes": "CLCL r6,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f80",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r8, %r0",
+  "category": "rr",
+  "notes": "CLCL r8,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f82",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r8, %r2",
+  "category": "rr",
+  "notes": "CLCL r8,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f84",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r8, %r4",
+  "category": "rr",
+  "notes": "CLCL r8,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f86",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r8, %r6",
+  "category": "rr",
+  "notes": "CLCL r8,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f88",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r8, %r8",
+  "category": "rr",
+  "notes": "CLCL r8,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f8a",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r8, %r10",
+  "category": "rr",
+  "notes": "CLCL r8,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f8c",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r8, %r12",
+  "category": "rr",
+  "notes": "CLCL r8,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0f8e",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r8, %r14",
+  "category": "rr",
+  "notes": "CLCL r8,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fa0",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r10, %r0",
+  "category": "rr",
+  "notes": "CLCL r10,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fa2",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r10, %r2",
+  "category": "rr",
+  "notes": "CLCL r10,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fa4",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r10, %r4",
+  "category": "rr",
+  "notes": "CLCL r10,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fa6",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r10, %r6",
+  "category": "rr",
+  "notes": "CLCL r10,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fa8",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r10, %r8",
+  "category": "rr",
+  "notes": "CLCL r10,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0faa",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r10, %r10",
+  "category": "rr",
+  "notes": "CLCL r10,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fac",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r10, %r12",
+  "category": "rr",
+  "notes": "CLCL r10,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fae",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r10, %r14",
+  "category": "rr",
+  "notes": "CLCL r10,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fc0",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r12, %r0",
+  "category": "rr",
+  "notes": "CLCL r12,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fc2",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r12, %r2",
+  "category": "rr",
+  "notes": "CLCL r12,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fc4",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r12, %r4",
+  "category": "rr",
+  "notes": "CLCL r12,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fc6",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r12, %r6",
+  "category": "rr",
+  "notes": "CLCL r12,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fc8",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r12, %r8",
+  "category": "rr",
+  "notes": "CLCL r12,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fca",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r12, %r10",
+  "category": "rr",
+  "notes": "CLCL r12,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fcc",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r12, %r12",
+  "category": "rr",
+  "notes": "CLCL r12,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fce",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r12, %r14",
+  "category": "rr",
+  "notes": "CLCL r12,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fe0",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r14, %r0",
+  "category": "rr",
+  "notes": "CLCL r14,r0 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fe2",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r14, %r2",
+  "category": "rr",
+  "notes": "CLCL r14,r2 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fe4",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r14, %r4",
+  "category": "rr",
+  "notes": "CLCL r14,r4 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fe6",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r14, %r6",
+  "category": "rr",
+  "notes": "CLCL r14,r6 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fe8",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r14, %r8",
+  "category": "rr",
+  "notes": "CLCL r14,r8 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fea",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r14, %r10",
+  "category": "rr",
+  "notes": "CLCL r14,r10 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fec",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r14, %r12",
+  "category": "rr",
+  "notes": "CLCL r14,r12 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "0fee",
+  "capstone_mnemonic": "clcl",
+  "capstone_op_str": "%r14, %r14",
+  "category": "rr",
+  "notes": "CLCL r14,r14 real p-code (dec2)"
+ },
+ {
+  "bytes_hex": "432eda1f",
+  "capstone_mnemonic": "ic",
+  "capstone_op_str": "%r2, 0xa1f(%r14, %r13)",
+  "category": "loadstore",
+  "notes": "INSERT CHARACTER: 43, R1=2, X2=14, B2=13, D=0xA1F"
+ },
+ {
+  "bytes_hex": "8c201000",
+  "capstone_mnemonic": "srdl",
+  "capstone_op_str": "%r2, 0(%r1)",
+  "category": "arith",
+  "notes": "SHIFT RIGHT DOUBLE LOGICAL: 8C, R1=2, B2=1, D=0"
+ },
+ {
+  "bytes_hex": "8d201000",
+  "capstone_mnemonic": "sldl",
+  "capstone_op_str": "%r2, 0(%r1)",
+  "category": "arith",
+  "notes": "SHIFT LEFT DOUBLE LOGICAL: 8D, R1=2, B2=1, D=0"
+ },
+ {
+  "bytes_hex": "8e201000",
+  "capstone_mnemonic": "srda",
+  "capstone_op_str": "%r2, 0(%r1)",
+  "category": "arith",
+  "notes": "SHIFT RIGHT DOUBLE ARITHMETIC: 8E, R1=2, B2=1, D=0"
+ },
+ {
+  "bytes_hex": "8f201000",
+  "capstone_mnemonic": "slda",
+  "capstone_op_str": "%r2, 0(%r1)",
+  "category": "arith",
+  "notes": "SHIFT LEFT DOUBLE ARITHMETIC: 8F, R1=2, B2=1, D=0"
+ },
+ {
+  "bytes_hex": "a5111234",
+  "capstone_mnemonic": "iihl",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "INSERT IMMEDIATE high-low: A5/1, R1=1"
+ },
+ {
+  "bytes_hex": "a5121234",
+  "capstone_mnemonic": "iilh",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "INSERT IMMEDIATE low-high: A5/2, R1=1"
+ },
+ {
+  "bytes_hex": "a5131234",
+  "capstone_mnemonic": "iill",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "INSERT IMMEDIATE low-low: A5/3, R1=1"
+ },
+ {
+  "bytes_hex": "a5141234",
+  "capstone_mnemonic": "nihh",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "AND IMMEDIATE high-high: A5/4, R1=1"
+ },
+ {
+  "bytes_hex": "a5151234",
+  "capstone_mnemonic": "nihl",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "AND IMMEDIATE high-low: A5/5, R1=1"
+ },
+ {
+  "bytes_hex": "a5181234",
+  "capstone_mnemonic": "oihh",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "OR IMMEDIATE high-high: A5/8, R1=1"
+ },
+ {
+  "bytes_hex": "a5191234",
+  "capstone_mnemonic": "oihl",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "OR IMMEDIATE high-low: A5/9, R1=1"
+ },
+ {
+  "bytes_hex": "a51a1234",
+  "capstone_mnemonic": "oilh",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "OR IMMEDIATE low-high: A5/A, R1=1"
+ },
+ {
+  "bytes_hex": "a51c1234",
+  "capstone_mnemonic": "llihh",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "LOAD IMMEDIATE high-high: A5/C, R1=1"
+ },
+ {
+  "bytes_hex": "a51d1234",
+  "capstone_mnemonic": "llihl",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "LOAD IMMEDIATE high-low: A5/D, R1=1"
+ },
+ {
+  "bytes_hex": "a51e1234",
+  "capstone_mnemonic": "llilh",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "LOAD IMMEDIATE low-high: A5/E, R1=1"
+ },
+ {
+  "bytes_hex": "a51f1234",
+  "capstone_mnemonic": "llill",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "LOAD IMMEDIATE low-low: A5/F, R1=1"
+ },
+ {
+  "bytes_hex": "a7001234",
+  "capstone_mnemonic": "tmlh",
+  "capstone_op_str": "%r0, 0x1234",
+  "category": "arith",
+  "notes": "TEST UNDER MASK low-high: A7, R1=0, M3=0"
+ },
+ {
+  "bytes_hex": "a7111234",
+  "capstone_mnemonic": "tmll",
+  "capstone_op_str": "%r1, 0x1234",
+  "category": "arith",
+  "notes": "TEST UNDER MASK low-low: A7, R1=1, M3=1"
+ },
+ {
+  "bytes_hex": "a7221234",
+  "capstone_mnemonic": "tmhh",
+  "capstone_op_str": "%r2, 0x1234",
+  "category": "arith",
+  "notes": "TEST UNDER MASK high-high: A7, R1=2, M3=2"
+ },
+ {
+  "bytes_hex": "a7331234",
+  "capstone_mnemonic": "tmhl",
+  "capstone_op_str": "%r3, 0x1234",
+  "category": "arith",
+  "notes": "TEST UNDER MASK high-low: A7, R1=3, M3=3"
+ },
+ {
+  "bytes_hex": "073d",
+  "capstone_mnemonic": "bnler",
+  "capstone_op_str": "%r13",
+  "category": "branch",
+  "notes": "BCR mask 3 (bnler)"
+ },
+ {
+  "bytes_hex": "075d",
+  "capstone_mnemonic": "bnher",
+  "capstone_op_str": "%r13",
+  "category": "branch",
+  "notes": "BCR mask 5 (bnher)"
+ },
+ {
+  "bytes_hex": "076d",
+  "capstone_mnemonic": "blhr",
+  "capstone_op_str": "%r13",
+  "category": "branch",
+  "notes": "BCR mask 6 (blhr)"
+ },
+ {
+  "bytes_hex": "079d",
+  "capstone_mnemonic": "bnlhr",
+  "capstone_op_str": "%r13",
+  "category": "branch",
+  "notes": "BCR mask 9 (bnlhr)"
+ },
+ {
+  "bytes_hex": "07ad",
+  "capstone_mnemonic": "bher",
+  "capstone_op_str": "%r13",
+  "category": "branch",
+  "notes": "BCR mask 10 (bher)"
+ },
+ {
+  "bytes_hex": "07cd",
+  "capstone_mnemonic": "bler",
+  "capstone_op_str": "%r13",
+  "category": "branch",
+  "notes": "BCR mask 12 (bler)"
+ }
+]

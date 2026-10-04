@@ -1,0 +1,121 @@
+[
+  {
+    "name": "VL_v1",
+    "hex": "e71010000006",
+    "mnemonic": "vl",
+    "capstone_op": "%v1, 0(%r1)",
+    "size": 6
+  },
+  {
+    "name": "VL_v17",
+    "hex": "e71010000806",
+    "mnemonic": "vl",
+    "capstone_op": "%v17, 0(%r1)",
+    "size": 6
+  },
+  {
+    "name": "VL_v31",
+    "hex": "e7f010000806",
+    "mnemonic": "vl",
+    "capstone_op": "%v31, 0(%r1)",
+    "size": 6
+  },
+  {
+    "name": "VST_v2",
+    "hex": "e7201000000e",
+    "mnemonic": "vst",
+    "capstone_op": "%v2, 0(%r1)",
+    "size": 6
+  },
+  {
+    "name": "VST_v18",
+    "hex": "e7201000080e",
+    "mnemonic": "vst",
+    "capstone_op": "%v18, 0(%r1)",
+    "size": 6
+  },
+  {
+    "name": "VLR",
+    "hex": "e71200000056",
+    "mnemonic": "vlr",
+    "capstone_op": "%v1, %v2",
+    "size": 6
+  },
+  {
+    "name": "VLR_hi",
+    "hex": "e71200000c56",
+    "mnemonic": "vlr",
+    "capstone_op": "%v17, %v18",
+    "size": 6
+  },
+  {
+    "name": "VAB",
+    "hex": "e712300000f3",
+    "mnemonic": "vab",
+    "capstone_op": "%v1, %v2, %v3",
+    "size": 6
+  },
+  {
+    "name": "VAH",
+    "hex": "e712300010f3",
+    "mnemonic": "vah",
+    "capstone_op": "%v1, %v2, %v3",
+    "size": 6
+  },
+  {
+    "name": "VAF",
+    "hex": "e712300020f3",
+    "mnemonic": "vaf",
+    "capstone_op": "%v1, %v2, %v3",
+    "size": 6
+  },
+  {
+    "name": "VAG",
+    "hex": "e712300030f3",
+    "mnemonic": "vag",
+    "capstone_op": "%v1, %v2, %v3",
+    "size": 6
+  },
+  {
+    "name": "VSB",
+    "hex": "e712300000f7",
+    "mnemonic": "vsb",
+    "capstone_op": "%v1, %v2, %v3",
+    "size": 6
+  },
+  {
+    "name": "VSH",
+    "hex": "e712300010f7",
+    "mnemonic": "vsh",
+    "capstone_op": "%v1, %v2, %v3",
+    "size": 6
+  },
+  {
+    "name": "VSF",
+    "hex": "e712300020f7",
+    "mnemonic": "vsf",
+    "capstone_op": "%v1, %v2, %v3",
+    "size": 6
+  },
+  {
+    "name": "VSG",
+    "hex": "e712300030f7",
+    "mnemonic": "vsg",
+    "capstone_op": "%v1, %v2, %v3",
+    "size": 6
+  },
+  {
+    "name": "VGBM",
+    "hex": "e71012340044",
+    "mnemonic": "vgbm",
+    "capstone_op": "%v1, 0x1234",
+    "size": 6
+  },
+  {
+    "name": "VGBM_v16",
+    "hex": "e70012340844",
+    "mnemonic": "vgbm",
+    "capstone_op": "%v16, 0x1234",
+    "size": 6
+  }
+]

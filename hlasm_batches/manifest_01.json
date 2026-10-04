@@ -1,0 +1,2568 @@
+{
+ "T0001": {
+  "spec_mnemonic": "AR",
+  "hlasm_mnemonic": "AR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0002": {
+  "spec_mnemonic": "A",
+  "hlasm_mnemonic": "A",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0003": {
+  "spec_mnemonic": "AH",
+  "hlasm_mnemonic": "AH",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0004": {
+  "spec_mnemonic": "AHY",
+  "hlasm_mnemonic": "AHY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0005": {
+  "spec_mnemonic": "AHI",
+  "hlasm_mnemonic": "AHI",
+  "operands": "1,4660",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0006": {
+  "spec_mnemonic": "AFI",
+  "hlasm_mnemonic": "AFI",
+  "operands": "1,305419896",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0007": {
+  "spec_mnemonic": "AGR",
+  "hlasm_mnemonic": "AGR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0008": {
+  "spec_mnemonic": "AG",
+  "hlasm_mnemonic": "AG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0009": {
+  "spec_mnemonic": "AGHI",
+  "hlasm_mnemonic": "AGHI",
+  "operands": "1,4660",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0010": {
+  "spec_mnemonic": "AGFI",
+  "hlasm_mnemonic": "AGFI",
+  "operands": "1,305419896",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0011": {
+  "spec_mnemonic": "SR",
+  "hlasm_mnemonic": "SR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0012": {
+  "spec_mnemonic": "S",
+  "hlasm_mnemonic": "S",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0013": {
+  "spec_mnemonic": "SH",
+  "hlasm_mnemonic": "SH",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0014": {
+  "spec_mnemonic": "SHY",
+  "hlasm_mnemonic": "SHY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0015": {
+  "spec_mnemonic": "SGR",
+  "hlasm_mnemonic": "SGR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0016": {
+  "spec_mnemonic": "SG",
+  "hlasm_mnemonic": "SG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0017": {
+  "spec_mnemonic": "NR",
+  "hlasm_mnemonic": "NR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0018": {
+  "spec_mnemonic": "N",
+  "hlasm_mnemonic": "N",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0019": {
+  "spec_mnemonic": "NY",
+  "hlasm_mnemonic": "NY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0020": {
+  "spec_mnemonic": "NGR",
+  "hlasm_mnemonic": "NGR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0021": {
+  "spec_mnemonic": "NG",
+  "hlasm_mnemonic": "NG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0022": {
+  "spec_mnemonic": "NI",
+  "hlasm_mnemonic": "NI",
+  "operands": "0(4),171",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0023": {
+  "spec_mnemonic": "NC",
+  "hlasm_mnemonic": "NC",
+  "operands": "0(8,4),16(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0024": {
+  "spec_mnemonic": "OR",
+  "hlasm_mnemonic": "OR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0025": {
+  "spec_mnemonic": "O",
+  "hlasm_mnemonic": "O",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0026": {
+  "spec_mnemonic": "OY",
+  "hlasm_mnemonic": "OY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0027": {
+  "spec_mnemonic": "OGR",
+  "hlasm_mnemonic": "OGR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0028": {
+  "spec_mnemonic": "OG",
+  "hlasm_mnemonic": "OG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0029": {
+  "spec_mnemonic": "OI",
+  "hlasm_mnemonic": "OI",
+  "operands": "0(4),171",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0030": {
+  "spec_mnemonic": "OC",
+  "hlasm_mnemonic": "OC",
+  "operands": "0(8,4),16(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0031": {
+  "spec_mnemonic": "XR",
+  "hlasm_mnemonic": "XR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0032": {
+  "spec_mnemonic": "X",
+  "hlasm_mnemonic": "X",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0033": {
+  "spec_mnemonic": "XY",
+  "hlasm_mnemonic": "XY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0034": {
+  "spec_mnemonic": "XGR",
+  "hlasm_mnemonic": "XGR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0035": {
+  "spec_mnemonic": "XG",
+  "hlasm_mnemonic": "XG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0036": {
+  "spec_mnemonic": "XI",
+  "hlasm_mnemonic": "XI",
+  "operands": "0(4),171",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0037": {
+  "spec_mnemonic": "XC",
+  "hlasm_mnemonic": "XC",
+  "operands": "0(8,4),16(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0038": {
+  "spec_mnemonic": "SLL",
+  "hlasm_mnemonic": "SLL",
+  "operands": "1,16(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0039": {
+  "spec_mnemonic": "SRL",
+  "hlasm_mnemonic": "SRL",
+  "operands": "1,16(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0040": {
+  "spec_mnemonic": "SLA",
+  "hlasm_mnemonic": "SLA",
+  "operands": "1,16(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0041": {
+  "spec_mnemonic": "SRA",
+  "hlasm_mnemonic": "SRA",
+  "operands": "1,16(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0042": {
+  "spec_mnemonic": "SLLK",
+  "hlasm_mnemonic": "SLLK",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0043": {
+  "spec_mnemonic": "SRLK",
+  "hlasm_mnemonic": "SRLK",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0044": {
+  "spec_mnemonic": "SLAK",
+  "hlasm_mnemonic": "SLAK",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0045": {
+  "spec_mnemonic": "SRAK",
+  "hlasm_mnemonic": "SRAK",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0046": {
+  "spec_mnemonic": "SLLG",
+  "hlasm_mnemonic": "SLLG",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0047": {
+  "spec_mnemonic": "SRLG",
+  "hlasm_mnemonic": "SRLG",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0048": {
+  "spec_mnemonic": "SLAG",
+  "hlasm_mnemonic": "SLAG",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0049": {
+  "spec_mnemonic": "SRAG",
+  "hlasm_mnemonic": "SRAG",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0050": {
+  "spec_mnemonic": "RLL",
+  "hlasm_mnemonic": "RLL",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0051": {
+  "spec_mnemonic": "RLLG",
+  "hlasm_mnemonic": "RLLG",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0052": {
+  "spec_mnemonic": "CR",
+  "hlasm_mnemonic": "CR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0053": {
+  "spec_mnemonic": "C",
+  "hlasm_mnemonic": "C",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0054": {
+  "spec_mnemonic": "CH",
+  "hlasm_mnemonic": "CH",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0055": {
+  "spec_mnemonic": "CHY",
+  "hlasm_mnemonic": "CHY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0056": {
+  "spec_mnemonic": "CGR",
+  "hlasm_mnemonic": "CGR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0057": {
+  "spec_mnemonic": "CG",
+  "hlasm_mnemonic": "CG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0058": {
+  "spec_mnemonic": "CHI",
+  "hlasm_mnemonic": "CHI",
+  "operands": "1,4660",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0059": {
+  "spec_mnemonic": "CGHI",
+  "hlasm_mnemonic": "CGHI",
+  "operands": "1,4660",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0060": {
+  "spec_mnemonic": "CFI",
+  "hlasm_mnemonic": "CFI",
+  "operands": "1,305419896",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0061": {
+  "spec_mnemonic": "CGFI",
+  "hlasm_mnemonic": "CGFI",
+  "operands": "1,305419896",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0062": {
+  "spec_mnemonic": "CLR",
+  "hlasm_mnemonic": "CLR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0063": {
+  "spec_mnemonic": "CL",
+  "hlasm_mnemonic": "CL",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0064": {
+  "spec_mnemonic": "CLG",
+  "hlasm_mnemonic": "CLG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0065": {
+  "spec_mnemonic": "CLGR",
+  "hlasm_mnemonic": "CLGR",
+  "operands": "1,2",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0066": {
+  "spec_mnemonic": "CLI",
+  "hlasm_mnemonic": "CLI",
+  "operands": "0(4),171",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0067": {
+  "spec_mnemonic": "CLC",
+  "hlasm_mnemonic": "CLC",
+  "operands": "0(8,4),16(3)",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0068": {
+  "spec_mnemonic": "TMHH",
+  "hlasm_mnemonic": "TMHH",
+  "operands": "1,4660",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0069": {
+  "spec_mnemonic": "TMHL",
+  "hlasm_mnemonic": "TMHL",
+  "operands": "1,4660",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0070": {
+  "spec_mnemonic": "TMLH",
+  "hlasm_mnemonic": "TMLH",
+  "operands": "1,4660",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0071": {
+  "spec_mnemonic": "TMLL",
+  "hlasm_mnemonic": "TMLL",
+  "operands": "1,4660",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0072": {
+  "spec_mnemonic": "TM",
+  "hlasm_mnemonic": "TM",
+  "operands": "0(4),171",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0073": {
+  "spec_mnemonic": "TMY",
+  "hlasm_mnemonic": "TMY",
+  "operands": "0(4),171",
+  "srcfile": "s390x_arith.sinc"
+ },
+ "T0074": {
+  "spec_mnemonic": "nopr",
+  "hlasm_mnemonic": "NOPR",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0075": {
+  "spec_mnemonic": "bor",
+  "hlasm_mnemonic": "BOR",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0076": {
+  "spec_mnemonic": "bhr",
+  "hlasm_mnemonic": "BHR",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0077": {
+  "spec_mnemonic": "bnler",
+  "hlasm_mnemonic": "BCR",
+  "operands": "3,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BNLER->BCR mask=3"
+ },
+ "T0078": {
+  "spec_mnemonic": "blr",
+  "hlasm_mnemonic": "BLR",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0079": {
+  "spec_mnemonic": "bnher",
+  "hlasm_mnemonic": "BCR",
+  "operands": "5,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BNHER->BCR mask=5"
+ },
+ "T0080": {
+  "spec_mnemonic": "blhr",
+  "hlasm_mnemonic": "BCR",
+  "operands": "6,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BLHR->BCR mask=6"
+ },
+ "T0081": {
+  "spec_mnemonic": "bner",
+  "hlasm_mnemonic": "BNER",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0082": {
+  "spec_mnemonic": "ber",
+  "hlasm_mnemonic": "BER",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0083": {
+  "spec_mnemonic": "bnlhr",
+  "hlasm_mnemonic": "BCR",
+  "operands": "9,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BNLHR->BCR mask=9"
+ },
+ "T0084": {
+  "spec_mnemonic": "bher",
+  "hlasm_mnemonic": "BCR",
+  "operands": "10,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BHER->BCR mask=10"
+ },
+ "T0085": {
+  "spec_mnemonic": "bnlr",
+  "hlasm_mnemonic": "BCR",
+  "operands": "11,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BNLR->BCR mask=11"
+ },
+ "T0086": {
+  "spec_mnemonic": "bler",
+  "hlasm_mnemonic": "BCR",
+  "operands": "12,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BLER->BCR mask=12"
+ },
+ "T0087": {
+  "spec_mnemonic": "bnhr",
+  "hlasm_mnemonic": "BCR",
+  "operands": "13,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BNHR->BCR mask=13"
+ },
+ "T0088": {
+  "spec_mnemonic": "bnor",
+  "hlasm_mnemonic": "BCR",
+  "operands": "14,2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "BNOR->BCR mask=14"
+ },
+ "T0089": {
+  "spec_mnemonic": "br_ret",
+  "hlasm_mnemonic": "BR",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0090": {
+  "spec_mnemonic": "bcr",
+  "hlasm_mnemonic": "BCR",
+  "operands": "7,2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0091": {
+  "spec_mnemonic": "jnop",
+  "hlasm_mnemonic": "JNOP",
+  "operands": "0",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0092": {
+  "spec_mnemonic": "jo",
+  "hlasm_mnemonic": "JO",
+  "operands": "BT1",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0093": {
+  "spec_mnemonic": "jh",
+  "hlasm_mnemonic": "JH",
+  "operands": "BT2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0094": {
+  "spec_mnemonic": "jnle",
+  "hlasm_mnemonic": "BRC",
+  "operands": "3,BT1",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JNLE->BRC mask=3"
+ },
+ "T0095": {
+  "spec_mnemonic": "jl",
+  "hlasm_mnemonic": "JL",
+  "operands": "BT2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0096": {
+  "spec_mnemonic": "jnhe",
+  "hlasm_mnemonic": "BRC",
+  "operands": "5,BT1",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JNHE->BRC mask=5"
+ },
+ "T0097": {
+  "spec_mnemonic": "jlh",
+  "hlasm_mnemonic": "BRC",
+  "operands": "6,BT2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JLH->BRC mask=6"
+ },
+ "T0098": {
+  "spec_mnemonic": "jne",
+  "hlasm_mnemonic": "JNE",
+  "operands": "BT1",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0099": {
+  "spec_mnemonic": "je",
+  "hlasm_mnemonic": "JE",
+  "operands": "BT2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0100": {
+  "spec_mnemonic": "jnlh",
+  "hlasm_mnemonic": "BRC",
+  "operands": "9,BT1",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JNLH->BRC mask=9"
+ },
+ "T0101": {
+  "spec_mnemonic": "jhe",
+  "hlasm_mnemonic": "BRC",
+  "operands": "10,BT2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JHE->BRC mask=10"
+ },
+ "T0102": {
+  "spec_mnemonic": "jnl",
+  "hlasm_mnemonic": "BRC",
+  "operands": "11,BT1",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JNL->BRC mask=11"
+ },
+ "T0103": {
+  "spec_mnemonic": "jle",
+  "hlasm_mnemonic": "BRC",
+  "operands": "12,BT2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JLE->BRC mask=12"
+ },
+ "T0104": {
+  "spec_mnemonic": "jnh",
+  "hlasm_mnemonic": "BRC",
+  "operands": "13,BT1",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JNH->BRC mask=13"
+ },
+ "T0105": {
+  "spec_mnemonic": "jno",
+  "hlasm_mnemonic": "BRC",
+  "operands": "14,BT2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JNO->BRC mask=14"
+ },
+ "T0106": {
+  "spec_mnemonic": "j",
+  "hlasm_mnemonic": "J",
+  "operands": "BT1",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0107": {
+  "spec_mnemonic": "jlnop",
+  "hlasm_mnemonic": "JLNOP",
+  "operands": "0",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0108": {
+  "spec_mnemonic": "jlo",
+  "hlasm_mnemonic": "JLO",
+  "operands": "BT2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0109": {
+  "spec_mnemonic": "jlh",
+  "hlasm_mnemonic": "JLH",
+  "operands": "BT1",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0110": {
+  "spec_mnemonic": "jll",
+  "hlasm_mnemonic": "JLL",
+  "operands": "BT2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0111": {
+  "spec_mnemonic": "jlne",
+  "hlasm_mnemonic": "JLNE",
+  "operands": "BT1",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0112": {
+  "spec_mnemonic": "jle",
+  "hlasm_mnemonic": "JLE",
+  "operands": "BT2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0113": {
+  "spec_mnemonic": "jlnh",
+  "hlasm_mnemonic": "BRC",
+  "operands": "13,BT2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JLNH->BRC mask=13"
+ },
+ "T0114": {
+  "spec_mnemonic": "jlno",
+  "hlasm_mnemonic": "BRC",
+  "operands": "14,BT1",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JLNO->BRC mask=14"
+ },
+ "T0115": {
+  "spec_mnemonic": "jlu",
+  "hlasm_mnemonic": "JLU",
+  "operands": "BT2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0116": {
+  "spec_mnemonic": "brcl",
+  "hlasm_mnemonic": "BRCL",
+  "operands": "7,BT1",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0117": {
+  "spec_mnemonic": "bras",
+  "hlasm_mnemonic": "BRAS",
+  "operands": "1,BT2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0118": {
+  "spec_mnemonic": "brasl",
+  "hlasm_mnemonic": "BRASL",
+  "operands": "1,BT1",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0119": {
+  "spec_mnemonic": "basr",
+  "hlasm_mnemonic": "BASR",
+  "operands": "1,2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0120": {
+  "spec_mnemonic": "balr",
+  "hlasm_mnemonic": "BALR",
+  "operands": "1,2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0121": {
+  "spec_mnemonic": "bal",
+  "hlasm_mnemonic": "BAL",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0122": {
+  "spec_mnemonic": "bas",
+  "hlasm_mnemonic": "BAS",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0123": {
+  "spec_mnemonic": "bakr",
+  "hlasm_mnemonic": "BAKR",
+  "operands": "1,2",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0124": {
+  "spec_mnemonic": "pr",
+  "hlasm_mnemonic": "PR",
+  "operands": "",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0125": {
+  "spec_mnemonic": "svc",
+  "hlasm_mnemonic": "SVC",
+  "operands": "171",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0126": {
+  "spec_mnemonic": "trap2",
+  "hlasm_mnemonic": "TRAP2",
+  "operands": "",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0127": {
+  "spec_mnemonic": "trap4",
+  "hlasm_mnemonic": "TRAP4",
+  "operands": "",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0128": {
+  "spec_mnemonic": "lpsw",
+  "hlasm_mnemonic": "LPSW",
+  "operands": "0(4)",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0129": {
+  "spec_mnemonic": "lpswe",
+  "hlasm_mnemonic": "LPSWE",
+  "operands": "16(3)",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0130": {
+  "spec_mnemonic": "ssm",
+  "hlasm_mnemonic": "SSM",
+  "operands": "0(4)",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0131": {
+  "spec_mnemonic": "stnsm",
+  "hlasm_mnemonic": "STNSM",
+  "operands": "0(4),171",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0132": {
+  "spec_mnemonic": "stosm",
+  "hlasm_mnemonic": "STOSM",
+  "operands": "0(4),171",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0133": {
+  "spec_mnemonic": "ex",
+  "hlasm_mnemonic": "EX",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_branch.sinc"
+ },
+ "T0134": {
+  "spec_mnemonic": "bc",
+  "hlasm_mnemonic": "BC",
+  "operands": "0,16(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0135": {
+  "spec_mnemonic": "bo",
+  "hlasm_mnemonic": "BO",
+  "operands": "16(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0136": {
+  "spec_mnemonic": "bh",
+  "hlasm_mnemonic": "BH",
+  "operands": "16(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0137": {
+  "spec_mnemonic": "bnle",
+  "hlasm_mnemonic": "BC",
+  "operands": "3,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BNLE->BC mask=3"
+ },
+ "T0138": {
+  "spec_mnemonic": "bl",
+  "hlasm_mnemonic": "BL",
+  "operands": "16(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0139": {
+  "spec_mnemonic": "bnhe",
+  "hlasm_mnemonic": "BC",
+  "operands": "5,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BNHE->BC mask=5"
+ },
+ "T0140": {
+  "spec_mnemonic": "blh",
+  "hlasm_mnemonic": "BC",
+  "operands": "6,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BLH->BC mask=6"
+ },
+ "T0141": {
+  "spec_mnemonic": "bne",
+  "hlasm_mnemonic": "BNE",
+  "operands": "16(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0142": {
+  "spec_mnemonic": "be",
+  "hlasm_mnemonic": "BE",
+  "operands": "16(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0143": {
+  "spec_mnemonic": "bnlh",
+  "hlasm_mnemonic": "BC",
+  "operands": "9,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BNLH->BC mask=9"
+ },
+ "T0144": {
+  "spec_mnemonic": "bhe",
+  "hlasm_mnemonic": "BC",
+  "operands": "10,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BHE->BC mask=10"
+ },
+ "T0145": {
+  "spec_mnemonic": "bnl",
+  "hlasm_mnemonic": "BC",
+  "operands": "11,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BNL->BC mask=11"
+ },
+ "T0146": {
+  "spec_mnemonic": "ble",
+  "hlasm_mnemonic": "BC",
+  "operands": "12,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BLE->BC mask=12"
+ },
+ "T0147": {
+  "spec_mnemonic": "bnh",
+  "hlasm_mnemonic": "BC",
+  "operands": "13,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BNH->BC mask=13"
+ },
+ "T0148": {
+  "spec_mnemonic": "bno",
+  "hlasm_mnemonic": "BC",
+  "operands": "14,16(2,3)",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": "BNO->BC mask=14"
+ },
+ "T0149": {
+  "spec_mnemonic": "b",
+  "hlasm_mnemonic": "B",
+  "operands": "16(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0150": {
+  "spec_mnemonic": "bct",
+  "hlasm_mnemonic": "BCT",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0151": {
+  "spec_mnemonic": "bctg",
+  "hlasm_mnemonic": "BCTG",
+  "operands": "1,0(2,3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0152": {
+  "spec_mnemonic": "bctr",
+  "hlasm_mnemonic": "BCTR",
+  "operands": "1,2",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0153": {
+  "spec_mnemonic": "bctgr",
+  "hlasm_mnemonic": "BCTGR",
+  "operands": "1,2",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0154": {
+  "spec_mnemonic": "brct",
+  "hlasm_mnemonic": "BRCT",
+  "operands": "1,BT2",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0155": {
+  "spec_mnemonic": "brctg",
+  "hlasm_mnemonic": "BRCTG",
+  "operands": "1,BT1",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0156": {
+  "spec_mnemonic": "bxh",
+  "hlasm_mnemonic": "BXH",
+  "operands": "1,3,16(3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0157": {
+  "spec_mnemonic": "bxle",
+  "hlasm_mnemonic": "BXLE",
+  "operands": "1,3,16(3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0158": {
+  "spec_mnemonic": "bxhg",
+  "hlasm_mnemonic": "BXHG",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0159": {
+  "spec_mnemonic": "bxleg",
+  "hlasm_mnemonic": "BXLEG",
+  "operands": "1,3,74565(3)",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0160": {
+  "spec_mnemonic": "brxh",
+  "hlasm_mnemonic": "BRXH",
+  "operands": "1,3,BT2",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0161": {
+  "spec_mnemonic": "brxle",
+  "hlasm_mnemonic": "BRXLE",
+  "operands": "1,3,BT1",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0162": {
+  "spec_mnemonic": "brxhg",
+  "hlasm_mnemonic": "BRXHG",
+  "operands": "1,3,BT2",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0163": {
+  "spec_mnemonic": "brxlg",
+  "hlasm_mnemonic": "BRXLG",
+  "operands": "1,3,BT1",
+  "srcfile": "s390x_branch2.sinc"
+ },
+ "T0164": {
+  "spec_mnemonic": "LOCRO",
+  "hlasm_mnemonic": "LOCRO",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0165": {
+  "spec_mnemonic": "LOCRH",
+  "hlasm_mnemonic": "LOCRH",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0166": {
+  "spec_mnemonic": "LOCRNLE",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRNLE->LOCR mask=3"
+ },
+ "T0167": {
+  "spec_mnemonic": "LOCRL",
+  "hlasm_mnemonic": "LOCRL",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0168": {
+  "spec_mnemonic": "LOCRNHE",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRNHE->LOCR mask=5"
+ },
+ "T0169": {
+  "spec_mnemonic": "LOCRLH",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRLH->LOCR mask=6"
+ },
+ "T0170": {
+  "spec_mnemonic": "LOCRNE",
+  "hlasm_mnemonic": "LOCRNE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0171": {
+  "spec_mnemonic": "LOCRE",
+  "hlasm_mnemonic": "LOCRE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0172": {
+  "spec_mnemonic": "LOCRNLH",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRNLH->LOCR mask=9"
+ },
+ "T0173": {
+  "spec_mnemonic": "LOCRHE",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRHE->LOCR mask=10"
+ },
+ "T0174": {
+  "spec_mnemonic": "LOCRNL",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRNL->LOCR mask=11"
+ },
+ "T0175": {
+  "spec_mnemonic": "LOCRLE",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRLE->LOCR mask=12"
+ },
+ "T0176": {
+  "spec_mnemonic": "LOCRNH",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRNH->LOCR mask=13"
+ },
+ "T0177": {
+  "spec_mnemonic": "LOCRNO",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCRNO->LOCR mask=14"
+ },
+ "T0178": {
+  "spec_mnemonic": "LOCR",
+  "hlasm_mnemonic": "LOCR",
+  "operands": "1,2,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0179": {
+  "spec_mnemonic": "LOCGRO",
+  "hlasm_mnemonic": "LOCGRO",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0180": {
+  "spec_mnemonic": "LOCGRH",
+  "hlasm_mnemonic": "LOCGRH",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0181": {
+  "spec_mnemonic": "LOCGRNLE",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRNLE->LOCGR mask=3"
+ },
+ "T0182": {
+  "spec_mnemonic": "LOCGRL",
+  "hlasm_mnemonic": "LOCGRL",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0183": {
+  "spec_mnemonic": "LOCGRNHE",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRNHE->LOCGR mask=5"
+ },
+ "T0184": {
+  "spec_mnemonic": "LOCGRLH",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRLH->LOCGR mask=6"
+ },
+ "T0185": {
+  "spec_mnemonic": "LOCGRNE",
+  "hlasm_mnemonic": "LOCGRNE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0186": {
+  "spec_mnemonic": "LOCGRE",
+  "hlasm_mnemonic": "LOCGRE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0187": {
+  "spec_mnemonic": "LOCGRNLH",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRNLH->LOCGR mask=9"
+ },
+ "T0188": {
+  "spec_mnemonic": "LOCGRHE",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRHE->LOCGR mask=10"
+ },
+ "T0189": {
+  "spec_mnemonic": "LOCGRNL",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRNL->LOCGR mask=11"
+ },
+ "T0190": {
+  "spec_mnemonic": "LOCGRLE",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRLE->LOCGR mask=12"
+ },
+ "T0191": {
+  "spec_mnemonic": "LOCGRNH",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRNH->LOCGR mask=13"
+ },
+ "T0192": {
+  "spec_mnemonic": "LOCGRNO",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGRNO->LOCGR mask=14"
+ },
+ "T0193": {
+  "spec_mnemonic": "LOCGR",
+  "hlasm_mnemonic": "LOCGR",
+  "operands": "1,2,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0194": {
+  "spec_mnemonic": "LOCFHRO",
+  "hlasm_mnemonic": "LOCFHRO",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0195": {
+  "spec_mnemonic": "LOCFHRH",
+  "hlasm_mnemonic": "LOCFHRH",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0196": {
+  "spec_mnemonic": "LOCFHRNLE",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRNLE->LOCFHR mask=3"
+ },
+ "T0197": {
+  "spec_mnemonic": "LOCFHRL",
+  "hlasm_mnemonic": "LOCFHRL",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0198": {
+  "spec_mnemonic": "LOCFHRNHE",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRNHE->LOCFHR mask=5"
+ },
+ "T0199": {
+  "spec_mnemonic": "LOCFHRLH",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRLH->LOCFHR mask=6"
+ },
+ "T0200": {
+  "spec_mnemonic": "LOCFHRNE",
+  "hlasm_mnemonic": "LOCFHRNE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0201": {
+  "spec_mnemonic": "LOCFHRE",
+  "hlasm_mnemonic": "LOCFHRE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0202": {
+  "spec_mnemonic": "LOCFHRNLH",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRNLH->LOCFHR mask=9"
+ },
+ "T0203": {
+  "spec_mnemonic": "LOCFHRHE",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRHE->LOCFHR mask=10"
+ },
+ "T0204": {
+  "spec_mnemonic": "LOCFHRNL",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRNL->LOCFHR mask=11"
+ },
+ "T0205": {
+  "spec_mnemonic": "LOCFHRLE",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRLE->LOCFHR mask=12"
+ },
+ "T0206": {
+  "spec_mnemonic": "LOCFHRNH",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRNH->LOCFHR mask=13"
+ },
+ "T0207": {
+  "spec_mnemonic": "LOCFHRNO",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHRNO->LOCFHR mask=14"
+ },
+ "T0208": {
+  "spec_mnemonic": "LOCFHR",
+  "hlasm_mnemonic": "LOCFHR",
+  "operands": "1,2,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0209": {
+  "spec_mnemonic": "CRTH",
+  "hlasm_mnemonic": "CRTH",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0210": {
+  "spec_mnemonic": "CRTL",
+  "hlasm_mnemonic": "CRTL",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0211": {
+  "spec_mnemonic": "CRTLH",
+  "hlasm_mnemonic": "CRT",
+  "operands": "1,2,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CRTLH->CRT mask=6"
+ },
+ "T0212": {
+  "spec_mnemonic": "CRTE",
+  "hlasm_mnemonic": "CRTE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0213": {
+  "spec_mnemonic": "CRTHE",
+  "hlasm_mnemonic": "CRT",
+  "operands": "1,2,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CRTHE->CRT mask=10"
+ },
+ "T0214": {
+  "spec_mnemonic": "CRTLE",
+  "hlasm_mnemonic": "CRT",
+  "operands": "1,2,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CRTLE->CRT mask=12"
+ },
+ "T0215": {
+  "spec_mnemonic": "CRT",
+  "hlasm_mnemonic": "CRT",
+  "operands": "1,2,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0216": {
+  "spec_mnemonic": "CLRTH",
+  "hlasm_mnemonic": "CLRTH",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0217": {
+  "spec_mnemonic": "CLRTL",
+  "hlasm_mnemonic": "CLRTL",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0218": {
+  "spec_mnemonic": "CLRTLH",
+  "hlasm_mnemonic": "CLRT",
+  "operands": "1,2,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLRTLH->CLRT mask=6"
+ },
+ "T0219": {
+  "spec_mnemonic": "CLRTE",
+  "hlasm_mnemonic": "CLRTE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0220": {
+  "spec_mnemonic": "CLRTHE",
+  "hlasm_mnemonic": "CLRT",
+  "operands": "1,2,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLRTHE->CLRT mask=10"
+ },
+ "T0221": {
+  "spec_mnemonic": "CLRTLE",
+  "hlasm_mnemonic": "CLRT",
+  "operands": "1,2,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLRTLE->CLRT mask=12"
+ },
+ "T0222": {
+  "spec_mnemonic": "CLRT",
+  "hlasm_mnemonic": "CLRT",
+  "operands": "1,2,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0223": {
+  "spec_mnemonic": "CGRTH",
+  "hlasm_mnemonic": "CGRTH",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0224": {
+  "spec_mnemonic": "CGRTL",
+  "hlasm_mnemonic": "CGRTL",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0225": {
+  "spec_mnemonic": "CGRTLH",
+  "hlasm_mnemonic": "CGRT",
+  "operands": "1,2,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CGRTLH->CGRT mask=6"
+ },
+ "T0226": {
+  "spec_mnemonic": "CGRTE",
+  "hlasm_mnemonic": "CGRTE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0227": {
+  "spec_mnemonic": "CGRTHE",
+  "hlasm_mnemonic": "CGRT",
+  "operands": "1,2,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CGRTHE->CGRT mask=10"
+ },
+ "T0228": {
+  "spec_mnemonic": "CGRTLE",
+  "hlasm_mnemonic": "CGRT",
+  "operands": "1,2,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CGRTLE->CGRT mask=12"
+ },
+ "T0229": {
+  "spec_mnemonic": "CGRT",
+  "hlasm_mnemonic": "CGRT",
+  "operands": "1,2,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0230": {
+  "spec_mnemonic": "CLGRTH",
+  "hlasm_mnemonic": "CLGRTH",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0231": {
+  "spec_mnemonic": "CLGRTL",
+  "hlasm_mnemonic": "CLGRTL",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0232": {
+  "spec_mnemonic": "CLGRTLH",
+  "hlasm_mnemonic": "CLGRT",
+  "operands": "1,2,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLGRTLH->CLGRT mask=6"
+ },
+ "T0233": {
+  "spec_mnemonic": "CLGRTE",
+  "hlasm_mnemonic": "CLGRTE",
+  "operands": "1,2",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0234": {
+  "spec_mnemonic": "CLGRTHE",
+  "hlasm_mnemonic": "CLGRT",
+  "operands": "1,2,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLGRTHE->CLGRT mask=10"
+ },
+ "T0235": {
+  "spec_mnemonic": "CLGRTLE",
+  "hlasm_mnemonic": "CLGRT",
+  "operands": "1,2,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLGRTLE->CLGRT mask=12"
+ },
+ "T0236": {
+  "spec_mnemonic": "CLGRT",
+  "hlasm_mnemonic": "CLGRT",
+  "operands": "1,2,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0237": {
+  "spec_mnemonic": "LOCO",
+  "hlasm_mnemonic": "LOCO",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0238": {
+  "spec_mnemonic": "LOCH",
+  "hlasm_mnemonic": "LOCH",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0239": {
+  "spec_mnemonic": "LOCNLE",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCNLE->LOC mask=3"
+ },
+ "T0240": {
+  "spec_mnemonic": "LOCL",
+  "hlasm_mnemonic": "LOCL",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0241": {
+  "spec_mnemonic": "LOCNHE",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCNHE->LOC mask=5"
+ },
+ "T0242": {
+  "spec_mnemonic": "LOCLH",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCLH->LOC mask=6"
+ },
+ "T0243": {
+  "spec_mnemonic": "LOCNE",
+  "hlasm_mnemonic": "LOCNE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0244": {
+  "spec_mnemonic": "LOCE",
+  "hlasm_mnemonic": "LOCE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0245": {
+  "spec_mnemonic": "LOCNLH",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCNLH->LOC mask=9"
+ },
+ "T0246": {
+  "spec_mnemonic": "LOCHE",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHE->LOC mask=10"
+ },
+ "T0247": {
+  "spec_mnemonic": "LOCNL",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCNL->LOC mask=11"
+ },
+ "T0248": {
+  "spec_mnemonic": "LOCLE",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCLE->LOC mask=12"
+ },
+ "T0249": {
+  "spec_mnemonic": "LOCNH",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCNH->LOC mask=13"
+ },
+ "T0250": {
+  "spec_mnemonic": "LOCNO",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCNO->LOC mask=14"
+ },
+ "T0251": {
+  "spec_mnemonic": "LOC",
+  "hlasm_mnemonic": "LOC",
+  "operands": "1,74565(3),7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0252": {
+  "spec_mnemonic": "LOCGO",
+  "hlasm_mnemonic": "LOCGO",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0253": {
+  "spec_mnemonic": "LOCGH",
+  "hlasm_mnemonic": "LOCGH",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0254": {
+  "spec_mnemonic": "LOCGNLE",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGNLE->LOCG mask=3"
+ },
+ "T0255": {
+  "spec_mnemonic": "LOCGL",
+  "hlasm_mnemonic": "LOCGL",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0256": {
+  "spec_mnemonic": "LOCGNHE",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGNHE->LOCG mask=5"
+ },
+ "T0257": {
+  "spec_mnemonic": "LOCGLH",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGLH->LOCG mask=6"
+ },
+ "T0258": {
+  "spec_mnemonic": "LOCGNE",
+  "hlasm_mnemonic": "LOCGNE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0259": {
+  "spec_mnemonic": "LOCGE",
+  "hlasm_mnemonic": "LOCGE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0260": {
+  "spec_mnemonic": "LOCGNLH",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGNLH->LOCG mask=9"
+ },
+ "T0261": {
+  "spec_mnemonic": "LOCGHE",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHE->LOCG mask=10"
+ },
+ "T0262": {
+  "spec_mnemonic": "LOCGNL",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGNL->LOCG mask=11"
+ },
+ "T0263": {
+  "spec_mnemonic": "LOCGLE",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGLE->LOCG mask=12"
+ },
+ "T0264": {
+  "spec_mnemonic": "LOCGNH",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGNH->LOCG mask=13"
+ },
+ "T0265": {
+  "spec_mnemonic": "LOCGNO",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGNO->LOCG mask=14"
+ },
+ "T0266": {
+  "spec_mnemonic": "LOCG",
+  "hlasm_mnemonic": "LOCG",
+  "operands": "1,74565(3),7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0267": {
+  "spec_mnemonic": "LOCFHO",
+  "hlasm_mnemonic": "LOCFHO",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0268": {
+  "spec_mnemonic": "LOCFHH",
+  "hlasm_mnemonic": "LOCFHH",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0269": {
+  "spec_mnemonic": "LOCFHNLE",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHNLE->LOCFH mask=3"
+ },
+ "T0270": {
+  "spec_mnemonic": "LOCFHL",
+  "hlasm_mnemonic": "LOCFHL",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0271": {
+  "spec_mnemonic": "LOCFHNHE",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHNHE->LOCFH mask=5"
+ },
+ "T0272": {
+  "spec_mnemonic": "LOCFHLH",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHLH->LOCFH mask=6"
+ },
+ "T0273": {
+  "spec_mnemonic": "LOCFHNE",
+  "hlasm_mnemonic": "LOCFHNE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0274": {
+  "spec_mnemonic": "LOCFHE",
+  "hlasm_mnemonic": "LOCFHE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0275": {
+  "spec_mnemonic": "LOCFHNLH",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHNLH->LOCFH mask=9"
+ },
+ "T0276": {
+  "spec_mnemonic": "LOCFHHE",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHHE->LOCFH mask=10"
+ },
+ "T0277": {
+  "spec_mnemonic": "LOCFHNL",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHNL->LOCFH mask=11"
+ },
+ "T0278": {
+  "spec_mnemonic": "LOCFHLE",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHLE->LOCFH mask=12"
+ },
+ "T0279": {
+  "spec_mnemonic": "LOCFHNH",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHNH->LOCFH mask=13"
+ },
+ "T0280": {
+  "spec_mnemonic": "LOCFHNO",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCFHNO->LOCFH mask=14"
+ },
+ "T0281": {
+  "spec_mnemonic": "LOCFH",
+  "hlasm_mnemonic": "LOCFH",
+  "operands": "1,74565(3),7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0282": {
+  "spec_mnemonic": "STOCO",
+  "hlasm_mnemonic": "STOCO",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0283": {
+  "spec_mnemonic": "STOCH",
+  "hlasm_mnemonic": "STOCH",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0284": {
+  "spec_mnemonic": "STOCNLE",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCNLE->STOC mask=3"
+ },
+ "T0285": {
+  "spec_mnemonic": "STOCL",
+  "hlasm_mnemonic": "STOCL",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0286": {
+  "spec_mnemonic": "STOCNHE",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCNHE->STOC mask=5"
+ },
+ "T0287": {
+  "spec_mnemonic": "STOCLH",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCLH->STOC mask=6"
+ },
+ "T0288": {
+  "spec_mnemonic": "STOCNE",
+  "hlasm_mnemonic": "STOCNE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0289": {
+  "spec_mnemonic": "STOCE",
+  "hlasm_mnemonic": "STOCE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0290": {
+  "spec_mnemonic": "STOCNLH",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCNLH->STOC mask=9"
+ },
+ "T0291": {
+  "spec_mnemonic": "STOCHE",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCHE->STOC mask=10"
+ },
+ "T0292": {
+  "spec_mnemonic": "STOCNL",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCNL->STOC mask=11"
+ },
+ "T0293": {
+  "spec_mnemonic": "STOCLE",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCLE->STOC mask=12"
+ },
+ "T0294": {
+  "spec_mnemonic": "STOCNH",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCNH->STOC mask=13"
+ },
+ "T0295": {
+  "spec_mnemonic": "STOCNO",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCNO->STOC mask=14"
+ },
+ "T0296": {
+  "spec_mnemonic": "STOC",
+  "hlasm_mnemonic": "STOC",
+  "operands": "1,74565(3),7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0297": {
+  "spec_mnemonic": "STOCGO",
+  "hlasm_mnemonic": "STOCGO",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0298": {
+  "spec_mnemonic": "STOCGH",
+  "hlasm_mnemonic": "STOCGH",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0299": {
+  "spec_mnemonic": "STOCGNLE",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGNLE->STOCG mask=3"
+ },
+ "T0300": {
+  "spec_mnemonic": "STOCGL",
+  "hlasm_mnemonic": "STOCGL",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0301": {
+  "spec_mnemonic": "STOCGNHE",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGNHE->STOCG mask=5"
+ },
+ "T0302": {
+  "spec_mnemonic": "STOCGLH",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGLH->STOCG mask=6"
+ },
+ "T0303": {
+  "spec_mnemonic": "STOCGNE",
+  "hlasm_mnemonic": "STOCGNE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0304": {
+  "spec_mnemonic": "STOCGE",
+  "hlasm_mnemonic": "STOCGE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0305": {
+  "spec_mnemonic": "STOCGNLH",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGNLH->STOCG mask=9"
+ },
+ "T0306": {
+  "spec_mnemonic": "STOCGHE",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGHE->STOCG mask=10"
+ },
+ "T0307": {
+  "spec_mnemonic": "STOCGNL",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGNL->STOCG mask=11"
+ },
+ "T0308": {
+  "spec_mnemonic": "STOCGLE",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGLE->STOCG mask=12"
+ },
+ "T0309": {
+  "spec_mnemonic": "STOCGNH",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGNH->STOCG mask=13"
+ },
+ "T0310": {
+  "spec_mnemonic": "STOCGNO",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCGNO->STOCG mask=14"
+ },
+ "T0311": {
+  "spec_mnemonic": "STOCG",
+  "hlasm_mnemonic": "STOCG",
+  "operands": "1,74565(3),7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0312": {
+  "spec_mnemonic": "STOCFHO",
+  "hlasm_mnemonic": "STOCFHO",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0313": {
+  "spec_mnemonic": "STOCFHH",
+  "hlasm_mnemonic": "STOCFHH",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0314": {
+  "spec_mnemonic": "STOCFHNLE",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHNLE->STOCFH mask=3"
+ },
+ "T0315": {
+  "spec_mnemonic": "STOCFHL",
+  "hlasm_mnemonic": "STOCFHL",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0316": {
+  "spec_mnemonic": "STOCFHNHE",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHNHE->STOCFH mask=5"
+ },
+ "T0317": {
+  "spec_mnemonic": "STOCFHLH",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHLH->STOCFH mask=6"
+ },
+ "T0318": {
+  "spec_mnemonic": "STOCFHNE",
+  "hlasm_mnemonic": "STOCFHNE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0319": {
+  "spec_mnemonic": "STOCFHE",
+  "hlasm_mnemonic": "STOCFHE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0320": {
+  "spec_mnemonic": "STOCFHNLH",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHNLH->STOCFH mask=9"
+ },
+ "T0321": {
+  "spec_mnemonic": "STOCFHHE",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHHE->STOCFH mask=10"
+ },
+ "T0322": {
+  "spec_mnemonic": "STOCFHNL",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHNL->STOCFH mask=11"
+ },
+ "T0323": {
+  "spec_mnemonic": "STOCFHLE",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHLE->STOCFH mask=12"
+ },
+ "T0324": {
+  "spec_mnemonic": "STOCFHNH",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHNH->STOCFH mask=13"
+ },
+ "T0325": {
+  "spec_mnemonic": "STOCFHNO",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "STOCFHNO->STOCFH mask=14"
+ },
+ "T0326": {
+  "spec_mnemonic": "STOCFH",
+  "hlasm_mnemonic": "STOCFH",
+  "operands": "1,74565(3),7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0327": {
+  "spec_mnemonic": "CLTH",
+  "hlasm_mnemonic": "CLT",
+  "operands": "1,2,74565(3)",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLTH->CLT mask=2"
+ },
+ "T0328": {
+  "spec_mnemonic": "CLTL",
+  "hlasm_mnemonic": "CLTL",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0329": {
+  "spec_mnemonic": "CLTLH",
+  "hlasm_mnemonic": "CLT",
+  "operands": "1,6,74565(3)",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLTLH->CLT mask=6"
+ },
+ "T0330": {
+  "spec_mnemonic": "CLTE",
+  "hlasm_mnemonic": "CLTE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0331": {
+  "spec_mnemonic": "CLTHE",
+  "hlasm_mnemonic": "CLT",
+  "operands": "1,10,74565(3)",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLTHE->CLT mask=10"
+ },
+ "T0332": {
+  "spec_mnemonic": "CLTLE",
+  "hlasm_mnemonic": "CLT",
+  "operands": "1,12,74565(3)",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLTLE->CLT mask=12"
+ },
+ "T0333": {
+  "spec_mnemonic": "CLT",
+  "hlasm_mnemonic": "CLT",
+  "operands": "1,7,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0334": {
+  "spec_mnemonic": "CLGTH",
+  "hlasm_mnemonic": "CLGT",
+  "operands": "1,2,74565(3)",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLGTH->CLGT mask=2"
+ },
+ "T0335": {
+  "spec_mnemonic": "CLGTL",
+  "hlasm_mnemonic": "CLGTL",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0336": {
+  "spec_mnemonic": "CLGTLH",
+  "hlasm_mnemonic": "CLGT",
+  "operands": "1,6,74565(3)",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLGTLH->CLGT mask=6"
+ },
+ "T0337": {
+  "spec_mnemonic": "CLGTE",
+  "hlasm_mnemonic": "CLGTE",
+  "operands": "1,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0338": {
+  "spec_mnemonic": "CLGTHE",
+  "hlasm_mnemonic": "CLGT",
+  "operands": "1,10,74565(3)",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLGTHE->CLGT mask=10"
+ },
+ "T0339": {
+  "spec_mnemonic": "CLGTLE",
+  "hlasm_mnemonic": "CLGT",
+  "operands": "1,12,74565(3)",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLGTLE->CLGT mask=12"
+ },
+ "T0340": {
+  "spec_mnemonic": "CLGT",
+  "hlasm_mnemonic": "CLGT",
+  "operands": "1,7,74565(3)",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0341": {
+  "spec_mnemonic": "LOCHIO",
+  "hlasm_mnemonic": "LOCHIO",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0342": {
+  "spec_mnemonic": "LOCHIH",
+  "hlasm_mnemonic": "LOCHIH",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0343": {
+  "spec_mnemonic": "LOCHINLE",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHINLE->LOCHI mask=3"
+ },
+ "T0344": {
+  "spec_mnemonic": "LOCHIL",
+  "hlasm_mnemonic": "LOCHIL",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0345": {
+  "spec_mnemonic": "LOCHINHE",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHINHE->LOCHI mask=5"
+ },
+ "T0346": {
+  "spec_mnemonic": "LOCHILH",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHILH->LOCHI mask=6"
+ },
+ "T0347": {
+  "spec_mnemonic": "LOCHINE",
+  "hlasm_mnemonic": "LOCHINE",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0348": {
+  "spec_mnemonic": "LOCHIE",
+  "hlasm_mnemonic": "LOCHIE",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0349": {
+  "spec_mnemonic": "LOCHINLH",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHINLH->LOCHI mask=9"
+ },
+ "T0350": {
+  "spec_mnemonic": "LOCHIHE",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHIHE->LOCHI mask=10"
+ },
+ "T0351": {
+  "spec_mnemonic": "LOCHINL",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHINL->LOCHI mask=11"
+ },
+ "T0352": {
+  "spec_mnemonic": "LOCHILE",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHILE->LOCHI mask=12"
+ },
+ "T0353": {
+  "spec_mnemonic": "LOCHINH",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHINH->LOCHI mask=13"
+ },
+ "T0354": {
+  "spec_mnemonic": "LOCHINO",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHINO->LOCHI mask=14"
+ },
+ "T0355": {
+  "spec_mnemonic": "LOCHI",
+  "hlasm_mnemonic": "LOCHI",
+  "operands": "1,4660,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0356": {
+  "spec_mnemonic": "LOCGHIO",
+  "hlasm_mnemonic": "LOCGHIO",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0357": {
+  "spec_mnemonic": "LOCGHIH",
+  "hlasm_mnemonic": "LOCGHIH",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0358": {
+  "spec_mnemonic": "LOCGHINLE",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHINLE->LOCGHI mask=3"
+ },
+ "T0359": {
+  "spec_mnemonic": "LOCGHIL",
+  "hlasm_mnemonic": "LOCGHIL",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0360": {
+  "spec_mnemonic": "LOCGHINHE",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHINHE->LOCGHI mask=5"
+ },
+ "T0361": {
+  "spec_mnemonic": "LOCGHILH",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHILH->LOCGHI mask=6"
+ },
+ "T0362": {
+  "spec_mnemonic": "LOCGHINE",
+  "hlasm_mnemonic": "LOCGHINE",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0363": {
+  "spec_mnemonic": "LOCGHIE",
+  "hlasm_mnemonic": "LOCGHIE",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0364": {
+  "spec_mnemonic": "LOCGHINLH",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHINLH->LOCGHI mask=9"
+ },
+ "T0365": {
+  "spec_mnemonic": "LOCGHIHE",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHIHE->LOCGHI mask=10"
+ },
+ "T0366": {
+  "spec_mnemonic": "LOCGHINL",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHINL->LOCGHI mask=11"
+ },
+ "T0367": {
+  "spec_mnemonic": "LOCGHILE",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHILE->LOCGHI mask=12"
+ },
+ "T0368": {
+  "spec_mnemonic": "LOCGHINH",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHINH->LOCGHI mask=13"
+ },
+ "T0369": {
+  "spec_mnemonic": "LOCGHINO",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCGHINO->LOCGHI mask=14"
+ },
+ "T0370": {
+  "spec_mnemonic": "LOCGHI",
+  "hlasm_mnemonic": "LOCGHI",
+  "operands": "1,4660,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0371": {
+  "spec_mnemonic": "LOCHHIO",
+  "hlasm_mnemonic": "LOCHHIO",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0372": {
+  "spec_mnemonic": "LOCHHIH",
+  "hlasm_mnemonic": "LOCHHIH",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0373": {
+  "spec_mnemonic": "LOCHHINLE",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,3",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHINLE->LOCHHI mask=3"
+ },
+ "T0374": {
+  "spec_mnemonic": "LOCHHIL",
+  "hlasm_mnemonic": "LOCHHIL",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0375": {
+  "spec_mnemonic": "LOCHHINHE",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,5",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHINHE->LOCHHI mask=5"
+ },
+ "T0376": {
+  "spec_mnemonic": "LOCHHILH",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHILH->LOCHHI mask=6"
+ },
+ "T0377": {
+  "spec_mnemonic": "LOCHHINE",
+  "hlasm_mnemonic": "LOCHHINE",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0378": {
+  "spec_mnemonic": "LOCHHIE",
+  "hlasm_mnemonic": "LOCHHIE",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0379": {
+  "spec_mnemonic": "LOCHHINLH",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,9",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHINLH->LOCHHI mask=9"
+ },
+ "T0380": {
+  "spec_mnemonic": "LOCHHIHE",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHIHE->LOCHHI mask=10"
+ },
+ "T0381": {
+  "spec_mnemonic": "LOCHHINL",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,11",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHINL->LOCHHI mask=11"
+ },
+ "T0382": {
+  "spec_mnemonic": "LOCHHILE",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHILE->LOCHHI mask=12"
+ },
+ "T0383": {
+  "spec_mnemonic": "LOCHHINH",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,13",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHINH->LOCHHI mask=13"
+ },
+ "T0384": {
+  "spec_mnemonic": "LOCHHINO",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,14",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "LOCHHINO->LOCHHI mask=14"
+ },
+ "T0385": {
+  "spec_mnemonic": "LOCHHI",
+  "hlasm_mnemonic": "LOCHHI",
+  "operands": "1,4660,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0386": {
+  "spec_mnemonic": "CITH",
+  "hlasm_mnemonic": "CIT",
+  "operands": "1,4660,2",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CITH->CIT mask=2"
+ },
+ "T0387": {
+  "spec_mnemonic": "CITL",
+  "hlasm_mnemonic": "CITL",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0388": {
+  "spec_mnemonic": "CITLH",
+  "hlasm_mnemonic": "CIT",
+  "operands": "1,4660,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CITLH->CIT mask=6"
+ },
+ "T0389": {
+  "spec_mnemonic": "CITE",
+  "hlasm_mnemonic": "CITE",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0390": {
+  "spec_mnemonic": "CITHE",
+  "hlasm_mnemonic": "CIT",
+  "operands": "1,4660,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CITHE->CIT mask=10"
+ },
+ "T0391": {
+  "spec_mnemonic": "CITLE",
+  "hlasm_mnemonic": "CIT",
+  "operands": "1,4660,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CITLE->CIT mask=12"
+ },
+ "T0392": {
+  "spec_mnemonic": "CIT",
+  "hlasm_mnemonic": "CIT",
+  "operands": "1,4660,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0393": {
+  "spec_mnemonic": "CGITH",
+  "hlasm_mnemonic": "CGIT",
+  "operands": "1,4660,2",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CGITH->CGIT mask=2"
+ },
+ "T0394": {
+  "spec_mnemonic": "CGITL",
+  "hlasm_mnemonic": "CGITL",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0395": {
+  "spec_mnemonic": "CGITLH",
+  "hlasm_mnemonic": "CGIT",
+  "operands": "1,4660,6",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CGITLH->CGIT mask=6"
+ },
+ "T0396": {
+  "spec_mnemonic": "CGITE",
+  "hlasm_mnemonic": "CGITE",
+  "operands": "1,4660",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0397": {
+  "spec_mnemonic": "CGITHE",
+  "hlasm_mnemonic": "CGIT",
+  "operands": "1,4660,10",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CGITHE->CGIT mask=10"
+ },
+ "T0398": {
+  "spec_mnemonic": "CGITLE",
+  "hlasm_mnemonic": "CGIT",
+  "operands": "1,4660,12",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CGITLE->CGIT mask=12"
+ },
+ "T0399": {
+  "spec_mnemonic": "CGIT",
+  "hlasm_mnemonic": "CGIT",
+  "operands": "1,4660,7",
+  "srcfile": "s390x_cond.sinc"
+ },
+ "T0400": {
+  "spec_mnemonic": "CLFITH",
+  "hlasm_mnemonic": "CLFIT",
+  "operands": "1,4660,2",
+  "srcfile": "s390x_cond.sinc",
+  "rewrite_note": "CLFITH->CLFIT mask=2"
+ }
+}

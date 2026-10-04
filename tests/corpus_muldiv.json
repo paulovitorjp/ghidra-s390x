@@ -1,0 +1,458 @@
+[
+ {
+  "bytes_hex": "5c00f123",
+  "category": "muldiv_pair",
+  "notes": "M r0 even, D12 disp",
+  "expected_len": 4,
+  "capstone_mnemonic": "m",
+  "capstone_op_str": "%r0, 0x123(%r15)"
+ },
+ {
+  "bytes_hex": "5c630fff",
+  "category": "muldiv_pair",
+  "notes": "M r6 even, negative disp -1",
+  "expected_len": 4,
+  "capstone_mnemonic": "m",
+  "capstone_op_str": "%r6, 0xfff(%r3)"
+ },
+ {
+  "bytes_hex": "5ce00000",
+  "category": "muldiv_pair",
+  "notes": "M r14 even, zero addr",
+  "expected_len": 4,
+  "capstone_mnemonic": "m",
+  "capstone_op_str": "%r14, 0"
+ },
+ {
+  "bytes_hex": "5c50f010",
+  "category": "muldiv_pair",
+  "notes": "M r5. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it",
+  "expected_len": 4,
+  "capstone_mnemonic": null,
+  "capstone_op_str": null
+ },
+ {
+  "bytes_hex": "e320f345125c",
+  "category": "muldiv_pair",
+  "notes": "MFY r2 even, 20-bit disp",
+  "expected_len": 6,
+  "capstone_mnemonic": "mfy",
+  "capstone_op_str": "%r2, 0x12345(%r15)"
+ },
+ {
+  "bytes_hex": "e3812000805c",
+  "category": "muldiv_pair",
+  "notes": "MFY r8 even, min disp",
+  "expected_len": 6,
+  "capstone_mnemonic": "mfy",
+  "capstone_op_str": "%r8, -0x80000(%r1, %r2)"
+ },
+ {
+  "bytes_hex": "e3700000005c",
+  "category": "muldiv_pair",
+  "notes": "MFY r7. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it",
+  "expected_len": 6,
+  "capstone_mnemonic": null,
+  "capstone_op_str": null
+ },
+ {
+  "bytes_hex": "1c01",
+  "category": "muldiv_pair",
+  "notes": "MR r0 even",
+  "expected_len": 2,
+  "capstone_mnemonic": "mr",
+  "capstone_op_str": "%r0, %r1"
+ },
+ {
+  "bytes_hex": "1caf",
+  "category": "muldiv_pair",
+  "notes": "MR r10 even",
+  "expected_len": 2,
+  "capstone_mnemonic": "mr",
+  "capstone_op_str": "%r10, %r15"
+ },
+ {
+  "bytes_hex": "1c92",
+  "category": "muldiv_pair",
+  "notes": "MR r9. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it",
+  "expected_len": 2,
+  "capstone_mnemonic": null,
+  "capstone_op_str": null
+ },
+ {
+  "bytes_hex": "e300ffff7f84",
+  "category": "muldiv_pair",
+  "notes": "MG r0 even, max disp",
+  "expected_len": 6,
+  "capstone_mnemonic": "mg",
+  "capstone_op_str": "%r0, 0x7ffff(%r15)"
+ },
+ {
+  "bytes_hex": "e3e23fffff84",
+  "category": "muldiv_pair",
+  "notes": "MG r14 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "mg",
+  "capstone_op_str": "%r14, -1(%r2, %r3)"
+ },
+ {
+  "bytes_hex": "e31000000084",
+  "category": "muldiv_pair",
+  "notes": "MG r1. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it",
+  "expected_len": 6,
+  "capstone_mnemonic": null,
+  "capstone_op_str": null
+ },
+ {
+  "bytes_hex": "e340f1000096",
+  "category": "muldiv_pair",
+  "notes": "ML r4 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "ml",
+  "capstone_op_str": "%r4, 0x100(%r15)"
+ },
+ {
+  "bytes_hex": "e3c000000096",
+  "category": "muldiv_pair",
+  "notes": "ML r12 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "ml",
+  "capstone_op_str": "%r12, 0"
+ },
+ {
+  "bytes_hex": "b9960042",
+  "category": "muldiv_pair",
+  "notes": "MLR r4 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "mlr",
+  "capstone_op_str": "%r4, %r2"
+ },
+ {
+  "bytes_hex": "b99600bd",
+  "category": "muldiv_pair",
+  "notes": "MLR r11. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it",
+  "expected_len": 4,
+  "capstone_mnemonic": null,
+  "capstone_op_str": null
+ },
+ {
+  "bytes_hex": "e360f2000086",
+  "category": "muldiv_pair",
+  "notes": "MLG r6 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "mlg",
+  "capstone_op_str": "%r6, 0x200(%r15)"
+ },
+ {
+  "bytes_hex": "e30000000086",
+  "category": "muldiv_pair",
+  "notes": "MLG r0 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "mlg",
+  "capstone_op_str": "%r0, 0"
+ },
+ {
+  "bytes_hex": "b9860089",
+  "category": "muldiv_pair",
+  "notes": "MLGR r8 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "mlgr",
+  "capstone_op_str": "%r8, %r9"
+ },
+ {
+  "bytes_hex": "b986002f",
+  "category": "muldiv_pair",
+  "notes": "MLGR r2 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "mlgr",
+  "capstone_op_str": "%r2, %r15"
+ },
+ {
+  "bytes_hex": "5d00f040",
+  "category": "muldiv_pair",
+  "notes": "D r0 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "d",
+  "capstone_op_str": "%r0, 0x40(%r15)"
+ },
+ {
+  "bytes_hex": "5dc45800",
+  "category": "muldiv_pair",
+  "notes": "D r12 even, negative disp",
+  "expected_len": 4,
+  "capstone_mnemonic": "d",
+  "capstone_op_str": "%r12, 0x800(%r4, %r5)"
+ },
+ {
+  "bytes_hex": "5d300000",
+  "category": "muldiv_pair",
+  "notes": "D r3. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it",
+  "expected_len": 4,
+  "capstone_mnemonic": null,
+  "capstone_op_str": null
+ },
+ {
+  "bytes_hex": "1d27",
+  "category": "muldiv_pair",
+  "notes": "DR r2 even",
+  "expected_len": 2,
+  "capstone_mnemonic": "dr",
+  "capstone_op_str": "%r2, %r7"
+ },
+ {
+  "bytes_hex": "1dee",
+  "category": "muldiv_pair",
+  "notes": "DR r14 even",
+  "expected_len": 2,
+  "capstone_mnemonic": "dr",
+  "capstone_op_str": "%r14, %r14"
+ },
+ {
+  "bytes_hex": "e300fcdeab97",
+  "category": "muldiv_pair",
+  "notes": "DL r0 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "dl",
+  "capstone_op_str": "%r0, -0x54322(%r15)"
+ },
+ {
+  "bytes_hex": "e3a000000097",
+  "category": "muldiv_pair",
+  "notes": "DL r10 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "dl",
+  "capstone_op_str": "%r10, 0"
+ },
+ {
+  "bytes_hex": "b9970066",
+  "category": "muldiv_pair",
+  "notes": "DLR r6 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "dlr",
+  "capstone_op_str": "%r6, %r6"
+ },
+ {
+  "bytes_hex": "b9970056",
+  "category": "muldiv_pair",
+  "notes": "DLR r5. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it",
+  "expected_len": 4,
+  "capstone_mnemonic": null,
+  "capstone_op_str": null
+ },
+ {
+  "bytes_hex": "e320f1111187",
+  "category": "muldiv_pair",
+  "notes": "DLG r2 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "dlg",
+  "capstone_op_str": "%r2, 0x11111(%r15)"
+ },
+ {
+  "bytes_hex": "e3e000000087",
+  "category": "muldiv_pair",
+  "notes": "DLG r14 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "dlg",
+  "capstone_op_str": "%r14, 0"
+ },
+ {
+  "bytes_hex": "b9870001",
+  "category": "muldiv_pair",
+  "notes": "DLGR r0 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "dlgr",
+  "capstone_op_str": "%r0, %r1"
+ },
+ {
+  "bytes_hex": "e340f300000d",
+  "category": "muldiv_pair",
+  "notes": "DSG r4 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "dsg",
+  "capstone_op_str": "%r4, 0x300(%r15)"
+ },
+ {
+  "bytes_hex": "e3830cbbed0d",
+  "category": "muldiv_pair",
+  "notes": "DSG r8 even, negative disp",
+  "expected_len": 6,
+  "capstone_mnemonic": "dsg",
+  "capstone_op_str": "%r8, -0x12345(%r3)"
+ },
+ {
+  "bytes_hex": "b90d00ab",
+  "category": "muldiv_pair",
+  "notes": "DSGR r10 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "dsgr",
+  "capstone_op_str": "%r10, %r11"
+ },
+ {
+  "bytes_hex": "b90d00cc",
+  "category": "muldiv_pair",
+  "notes": "DSGR r12 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "dsgr",
+  "capstone_op_str": "%r12, %r12"
+ },
+ {
+  "bytes_hex": "e360f400001d",
+  "category": "muldiv_pair",
+  "notes": "DSGF r6 even",
+  "expected_len": 6,
+  "capstone_mnemonic": "dsgf",
+  "capstone_op_str": "%r6, 0x400(%r15)"
+ },
+ {
+  "bytes_hex": "b91d0003",
+  "category": "muldiv_pair",
+  "notes": "DSGFR r0 even",
+  "expected_len": 4,
+  "capstone_mnemonic": "dsgfr",
+  "capstone_op_str": "%r0, %r3"
+ },
+ {
+  "bytes_hex": "b91d00d4",
+  "category": "muldiv_pair",
+  "notes": "DSGFR r13. odd R1: Capstone refuses to decode (specification exception on HW); our opaque fallback must still decode it",
+  "expected_len": 4,
+  "capstone_mnemonic": null,
+  "capstone_op_str": null
+ },
+ {
+  "bytes_hex": "4c10f020",
+  "category": "muldiv",
+  "notes": "MH",
+  "expected_len": 4,
+  "capstone_mnemonic": "mh",
+  "capstone_op_str": "%r1, 0x20(%r15)"
+ },
+ {
+  "bytes_hex": "4c720ff8",
+  "category": "muldiv",
+  "notes": "MH negative disp",
+  "expected_len": 4,
+  "capstone_mnemonic": "mh",
+  "capstone_op_str": "%r7, 0xff8(%r2)"
+ },
+ {
+  "bytes_hex": "e330f500007c",
+  "category": "muldiv",
+  "notes": "MHY",
+  "expected_len": 6,
+  "capstone_mnemonic": "mhy",
+  "capstone_op_str": "%r3, 0x500(%r15)"
+ },
+ {
+  "bytes_hex": "a75c1234",
+  "category": "muldiv",
+  "notes": "MHI positive imm",
+  "expected_len": 4,
+  "capstone_mnemonic": "mhi",
+  "capstone_op_str": "%r5, 0x1234"
+ },
+ {
+  "bytes_hex": "a70c8000",
+  "category": "muldiv",
+  "notes": "MHI min imm",
+  "expected_len": 4,
+  "capstone_mnemonic": "mhi",
+  "capstone_op_str": "%r0, -0x8000"
+ },
+ {
+  "bytes_hex": "e3b0f600003c",
+  "category": "muldiv",
+  "notes": "MGH",
+  "expected_len": 6,
+  "capstone_mnemonic": "mgh",
+  "capstone_op_str": "%r11, 0x600(%r15)"
+ },
+ {
+  "bytes_hex": "a79dffff",
+  "category": "muldiv",
+  "notes": "MGHI -1",
+  "expected_len": 4,
+  "capstone_mnemonic": "mghi",
+  "capstone_op_str": "%r9, -1"
+ },
+ {
+  "bytes_hex": "7120f070",
+  "category": "muldiv",
+  "notes": "MS",
+  "expected_len": 4,
+  "capstone_mnemonic": "ms",
+  "capstone_op_str": "%r2, 0x70(%r15)"
+ },
+ {
+  "bytes_hex": "e340f0018051",
+  "category": "muldiv",
+  "notes": "MSY negative 20-bit disp",
+  "expected_len": 6,
+  "capstone_mnemonic": "msy",
+  "capstone_op_str": "%r4, -0x7ffff(%r15)"
+ },
+ {
+  "bytes_hex": "b2520039",
+  "category": "muldiv",
+  "notes": "MSR (opcode B252, verified vs Capstone cdlgtr=B952)",
+  "expected_len": 4,
+  "capstone_mnemonic": "msr",
+  "capstone_op_str": "%r3, %r9"
+ },
+ {
+  "bytes_hex": "c2117fffffff",
+  "category": "muldiv",
+  "notes": "MSFI max imm",
+  "expected_len": 6,
+  "capstone_mnemonic": "msfi",
+  "capstone_op_str": "%r1, 0x7fffffff"
+ },
+ {
+  "bytes_hex": "c2f180000000",
+  "category": "muldiv",
+  "notes": "MSFI min imm",
+  "expected_len": 6,
+  "capstone_mnemonic": "msfi",
+  "capstone_op_str": "%r15, -0x80000000"
+ },
+ {
+  "bytes_hex": "e350f700000c",
+  "category": "muldiv",
+  "notes": "MSG",
+  "expected_len": 6,
+  "capstone_mnemonic": "msg",
+  "capstone_op_str": "%r5, 0x700(%r15)"
+ },
+ {
+  "bytes_hex": "b90c0067",
+  "category": "muldiv",
+  "notes": "MSGR",
+  "expected_len": 4,
+  "capstone_mnemonic": "msgr",
+  "capstone_op_str": "%r6, %r7"
+ },
+ {
+  "bytes_hex": "e380f800001c",
+  "category": "muldiv",
+  "notes": "MSGF",
+  "expected_len": 6,
+  "capstone_mnemonic": "msgf",
+  "capstone_op_str": "%r8, 0x800(%r15)"
+ },
+ {
+  "bytes_hex": "b91c00ab",
+  "category": "muldiv",
+  "notes": "MSGFR",
+  "expected_len": 4,
+  "capstone_mnemonic": "msgfr",
+  "capstone_op_str": "%r10, %r11"
+ },
+ {
+  "bytes_hex": "c290ffffffff",
+  "category": "muldiv",
+  "notes": "MSGFI -1",
+  "expected_len": 6,
+  "capstone_mnemonic": "msgfi",
+  "capstone_op_str": "%r9, -1"
+ }
+]

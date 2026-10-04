@@ -1,0 +1,4 @@
+program: ghidra_smoke.bin
+language: s390x:BE:64:default
+range: 00400000 .. 0040001b
+first: brasl brasl  r14 ,0x6

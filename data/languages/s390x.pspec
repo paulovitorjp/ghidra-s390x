@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- s390x.pspec - processor specification for IBM z/Architecture (64-bit).
+     The program counter is the PSW instruction address (pswia); the
+     architecture is big-endian. Register names must match s390x.slaspec. -->
+<processor_spec>
+
+  <programcounter register="pswia"/>
+
+  <register_data>
+    <register name="r0"/>
+    <register name="r1"/>
+    <register name="r2"/>
+    <register name="r3"/>
+    <register name="r4"/>
+    <register name="r5"/>
+    <register name="r6"/>
+    <register name="r7"/>
+    <register name="r8"/>
+    <register name="r9"/>
+    <register name="r10"/>
+    <register name="r11"/>
+    <register name="r12"/>
+    <register name="r13"/>
+    <register name="r14"/>
+    <register name="r15"/>
+    <register name="a0"/>
+    <register name="a1"/>
+    <register name="a2"/>
+    <register name="a3"/>
+    <register name="a4"/>
+    <register name="a5"/>
+    <register name="a6"/>
+    <register name="a7"/>
+    <register name="a8"/>
+    <register name="a9"/>
+    <register name="a10"/>
+    <register name="a11"/>
+    <register name="a12"/>
+    <register name="a13"/>
+    <register name="a14"/>
+    <register name="a15"/>
+    <register name="f0"/>
+    <register name="f1"/>
+    <register name="f2"/>
+    <register name="f3"/>
+    <register name="f4"/>
+    <register name="f5"/>
+    <register name="f6"/>
+    <register name="f7"/>
+    <register name="f8"/>
+    <register name="f9"/>
+    <register name="f10"/>
+    <register name="f11"/>
+    <register name="f12"/>
+    <register name="f13"/>
+    <register name="f14"/>
+    <register name="f15"/>
+    <register name="v0"/>
+    <register name="v1"/>
+    <register name="v2"/>
+    <register name="v3"/>
+    <register name="v4"/>
+    <register name="v5"/>
+    <register name="v6"/>
+    <register name="v7"/>
+    <register name="v8"/>
+    <register name="v9"/>
+    <register name="v10"/>
+    <register name="v11"/>
+    <register name="v12"/>
+    <register name="v13"/>
+    <register name="v14"/>
+    <register name="v15"/>
+    <register name="v16"/>
+    <register name="v17"/>
+    <register name="v18"/>
+    <register name="v19"/>
+    <register name="v20"/>
+    <register name="v21"/>
+    <register name="v22"/>
+    <register name="v23"/>
+    <register name="v24"/>
+    <register name="v25"/>
+    <register name="v26"/>
+    <register name="v27"/>
+    <register name="v28"/>
+    <register name="v29"/>
+    <register name="v30"/>
+    <register name="v31"/>
+    <register name="psw"/>
+    <register name="pswm"/>
+    <register name="pswia"/>
+    <register name="cc"/>
+  </register_data>
+
+</processor_spec>

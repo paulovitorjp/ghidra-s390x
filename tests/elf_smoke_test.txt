@@ -1,0 +1,162 @@
+program: elf_smoke.elf
+language: s390x:BE:64:default
+compiler: default
+image base: 00010000
+range: 00010000 .. .symtab::0000005f
+entry symbols: 
+symbol _start -> 00010078 
+symbol main -> 00010080 
+symbol sum -> 000100b6 
+NO DECODE at 000100ce
+NO DECODE at 000100cf
+NO DECODE at 000100d0
+NO DECODE at 000100d1
+NO DECODE at 000100d2
+NO DECODE at 000100d3
+NO DECODE at 000100d4
+NO DECODE at 000100d5
+NO DECODE at 000100d6
+NO DECODE at 000100d7
+NO DECODE at 000100d8
+NO DECODE at 000100d9
+NO DECODE at 000100da
+NO DECODE at 000100db
+NO DECODE at 000100dc
+NO DECODE at 000100dd
+NO DECODE at 000100de
+NO DECODE at 000100df
+NO DECODE at 000100e0
+NO DECODE at 000100e1
+NO DECODE at 000100e2
+NO DECODE at 000100e3
+NO DECODE at 000100e4
+NO DECODE at 000100e5
+NO DECODE at 000100e6
+NO DECODE at 000100e7
+NO DECODE at 000100e8
+NO DECODE at 000100e9
+NO DECODE at 000100ec
+NO DECODE at 000100ed
+NO DECODE at 000100ee
+NO DECODE at 000100ef
+NO DECODE at 000100f0
+NO DECODE at 000100f1
+NO DECODE at 000100f2
+NO DECODE at 000100f3
+NO DECODE at 000100f4
+NO DECODE at 000100f5
+NO DECODE at 000100f6
+NO DECODE at 000100f7
+=== DISASSEMBLY ===
+00010078  brasl  brasl brasl  r14 ,0x00010080
+0001007e  svc  svc svc  0x1
+00010080  STMG_14_15  STMG_14_15 STMG  14 ,15 ,0x8 ( r15 )
+00010086  AGHI  AGHI AGHI  r15 ,-0xa0
+0001008a  LHI  LHI LHI  r2 ,0xa
+0001008e  brasl  brasl brasl  r14 ,0x000100b6
+00010094  CGHI  CGHI CGHI  r2 ,0x32
+00010098  jh  jh jh  0x000100a4
+0001009c  LHI  LHI LHI  r3 ,0x0
+000100a0  j  j j  0x000100a8
+000100a4  LHI  LHI LHI  r3 ,0x1
+000100a8  LR  LR LR  r2 ,r3
+000100aa  AGHI  AGHI AGHI  r15 ,0xa0
+000100ae  LMG_14_15  LMG_14_15 LMG  14 ,15 ,0xa8 ( r15 )
+000100b4  br_ret  br_ret br  r14
+000100b6  LHI  LHI LHI  r3 ,0x0
+000100ba  LHI  LHI LHI  r4 ,0x1
+000100be  AR  AR AR  r3 ,r4
+000100c0  AHI  AHI AHI  r4 ,0x1
+000100c4  CR  CR CR  r4 ,r2
+000100c6  jnh  jnh jnh  0x000100be
+000100ca  LR  LR LR  r2 ,r3
+000100cc  br_ret  br_ret br  r14
+000100ea  LTR  LTR LTR  r0 ,r0
+instruction count: 24
+=== FUNCTIONS ===
+fn _start @ 00010078
+fn main @ 00010080
+fn sum @ 000100b6
+=== DECOMPILE main ===
+
+/* WARNING: Unable to track spacebase fully for stack */
+/* WARNING: Removing unreachable block (ram,0x00010080) */
+/* WARNING: Removing unreachable block (ram,0x000100ae) */
+
+ulong main(ulong param_1,ulong param_2)
+
+{
+  sbyte sVar1;
+  ulong uVar2;
+  undefined8 unaff_retaddr;
+  long in_zero;
+  
+  *(undefined8 *)(&stack0x00000008 + in_zero) = unaff_retaddr;
+  *(BADSPACEBASE **)(&stack0x00000010 + in_zero) = register0x00000078;
+  uVar2 = sum(param_1 & 0xffffffff00000000 | 10);
+  if (uVar2 == 0x32) {
+    sVar1 = 0;
+  }
+  else if ((long)uVar2 < 0) {
+    if ((long)uVar2 < 0) {
+      sVar1 = 1;
+    }
+    else {
+      sVar1 = 2;
+    }
+  }
+  else if (uVar2 < 0x32) {
+    sVar1 = 1;
+  }
+  else {
+    sVar1 = 2;
+  }
+  if ((8U >> sVar1 & 2) == 0) {
+    param_2 = param_2 & 0xffffffff00000000;
+  }
+  else {
+    param_2 = param_2 & 0xffffffff00000000 | 1;
+  }
+  return param_2;
+}
+
+
+decompile main: OK
+=== DECOMPILE sum ===
+
+ulong sum(ulong param_1,ulong param_2)
+
+{
+  sbyte sVar1;
+  ulong uVar2;
+  ulong uVar3;
+  
+  param_2 = param_2 & 0xffffffff00000000;
+  uVar3 = 1;
+  do {
+    param_2 = param_2 & 0xffffffff00000000 | (param_2 & 0xffffffff) + uVar3 & 0xffffffff;
+    uVar3 = uVar3 + 1 & 0xffffffff;
+    uVar2 = param_1 & 0xffffffff;
+    if (uVar3 == uVar2) {
+      sVar1 = 0;
+    }
+    else if (uVar3 >> 0x1f == uVar2 >> 0x1f) {
+      if (uVar3 < uVar2) {
+        sVar1 = 1;
+      }
+      else {
+        sVar1 = 2;
+      }
+    }
+    else if (uVar3 >> 0x1f == 1) {
+      sVar1 = 1;
+    }
+    else {
+      sVar1 = 2;
+    }
+  } while ((8U >> sVar1 & 0xd) != 0);
+  return param_2;
+}
+
+
+decompile sum: OK

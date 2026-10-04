@@ -1,0 +1,8 @@
+<opinions>
+    <!-- Map EM_S390 (22) to the s390x 64-bit big-endian language for the
+         stock ELF loader. s390x has no dedicated ELF relocation handler in
+         Ghidra, so applyRelocations is a no-op for EM_S390 (documented gap). -->
+    <constraint loader="Executable and Linking Format (ELF)" compilerSpecID="default">
+        <constraint primary="22" processor="s390x" endian="big" size="64" variant="default" />
+    </constraint>
+</opinions>

@@ -1,0 +1,67 @@
+program: elf_dyn_smoke.elf
+language: s390x:BE:64:default
+image base: 00100000
+func=0x101000 target2=0x101008 dAbs64=0x102000 bias=0x100000 got=0x105000
+PASS R_390_64               got=0x102008 want=0x102008
+PASS R_390_RELATIVE         got=0x100500 want=0x100500
+PASS R_390_GLOB_DAT         got=0x101010 want=0x101010
+PASS R_390_PC32             got=0xffffefe8 want=0xffffefe8
+PASS R_390_32               got=0x102004 want=0x102004
+PASS R_390_16               got=0x1002 want=0x1002
+PASS R_390_8                got=0x3 want=0x3
+PASS R_390_PC16             got=0xefd5 want=0xefd5
+PASS R_390_TLS_TPOFF_skip   got=0x0 want=0x0
+PASS R_390_PC32DBL          got=0x4 want=0x4
+PASS R_390_12               got=0xa008 want=0xa008
+PASS R_390_20               got=0xabc13345 want=0xabc13345
+PASS R_390_PC16DBL          got=0xf7e2 want=0xf7e2
+PASS R_390_PC12DBL          got=0xb7e1 want=0xb7e1
+PASS R_390_PC24DBL          got=0xcdfff7e0 want=0xcdfff7e0
+PASS R_390_PC64             got=0xffffffffffffefb2 want=0xffffffffffffefb2
+PASS R_390_GOT12            got=0xd000 want=0xd000
+PASS R_390_GOT16            got=0x8 want=0x8
+PASS R_390_GOT20            got=0xe1200010 want=0xe1200010
+PASS R_390_GOT32            got=0x1c want=0x1c
+PASS R_390_GOT64            got=0x8 want=0x8
+PASS R_390_GOTPLT12         got=0xf000 want=0xf000
+PASS R_390_GOTPLT16         got=0x8 want=0x8
+PASS R_390_GOTPLT20         got=0xe2200010 want=0xe2200010
+PASS R_390_GOTPLT32         got=0x18 want=0x18
+PASS R_390_GOTPLT64         got=0x0 want=0x0
+PASS R_390_GOTENT           got=0xfff7efca want=0xfff7efca
+PASS R_390_GOTPLTENT        got=0xfff7efcc want=0xfff7efcc
+PASS R_390_GOTPC            got=0x2f7a want=0x2f7a
+PASS R_390_GOTPCDBL         got=0x17bc want=0x17bc
+PASS R_390_GOTOFF16         got=0xd008 want=0xd008
+PASS R_390_GOTOFF32         got=0xffffd008 want=0xffffd008
+PASS R_390_GOTOFF64         got=0xffffffffffffc000 want=0xffffffffffffc000
+PASS R_390_PLT16DBL         got=0xf7b7 want=0xf7b7
+PASS R_390_PLT12DBL         got=0xc7b6 want=0xc7b6
+PASS R_390_PLT32DBL         got=0xfffff7b1 want=0xfffff7b1
+PASS R_390_PLT24DBL         got=0xddfff7af want=0xddfff7af
+PASS R_390_PLT32            got=0xffffef60 want=0xffffef60
+PASS R_390_PLT64            got=0xffffffffffffef54 want=0xffffffffffffef54
+PASS R_390_PLTOFF16         got=0xc008 want=0xc008
+PASS R_390_PLTOFF32         got=0xffffc008 want=0xffffc008
+PASS R_390_PLTOFF64         got=0xffffffffffffc000 want=0xffffffffffffc000
+PASS R_390_IRELATIVE        got=0x101008 want=0x101008
+PASS R_390_COPY_skip        got=0x1122334455667788 want=0x1122334455667788
+PASS R_390_GNU_VTINHERIT_skip got=0xaa want=0xaa
+PASS R_390_GNU_VTENTRY_skip got=0xbb want=0xbb
+PASS GOT[0]=d_abs64         got=0x102000 want=0x102000
+PASS GOT[1]=d_target        got=0x102008 want=0x102008
+PASS GOT[2]=func            got=0x101000 want=0x101000
+PASS GOT[3]=target2         got=0x101008 want=0x101008
+disasm @func: brasl brasl  r14 ,0x00101008
+  flow: 00101008
+PASS brasl target
+extfunc thunk @ 0x104000 isThunk=true isExternal=false
+PASS R_390_JMP_SLOT         got=0x104000 want=0x104000
+PASS extfunc linkage
+bookmarks: ERROR=0 WARNING=3
+  warn: Warning - Relocation - ELF Relocation Failure: R_390_TLS_TPOFF (56, 0x38) Symbol = <no name> (0x0) - TLS relocation not modeled for s390x - 00102030
+  warn: Warning - Relocation - ELF Relocation Failure: R_390_IRELATIVE (61, 0x3d) Symbol = <no name> (0x0) - IFUNC resolver not invoked; address of resolver recorded - 001020c2
+  warn: Warning - Relocation - ELF Relocation Failure: R_390_COPY (9, 0x9) Symbol = d_target (0x4) - Runtime copy not supported (8-bytes) - 001020ca
+PASS no ERROR bookmarks
+PASS expected WARNING bookmarks (TLS/IRELATIVE/COPY)
+RESULT: ALL PASS (0 failures)

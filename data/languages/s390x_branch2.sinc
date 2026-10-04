@@ -1,0 +1,635 @@
+# s390x_branch2.sinc — Branch / loop-control constructors, part 2 (Phase 2b)
+#
+# Covers the remaining branch-on-count and branch-on-index instructions:
+#   BC family (RX, 16 mask forms incl. extended mnemonics), BCT, BCTG,
+#   BCTR, BCTGR, BRCT, BRCTG,
+#   BXH, BXLE, BXHG, BXLEG, BRXH, BRXLE, BRXHG, BRXLG.
+#
+# This file is textually included into s390x.slaspec at merge time AFTER
+# s390x_branch.sinc (it reuses that file's rel_RI16 macro) and shares the
+# define-section tokens, registers, attachments, and macros of
+# s390x.slaspec; the extra tokens it needs are defined here.
+#
+# References: IBM z/Architecture Principles of Operation SA22-7832-14
+# (15th ed., Apr 2025). EVERY opcode below was verified against the PoP
+# instruction figures (sections 7-41..7-48, App. A opcode tables) and
+# cross-checked byte-for-byte against Capstone 5.0.7 (CS_ARCH_SYSZ).
+#
+# Conventions: see CONVENTIONS.md. Constructor names are lowercase;
+# every constructor carries an explicit [...] display section in HLASM
+# operand order. All bit ranges below use SLEIGH LSB=0 numbering
+# (PoP MSB=0 ranges converted per CONVENTIONS.md).
+#
+# IMPORTANT ASSUMPTIONS (for the merge/sleighc phase to confirm):
+#  1. BC's 16 mask forms are each fully constrained (M1 = 0..F), so the
+#     patterns are mutually exclusive; no most-specific-wins subtlety.
+#  2. BCTR/BCTGR suppress the branch when the *R2 field* is zero (PoP
+#     7-41, note 4) -- not when the register's value is zero. A pair of
+#     constructors keyed on a numeric shadow of the R2 field models this
+#     exactly. (A "!= 0" constraint cannot share a field with an operand
+#     use of that field, hence the RRd_R2n/RREd_R2n shadow fields.)
+#  3. BXH/BXLE/BXHG/BXLEG/BRXH/BRXLE/BRXHG/BRXLG: an even R3 field
+#     designates a register PAIR (increment in r[R3], compare value in
+#     r[R3+1]); an odd R3 supplies both (PoP 7-41). The RSd_R3c (etc.)
+#     second view of the R3 field, attached to r(R3|1), models both
+#     cases exactly in a single constructor. Two fields may share one
+#     bit range in a token definition; verified with the built compiler.
+#  4. Relative-branch targets display as the raw signed halfword offset
+#     (e.g. `brct r1,4`); the true absolute target lives in the pcode
+#     (goto), which is what Ghidra's analysis consumes. The diff
+#     harness needs pcrel entries for brct/brctg/brxh/brxle/brxhg/brxlg.
+#  5. Base/index fields with value 0 attach to the 'zero' pseudo-
+#     register (Phase 1 convention). Cosmetic only; pcode is correct.
+#  6. 20-bit displacements display the low 12 bits only (existing RSY
+#     convention, e.g. SLLK); full value is used in the pcode EA.
+#  7. This SLEIGH build rejects `if (cond) goto [computed];` (syntax
+#     error) even though bare `goto [computed];` is fine. All
+#     conditional computed branches are therefore written in the
+#     `if (negated-cond) goto <label>; goto [target]; <label>` shape
+#     used by s390x_branch.sinc.
+
+# ---------------------------------------------------------------------------
+# Extra tokens
+# ---------------------------------------------------------------------------
+
+# RRd: RR-format variant for BRANCH ON COUNT (BCTR). Adds RRd_R2n, a
+# numeric (unattached) shadow of the R2 field for the R2-field-zero
+# branch-suppression split (see assumption 2).
+define token RRd(16)
+    RRd_OP  = (8,15)
+    RRd_R1  = (4,7)
+    RRd_R2  = (0,3)
+    RRd_R2n = (0,3)
+;
+attach variables [ RRd_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRd_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+# RRd_R2n intentionally unattached: numeric field for pattern constraints.
+
+# RREd: RRE-format variant for BRANCH ON COUNT (BCTGR). Same shadow
+# trick as RRd. PoP RRE: OP(0-15) IGN(16-23) R1(24-27) R2(28-31).
+define token RREd(32)
+    RREd_OP  = (16,31)
+    RREd_IGN = (8,15)
+    RREd_R1  = (4,7)
+    RREd_R2  = (0,3)
+    RREd_R2n = (0,3)
+;
+attach variables [ RREd_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RREd_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+# RREd_R2n intentionally unattached: numeric field for pattern constraints.
+
+# RSd: RS-format variant for BRANCH ON INDEX HIGH / LOW OR EQUAL
+# (BXH/BXLE). Adds RSd_R3c, a second view of the R3 field attached to
+# r(R3|1) -- the compare-value register per the even/odd pair rule
+# (PoP 7-41; see assumption 3).
+define token RSd(32)
+    RSd_OP  = (24,31)
+    RSd_R1  = (20,23)
+    RSd_R3  = (16,19)
+    RSd_R3c = (16,19)
+    RSd_B2  = (12,15)
+    RSd_D2  = (0,11)
+;
+attach variables [ RSd_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSd_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSd_R3c ] [ r1 r1 r3 r3 r5 r5 r7 r7 r9 r9 r11 r11 r13 r13 r15 r15 ];
+attach variables [ RSd_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RSYd: RSY-format variant for BXHG/BXLEG. Same R3c trick as RSd.
+# PoP RSY: OP(0-7) R1(8-11) R3(12-15) B2(16-19) DL2(20-31) DH2(32-39)
+# OP2(40-47).
+define token RSYd(48)
+    RSYd_OP  = (40,47)
+    RSYd_R1  = (36,39)
+    RSYd_R3  = (32,35)
+    RSYd_R3c = (32,35)
+    RSYd_B2  = (28,31)
+    RSYd_DL2 = (16,27)
+    RSYd_DH2 = (8,15)
+    RSYd_OP2 = (0,7)
+;
+attach variables [ RSYd_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYd_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSYd_R3c ] [ r1 r1 r3 r3 r5 r5 r7 r7 r9 r9 r11 r11 r13 r13 r15 r15 ];
+attach variables [ RSYd_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RSId: RSI-format variant for BRANCH RELATIVE ON INDEX HIGH / LOW OR
+# EQUAL (BRXH/BRXLE). Same R3c trick. PoP RSI: OP(0-7) R1(8-11)
+# R3(12-15) I2(16-31, signed halfword count).
+define token RSId(32)
+    RSId_OP  = (24,31)
+    RSId_R1  = (20,23)
+    RSId_R3  = (16,19)
+    RSId_R3c = (16,19)
+    RSId_I2  = (0,15) signed
+;
+attach variables [ RSId_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSId_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RSId_R3c ] [ r1 r1 r3 r3 r5 r5 r7 r7 r9 r9 r11 r11 r13 r13 r15 r15 ];
+
+# RIEd: RIEe-format variant for BRXHG/BRXLG. Same R3c trick.
+# PoP RIEe: 'EC'(0-7) R1(8-11) R3(12-15) RI2(16-31, signed halfword
+# count) IGN(32-39) OP2(40-47).
+define token RIEd(48)
+    RIEd_OP  = (40,47)
+    RIEd_R1  = (36,39)
+    RIEd_R3  = (32,35)
+    RIEd_R3c = (32,35)
+    RIEd_RI2 = (16,31) signed
+    RIEd_IGN = (8,15)
+    RIEd_OP2 = (0,7)
+;
+attach variables [ RIEd_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RIEd_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RIEd_R3c ] [ r1 r1 r3 r3 r5 r5 r7 r7 r9 r9 r11 r11 r13 r13 r15 r15 ];
+
+# ---------------------------------------------------------------------------
+# BRANCH ON CONDITION, RX format (BC + extended mnemonics)
+# PoP 7-44. Opcode 0x47, token RXb (M1/X2/B2/D2). The M1 mask selects
+# which of the 4 condition-code states branch: bit 3 (val 8)->CC0,
+# bit 2 (val 4)->CC1, bit 1 (val 2)->CC2, bit 0 (val 1)->CC3.
+# Extended mnemonics per PoP Fig. 7-1. Capstone prints `bc` with the
+# mask operand for M1=0, `b` for M1=15.
+# ---------------------------------------------------------------------------
+
+:bc "bc 0," RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x0 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    # Mask 0 never branches; falls through. (PoP J-1.)
+}
+
+:bo "bo " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x1 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x1;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_1>;
+    goto [ea];
+    <br2_skip_1>
+}
+
+:bh "bh " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x2 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x2;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_2>;
+    goto [ea];
+    <br2_skip_2>
+}
+
+:bnle "bnle " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x3 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x3;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_3>;
+    goto [ea];
+    <br2_skip_3>
+}
+
+:bl "bl " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x4 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x4;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_4>;
+    goto [ea];
+    <br2_skip_4>
+}
+
+:bnhe "bnhe " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x5 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x5;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_5>;
+    goto [ea];
+    <br2_skip_5>
+}
+
+:blh "blh " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x6 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x6;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_6>;
+    goto [ea];
+    <br2_skip_6>
+}
+
+:bne "bne " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x7 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x7;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_7>;
+    goto [ea];
+    <br2_skip_7>
+}
+
+:be "be " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x8 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x8;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_8>;
+    goto [ea];
+    <br2_skip_8>
+}
+
+:bnlh "bnlh " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0x9 & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0x9;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_9>;
+    goto [ea];
+    <br2_skip_9>
+}
+
+:bhe "bhe " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0xA & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0xA;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_10>;
+    goto [ea];
+    <br2_skip_10>
+}
+
+:bnl "bnl " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0xB & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0xB;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_11>;
+    goto [ea];
+    <br2_skip_11>
+}
+
+:ble "ble " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0xC & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0xC;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_12>;
+    goto [ea];
+    <br2_skip_12>
+}
+
+:bnh "bnh " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0xD & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0xD;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_13>;
+    goto [ea];
+    <br2_skip_13>
+}
+
+:bno "bno " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0xE & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    local _b_m:1;
+    local _b_ccval:1;
+    local _b_bit:1;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    _b_m = 0xE;
+    _b_ccval = cc;
+    _b_bit = 8 >> _b_ccval;
+    if ((_b_m & _b_bit) == 0) goto <br2_skip_14>;
+    goto [ea];
+    <br2_skip_14>
+}
+
+:b "b " RXb_D2 "(" RXb_X2 "," RXb_B2 ")" is RXb_OP=0x47 & RXb_M1=0xF & RXb_X2 & RXb_B2 & RXb_D2
+{
+    local ea:8;
+    ea_D12(ea, RXb_B2, RXb_X2, RXb_D2);
+    goto [ea];
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH ON COUNT, RX format (BCT) — 32-bit count
+# PoP 7-41. Opcode 0x46, token RXa. Subtract 1 from bits 32-63 of R1,
+# ignoring overflow; branch to the RX effective address iff the 32-bit
+# result is nonzero. Condition code unchanged.
+# ---------------------------------------------------------------------------
+
+:bct "bct " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x46 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+{
+    local ea:8;
+    local cnt:8;
+    ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+    cnt = (RXa_R1 - 1) & 0xffffffff;
+    RXa_R1 = (RXa_R1 & (0xFFFFFFFF << 32)) | cnt;
+    if (cnt == 0) goto <bct_skip>;
+    goto [ea];
+    <bct_skip>
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH ON COUNT, RXY format (BCTG) — 64-bit count
+# PoP 7-41. Opcode 0xE3/0x46, token RXYc (new token; no constructors
+# existed yet). Full 64-bit subtract-1; branch iff result nonzero.
+# ---------------------------------------------------------------------------
+
+:bctg "bctg " RXYc_R1 "," RXYc_DXL2 "(" RXYc_X2 "," RXYc_B2 ")" is RXYc_OP=0xE3 & RXYc_OP2=0x46 & RXYc_R1 & RXYc_X2 & RXYc_B2 & RXYc_DXL2 & RXYc_DXH2
+{
+    local ea:8;
+    ea_D20(ea, RXYc_B2, RXYc_X2, RXYc_DXH2, RXYc_DXL2);
+    RXYc_R1 = RXYc_R1 - 1;
+    if (RXYc_R1 == 0) goto <bctg_skip>;
+    goto [ea];
+    <bctg_skip>
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH ON COUNT, RR format (BCTR) — 32-bit count
+# PoP 7-41. Opcode 0x06. The decrement ALWAYS happens (no R1=0
+# exception); the branch is suppressed only when the *R2 field* is zero
+# (note 4). The branch address (from R2) is generated before R1 changes.
+# Two constructors: :bctr for R2 field != 0, :bctr_nobr for R2 field = 0.
+# ---------------------------------------------------------------------------
+
+:bctr "bctr " RRd_R1 "," RRd_R2 is RRd_OP=0x06 & RRd_R1 & RRd_R2 & RRd_R2n != 0
+{
+    # RRd_R2n is the numeric shadow of the R2 field; R2 field != 0 here.
+    local cnt:8;
+    cnt = (RRd_R1 - 1) & 0xffffffff;
+    RRd_R1 = (RRd_R1 & (0xFFFFFFFF << 32)) | cnt;
+    if (cnt == 0) goto <bctr_skip>;
+    goto RRd_R2;
+    <bctr_skip>
+}
+
+:bctr_nobr "bctr " RRd_R1 "," RRd_R2 is RRd_OP=0x06 & RRd_R1 & RRd_R2 & RRd_R2n=0
+{
+    # R2 field = 0: count without branching (PoP 7-41, note 4).
+    local cnt:8;
+    cnt = (RRd_R1 - 1) & 0xffffffff;
+    RRd_R1 = (RRd_R1 & (0xFFFFFFFF << 32)) | cnt;
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH ON COUNT, RRE format (BCTGR) — 64-bit count
+# PoP 7-41. Opcode 0xB9/0x46. Same R2-field-zero split as BCTR.
+# ---------------------------------------------------------------------------
+
+:bctgr "bctgr " RREd_R1 "," RREd_R2 is RREd_OP=0xB946 & RREd_IGN & RREd_R1 & RREd_R2 & RREd_R2n != 0
+{
+    # R2 field != 0: decrement, branch to R2 iff result nonzero.
+    RREd_R1 = RREd_R1 - 1;
+    if (RREd_R1 == 0) goto <bctgr_skip>;
+    goto RREd_R2;
+    <bctgr_skip>
+}
+
+:bctgr_nobr "bctgr " RREd_R1 "," RREd_R2 is RREd_OP=0xB946 & RREd_IGN & RREd_R1 & RREd_R2 & RREd_R2n=0
+{
+    # R2 field = 0: count without branching (PoP 7-41, note 4).
+    RREd_R1 = RREd_R1 - 1;
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH RELATIVE ON COUNT (BRCT, 32-bit) — RI format, opcode 0xA7 ext 6
+# BRANCH RELATIVE ON COUNT (BRCTG, 64-bit) — RI format, opcode 0xA7 ext 7
+# PoP 7-41. Same counting rule as BCT/BCTG; the target is
+# inst_addr + 2*RI2 (signed halfword count), computed by rel_RI16.
+# (JCT/JCTG are not distinct PoP instructions; Capstone decodes A7/6-7
+# as BRCT/BRCTG, so no aliases are provided.)
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# PC-relative target subtables for BRCT/BRCTG (RIb), BRXH/BRXLE (RSId),
+# BRXHG/BRXLG (RIEd). Each computes inst_start + 2*sign_extend(imm) at decode
+# time for a direct CBRANCH to a constant address. Display shows the absolute
+# target (Capstone-compatible).
+# ---------------------------------------------------------------------------
+RSId_TargetLoc: tgt is RSId_I2 [ tgt = inst_start + RSId_I2 * 2; ] { export *[const]:8 tgt; }
+RSId_Target: RSId_TargetLoc is RSId_TargetLoc { export *:8 RSId_TargetLoc; }
+RIEd_TargetLoc: tgt is RIEd_RI2 [ tgt = inst_start + RIEd_RI2 * 2; ] { export *[const]:8 tgt; }
+RIEd_Target: RIEd_TargetLoc is RIEd_TargetLoc { export *:8 RIEd_TargetLoc; }
+
+:brct "brct " RIb_R1 "," RIb_Target is RIb_OP=0xA7 & RIb_OP2=0x6 & RIb_R1 & RIb_Target
+{
+    local cnt:8;
+    cnt = (RIb_R1 - 1) & 0xffffffff;
+    RIb_R1 = (RIb_R1 & (0xFFFFFFFF << 32)) | cnt;
+    if (cnt != 0) goto RIb_Target;
+}
+
+:brctg "brctg " RIb_R1 "," RIb_Target is RIb_OP=0xA7 & RIb_OP2=0x7 & RIb_R1 & RIb_Target
+{
+    RIb_R1 = RIb_R1 - 1;
+    if (RIb_R1 != 0) goto RIb_Target;
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH ON INDEX HIGH (BXH) / LOW OR EQUAL (BXLE) — RS format, 32-bit
+# PoP 7-41. Opcodes 0x86/0x87. Signed 32-bit: sum = R1 + increment;
+# BXH branches iff sum > compare value, BXLE iff sum <= compare value.
+# The sum is ALWAYS stored back to R1; the branch target EA is generated
+# before the update; CC unchanged. RSd_R3 is the increment register
+# (r[R3]); RSd_R3c is the compare register (r[R3|1]) -- for odd R3 both
+# are the same register, for even R3 they are the r[R3]/r[R3+1] pair.
+# The original compare value is used even if it aliases R1 (read into
+# a local before the write-back).
+# ---------------------------------------------------------------------------
+
+:bxh "bxh " RSd_R1 "," RSd_R3 "," RSd_D2 "(" RSd_B2 ")" is RSd_OP=0x86 & RSd_R1 & RSd_R3 & RSd_R3c & RSd_B2 & RSd_D2
+{
+    local ea:8;
+    local inc:8;
+    local cmp:8;
+    local sum:8;
+    ea_D12(ea, RSd_B2, zero, RSd_D2);
+    inc = RSd_R3 & 0xffffffff;
+    cmp = RSd_R3c & 0xffffffff;
+    sum = ((RSd_R1 & 0xffffffff) + inc) & 0xffffffff;
+    RSd_R1 = (RSd_R1 & (0xFFFFFFFF << 32)) | sum;
+    if (sum s<= cmp) goto <bxh_skip>;
+    goto [ea];
+    <bxh_skip>
+}
+
+:bxle "bxle " RSd_R1 "," RSd_R3 "," RSd_D2 "(" RSd_B2 ")" is RSd_OP=0x87 & RSd_R1 & RSd_R3 & RSd_R3c & RSd_B2 & RSd_D2
+{
+    local ea:8;
+    local inc:8;
+    local cmp:8;
+    local sum:8;
+    ea_D12(ea, RSd_B2, zero, RSd_D2);
+    inc = RSd_R3 & 0xffffffff;
+    cmp = RSd_R3c & 0xffffffff;
+    sum = ((RSd_R1 & 0xffffffff) + inc) & 0xffffffff;
+    RSd_R1 = (RSd_R1 & (0xFFFFFFFF << 32)) | sum;
+    if (sum s> cmp) goto <bxle_skip>;
+    goto [ea];
+    <bxle_skip>
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH ON INDEX HIGH (BXHG) / LOW OR EQUAL (BXLEG) — RSY format, 64-bit
+# PoP 7-41. Opcodes 0xEB/0x44 and 0xEB/0x45. Same as BXH/BXLE but signed
+# 64-bit operands and a 20-bit displacement EA.
+# ---------------------------------------------------------------------------
+
+:bxhg "bxhg " RSYd_R1 "," RSYd_R3 "," RSYd_DL2 "(" RSYd_B2 ")" is RSYd_OP=0xEB & RSYd_OP2=0x44 & RSYd_R1 & RSYd_R3 & RSYd_R3c & RSYd_B2 & RSYd_DL2 & RSYd_DH2
+{
+    local ea:8;
+    local inc:8;
+    local cmp:8;
+    ea_D20(ea, RSYd_B2, zero, RSYd_DH2, RSYd_DL2);
+    inc = RSYd_R3;
+    cmp = RSYd_R3c;
+    RSYd_R1 = RSYd_R1 + inc;
+    if (RSYd_R1 s<= cmp) goto <bxhg_skip>;
+    goto [ea];
+    <bxhg_skip>
+}
+
+:bxleg "bxleg " RSYd_R1 "," RSYd_R3 "," RSYd_DL2 "(" RSYd_B2 ")" is RSYd_OP=0xEB & RSYd_OP2=0x45 & RSYd_R1 & RSYd_R3 & RSYd_R3c & RSYd_B2 & RSYd_DL2 & RSYd_DH2
+{
+    local ea:8;
+    local inc:8;
+    local cmp:8;
+    ea_D20(ea, RSYd_B2, zero, RSYd_DH2, RSYd_DL2);
+    inc = RSYd_R3;
+    cmp = RSYd_R3c;
+    RSYd_R1 = RSYd_R1 + inc;
+    if (RSYd_R1 s> cmp) goto <bxleg_skip>;
+    goto [ea];
+    <bxleg_skip>
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH RELATIVE ON INDEX HIGH (BRXH) / LOW OR EQUAL (BRXLE) — RSI, 32-bit
+# PoP 7-48. Opcodes 0x84/0x85. Same index semantics as BXH/BXLE; the
+# target is inst_addr + 2*I2 (signed halfword count) via rel_RI16.
+# ---------------------------------------------------------------------------
+
+:brxh "brxh " RSId_R1 "," RSId_R3 "," RSId_Target is RSId_OP=0x84 & RSId_R1 & RSId_R3 & RSId_R3c & RSId_Target
+{
+    local inc:8;
+    local cmp:8;
+    local sum:8;
+    inc = RSId_R3 & 0xffffffff;
+    cmp = RSId_R3c & 0xffffffff;
+    sum = ((RSId_R1 & 0xffffffff) + inc) & 0xffffffff;
+    RSId_R1 = (RSId_R1 & (0xFFFFFFFF << 32)) | sum;
+    if (sum s> cmp) goto RSId_Target;
+}
+
+:brxle "brxle " RSId_R1 "," RSId_R3 "," RSId_Target is RSId_OP=0x85 & RSId_R1 & RSId_R3 & RSId_R3c & RSId_Target
+{
+    local inc:8;
+    local cmp:8;
+    local sum:8;
+    inc = RSId_R3 & 0xffffffff;
+    cmp = RSId_R3c & 0xffffffff;
+    sum = ((RSId_R1 & 0xffffffff) + inc) & 0xffffffff;
+    RSId_R1 = (RSId_R1 & (0xFFFFFFFF << 32)) | sum;
+    if (sum s<= cmp) goto RSId_Target;
+}
+
+# ---------------------------------------------------------------------------
+# BRANCH RELATIVE ON INDEX HIGH (BRXHG) / LOW OR EQUAL (BRXLG) — RIEe, 64
+# PoP 7-48. Opcodes 0xEC/0x44 and 0xEC/0x45. Same index semantics as
+# BXHG/BXLEG; the target is inst_addr + 2*RI2 via rel_RI16.
+# ---------------------------------------------------------------------------
+
+:brxhg "brxhg " RIEd_R1 "," RIEd_R3 "," RIEd_Target is RIEd_OP=0xEC & RIEd_OP2=0x44 & RIEd_R1 & RIEd_R3 & RIEd_R3c & RIEd_Target & RIEd_IGN
+{
+    local inc:8;
+    local cmp:8;
+    inc = RIEd_R3;
+    cmp = RIEd_R3c;
+    RIEd_R1 = RIEd_R1 + inc;
+    if (RIEd_R1 s> cmp) goto RIEd_Target;
+}
+
+:brxlg "brxlg " RIEd_R1 "," RIEd_R3 "," RIEd_Target is RIEd_OP=0xEC & RIEd_OP2=0x45 & RIEd_R1 & RIEd_R3 & RIEd_R3c & RIEd_Target & RIEd_IGN
+{
+    local inc:8;
+    local cmp:8;
+    inc = RIEd_R3;
+    cmp = RIEd_R3c;
+    RIEd_R1 = RIEd_R1 + inc;
+    if (RIEd_R1 s<= cmp) goto RIEd_Target;
+}
+
+# ---------------------------------------------------------------------------
+# Omissions (verified 2026-09-17 against PoP SA22-7832-14 and Capstone):
+#  - JCT/JCTG/JCTH ("branch relative on count, 32/64/H"): NOT distinct
+#    PoP instructions. The A7 extension slots 6/7 are BRCT/BRCTG;
+#    Capstone decodes them as brct/brctg. No aliases provided.
+#  - No other branch-on-count / branch-on-index forms exist in the PoP
+#    (opcode tables App. A: 06, 46, 47, 84, 85, 86, 87, A7/6, A7/7,
+#    B946, E3/46, EB/44, EB/45, EC/44, EC/45 are all covered above).
+# ---------------------------------------------------------------------------

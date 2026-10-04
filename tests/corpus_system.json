@@ -1,0 +1,212 @@
+[
+  {
+    "bytes_hex": "b2041000",
+    "capstone_mnemonic": "sck",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "SET CLOCK: B204, B2=1, D2=0"
+  },
+  {
+    "bytes_hex": "b2051000",
+    "capstone_mnemonic": "stck",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "STORE CLOCK: B205, B2=1, D2=0"
+  },
+  {
+    "bytes_hex": "b2051234",
+    "capstone_mnemonic": "stck",
+    "capstone_op_str": "0x234(%r1)",
+    "category": "system",
+    "notes": "STORE CLOCK with nonzero displacement D2=0x234"
+  },
+  {
+    "bytes_hex": "b2061000",
+    "capstone_mnemonic": "sckc",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "SET CLOCK COMPARATOR: B206"
+  },
+  {
+    "bytes_hex": "b2071000",
+    "capstone_mnemonic": "stckc",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "STORE CLOCK COMPARATOR: B207"
+  },
+  {
+    "bytes_hex": "b2081000",
+    "capstone_mnemonic": "spt",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "SET CPU TIMER: B208"
+  },
+  {
+    "bytes_hex": "b2091000",
+    "capstone_mnemonic": "stpt",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "STORE CPU TIMER: B209"
+  },
+  {
+    "bytes_hex": "b2781000",
+    "capstone_mnemonic": "stcke",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "STORE CLOCK EXTENDED: B278"
+  },
+  {
+    "bytes_hex": "b27c1000",
+    "capstone_mnemonic": "stckf",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "STORE CLOCK FAST: B27C"
+  },
+  {
+    "bytes_hex": "b20a1000",
+    "capstone_mnemonic": "spka",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "SET PSW KEY FROM ADDRESS: B20A"
+  },
+  {
+    "bytes_hex": "b2121000",
+    "capstone_mnemonic": "stap",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "STORE CPU ADDRESS: B212"
+  },
+  {
+    "bytes_hex": "b2021000",
+    "capstone_mnemonic": "stidp",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "STORE CPU ID: B202"
+  },
+  {
+    "bytes_hex": "b27d1000",
+    "capstone_mnemonic": "stsi",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "STORE SYSTEM INFORMATION: B27D"
+  },
+  {
+    "bytes_hex": "b2791000",
+    "capstone_mnemonic": "sacf",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "SET ADDRESS SPACE CONTROL FAST: B279"
+  },
+  {
+    "bytes_hex": "b2181000",
+    "capstone_mnemonic": "pc",
+    "capstone_op_str": "0(%r1)",
+    "category": "system",
+    "notes": "PROGRAM CALL: B218 (not program counter)"
+  },
+  {
+    "bytes_hex": "0430",
+    "capstone_mnemonic": "spm",
+    "capstone_op_str": "%r3",
+    "category": "system",
+    "notes": "SET PROGRAM MASK: 04, R1=3"
+  },
+  {
+    "bytes_hex": "0400",
+    "capstone_mnemonic": "spm",
+    "capstone_op_str": "%r0",
+    "category": "system",
+    "notes": "SET PROGRAM MASK: 04, R1=0"
+  },
+  {
+    "bytes_hex": "b2220030",
+    "capstone_mnemonic": "ipm",
+    "capstone_op_str": "%r3",
+    "category": "system",
+    "notes": "INSERT PROGRAM MASK: B222, R1=3"
+  },
+  {
+    "bytes_hex": "b92e0000",
+    "capstone_mnemonic": "km",
+    "capstone_op_str": "%r0, %r0",
+    "category": "crypto",
+    "notes": "CIPHER MESSAGE: B92E"
+  },
+  {
+    "bytes_hex": "b92f0000",
+    "capstone_mnemonic": "kmc",
+    "capstone_op_str": "%r0, %r0",
+    "category": "crypto",
+    "notes": "CIPHER MESSAGE WITH CHAINING: B92F"
+  },
+  {
+    "bytes_hex": "b92a0000",
+    "capstone_mnemonic": "kmf",
+    "capstone_op_str": "%r0, %r0",
+    "category": "crypto",
+    "notes": "CIPHER MESSAGE WITH CIPHER FEEDBACK: B92A"
+  },
+  {
+    "bytes_hex": "b92b0000",
+    "capstone_mnemonic": "kmo",
+    "capstone_op_str": "%r0, %r0",
+    "category": "crypto",
+    "notes": "CIPHER MESSAGE WITH OUTPUT FEEDBACK: B92B"
+  },
+  {
+    "bytes_hex": "b91e0012",
+    "capstone_mnemonic": "kmac",
+    "capstone_op_str": "%r1, %r2",
+    "category": "crypto",
+    "notes": "COMPUTE MESSAGE AUTHENTICATION CODE: B91E, R1=1, R2=2"
+  },
+  {
+    "bytes_hex": "b92c0000",
+    "capstone_mnemonic": "pcc",
+    "capstone_op_str": "",
+    "category": "crypto",
+    "notes": "PERFORM CRYPTOGRAPHIC COMPUTATION: B92C, no operands"
+  },
+  {
+    "bytes_hex": "b9280000",
+    "capstone_mnemonic": "pckmo",
+    "capstone_op_str": "",
+    "category": "crypto",
+    "notes": "PERFORM CRYPTOGRAPHIC KEY MGMT OP: B928, no operands"
+  },
+  {
+    "bytes_hex": "b93c0000",
+    "capstone_mnemonic": "ppno",
+    "capstone_op_str": "%r0, %r0",
+    "category": "crypto",
+    "notes": "PERFORM RANDOM NUMBER OP: B93C (PoP alias PRNO; Capstone prints ppno)"
+  },
+  {
+    "bytes_hex": "b9290000",
+    "capstone_mnemonic": "kma",
+    "capstone_op_str": "%r0, %r0, %r0",
+    "category": "crypto",
+    "notes": "CIPHER MESSAGE WITH AUTHENTICATION: B929"
+  },
+  {
+    "bytes_hex": "b92d0000",
+    "capstone_mnemonic": "kmctr",
+    "capstone_op_str": "%r0, %r0, %r0",
+    "category": "crypto",
+    "notes": "CIPHER MESSAGE WITH COUNTER: B92D"
+  },
+  {
+    "bytes_hex": "b93e0000",
+    "capstone_mnemonic": "kimd",
+    "capstone_op_str": "%r0, %r0",
+    "category": "crypto",
+    "notes": "COMPUTE INTERMEDIATE MESSAGE DIGEST: B93E, M3=0 (not displayed)"
+  },
+  {
+    "bytes_hex": "b93f0000",
+    "capstone_mnemonic": "klmd",
+    "capstone_op_str": "%r0, %r0",
+    "category": "crypto",
+    "notes": "COMPUTE LAST MESSAGE DIGEST: B93F, M3=0 (not displayed)"
+  }
+]

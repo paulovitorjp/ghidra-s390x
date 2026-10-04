@@ -1,0 +1,7 @@
+[
+ {
+  "spec_mnemonic": "diagnose",
+  "hlasm_mnemonic": "DIAG",
+  "srcfile": "s390x_branch.sinc"
+ }
+]

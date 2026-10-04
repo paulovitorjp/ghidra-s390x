@@ -1,0 +1,432 @@
+# GENERATED FILE — do not hand-edit.
+# Produced by tools/gen_dblshift.py: unrolled even-R1 pair-register
+# double-shift constructors (SRDL, SLDL, SRDA, SLDA).
+# Each instruction: 8 even-R1 constructors with exact pair pcode,
+# plus 1 opaque odd-R1 fallback (specification exception on HW).
+# Opcodes/semantics verified against SA22-7832-14 (see script header).
+# Shared macros (sla_core64, sra_core64) are in s390x_arith.sinc —
+# include it BEFORE this file.
+
+:SRDL_0 "SRDL " "0" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1=0 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r0 & 0xffffffff) << 32) | (r1 & 0xffffffff);
+        r = pair >> amt;
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SRDL_2 "SRDL " "2" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1=2 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r2 & 0xffffffff) << 32) | (r3 & 0xffffffff);
+        r = pair >> amt;
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SRDL_4 "SRDL " "4" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1=4 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r4 & 0xffffffff) << 32) | (r5 & 0xffffffff);
+        r = pair >> amt;
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SRDL_6 "SRDL " "6" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1=6 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r6 & 0xffffffff) << 32) | (r7 & 0xffffffff);
+        r = pair >> amt;
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SRDL_8 "SRDL " "8" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1=8 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r8 & 0xffffffff) << 32) | (r9 & 0xffffffff);
+        r = pair >> amt;
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SRDL_10 "SRDL " "10" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1=10 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r10 & 0xffffffff) << 32) | (r11 & 0xffffffff);
+        r = pair >> amt;
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SRDL_12 "SRDL " "12" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1=12 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r12 & 0xffffffff) << 32) | (r13 & 0xffffffff);
+        r = pair >> amt;
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SRDL_14 "SRDL " "14" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1=14 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r14 & 0xffffffff) << 32) | (r15 & 0xffffffff);
+        r = pair >> amt;
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SRDL_odd "SRDL " RSa_R1 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8C & RSa_R1 & RSa_B2 & RSa_D2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-438..7-441). Decode only; not modeled.
+    }
+
+:SLDL_0 "SLDL " "0" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1=0 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r0 & 0xffffffff) << 32) | (r1 & 0xffffffff);
+        r = pair << amt;
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SLDL_2 "SLDL " "2" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1=2 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r2 & 0xffffffff) << 32) | (r3 & 0xffffffff);
+        r = pair << amt;
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SLDL_4 "SLDL " "4" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1=4 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r4 & 0xffffffff) << 32) | (r5 & 0xffffffff);
+        r = pair << amt;
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SLDL_6 "SLDL " "6" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1=6 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r6 & 0xffffffff) << 32) | (r7 & 0xffffffff);
+        r = pair << amt;
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SLDL_8 "SLDL " "8" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1=8 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r8 & 0xffffffff) << 32) | (r9 & 0xffffffff);
+        r = pair << amt;
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SLDL_10 "SLDL " "10" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1=10 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r10 & 0xffffffff) << 32) | (r11 & 0xffffffff);
+        r = pair << amt;
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SLDL_12 "SLDL " "12" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1=12 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r12 & 0xffffffff) << 32) | (r13 & 0xffffffff);
+        r = pair << amt;
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SLDL_14 "SLDL " "14" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1=14 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r14 & 0xffffffff) << 32) | (r15 & 0xffffffff);
+        r = pair << amt;
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        # CC unchanged (PoP 7-438/7-440).
+    }
+
+:SLDL_odd "SLDL " RSa_R1 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8D & RSa_R1 & RSa_B2 & RSa_D2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-438..7-441). Decode only; not modeled.
+    }
+
+:SRDA_0 "SRDA " "0" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1=0 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r0 & 0xffffffff) << 32) | (r1 & 0xffffffff);
+        local ncc:1;
+        sra_core64(pair, amt, r, ncc);
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SRDA_2 "SRDA " "2" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1=2 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r2 & 0xffffffff) << 32) | (r3 & 0xffffffff);
+        local ncc:1;
+        sra_core64(pair, amt, r, ncc);
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SRDA_4 "SRDA " "4" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1=4 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r4 & 0xffffffff) << 32) | (r5 & 0xffffffff);
+        local ncc:1;
+        sra_core64(pair, amt, r, ncc);
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SRDA_6 "SRDA " "6" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1=6 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r6 & 0xffffffff) << 32) | (r7 & 0xffffffff);
+        local ncc:1;
+        sra_core64(pair, amt, r, ncc);
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SRDA_8 "SRDA " "8" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1=8 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r8 & 0xffffffff) << 32) | (r9 & 0xffffffff);
+        local ncc:1;
+        sra_core64(pair, amt, r, ncc);
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SRDA_10 "SRDA " "10" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1=10 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r10 & 0xffffffff) << 32) | (r11 & 0xffffffff);
+        local ncc:1;
+        sra_core64(pair, amt, r, ncc);
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SRDA_12 "SRDA " "12" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1=12 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r12 & 0xffffffff) << 32) | (r13 & 0xffffffff);
+        local ncc:1;
+        sra_core64(pair, amt, r, ncc);
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SRDA_14 "SRDA " "14" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1=14 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r14 & 0xffffffff) << 32) | (r15 & 0xffffffff);
+        local ncc:1;
+        sra_core64(pair, amt, r, ncc);
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SRDA_odd "SRDA " RSa_R1 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8E & RSa_R1 & RSa_B2 & RSa_D2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-438..7-441). Decode only; not modeled.
+    }
+
+:SLDA_0 "SLDA " "0" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1=0 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r0 & 0xffffffff) << 32) | (r1 & 0xffffffff);
+        local ncc:1;
+        sla_core64(pair, amt, r, ncc);
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SLDA_2 "SLDA " "2" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1=2 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r2 & 0xffffffff) << 32) | (r3 & 0xffffffff);
+        local ncc:1;
+        sla_core64(pair, amt, r, ncc);
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SLDA_4 "SLDA " "4" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1=4 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r4 & 0xffffffff) << 32) | (r5 & 0xffffffff);
+        local ncc:1;
+        sla_core64(pair, amt, r, ncc);
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SLDA_6 "SLDA " "6" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1=6 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r6 & 0xffffffff) << 32) | (r7 & 0xffffffff);
+        local ncc:1;
+        sla_core64(pair, amt, r, ncc);
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SLDA_8 "SLDA " "8" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1=8 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r8 & 0xffffffff) << 32) | (r9 & 0xffffffff);
+        local ncc:1;
+        sla_core64(pair, amt, r, ncc);
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SLDA_10 "SLDA " "10" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1=10 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r10 & 0xffffffff) << 32) | (r11 & 0xffffffff);
+        local ncc:1;
+        sla_core64(pair, amt, r, ncc);
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SLDA_12 "SLDA " "12" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1=12 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r12 & 0xffffffff) << 32) | (r13 & 0xffffffff);
+        local ncc:1;
+        sla_core64(pair, amt, r, ncc);
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SLDA_14 "SLDA " "14" "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1=14 & RSa_B2 & RSa_D2
+    {
+        local sh:8; local amt:8; local pair:8; local r:8;
+        ea_D12(sh, RSa_B2, zero, RSa_D2);
+        amt = sh & 63;
+        pair = ((r14 & 0xffffffff) << 32) | (r15 & 0xffffffff);
+        local ncc:1;
+        sla_core64(pair, amt, r, ncc);
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((r >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        cc_set(ncc);
+    }
+
+:SLDA_odd "SLDA " RSa_R1 "," RSa_D2 "(" RSa_B2 ")" is RSa_OP=0x8F & RSa_R1 & RSa_B2 & RSa_D2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-438..7-441). Decode only; not modeled.
+    }

@@ -1,0 +1,5167 @@
+# ===========================================================================
+# s390x_cond.sinc — conditional integer tails: load/store-on-condition,
+# SELECT, compare-and-trap, load-and-trap, MVCIN, MVPG, LFPC.
+#
+# Reference: IBM z/Architecture Principles of Operation SA22-7832-14.
+# Bit-numbering convention (CONVENTIONS.md): PoP Figure 5-1 numbers bits
+# with bit 0 = MSB; SLEIGH numbers bit 0 = LSB, so every PoP range (s,e) on
+# an N-bit token is written here as (N-1-e, N-1-s).
+#
+# Condition-code mask convention (PoP 7-315, 7-326): the M3/M4 field is a
+# 4-bit mask; CC values 0/1/2/3 correspond to mask bits 8/4/2/1. The
+# existing 'cc' byte register holds the CC as a plain 0-3 value, so
+#   ccval = cc;  bit = 8 >> ccval;  matched = (mask & bit) != 0
+# (same idiom as s390x_branch.sinc).
+#
+# CORRECTION to the original task text: for load/store-on-condition, M3=0
+# does NOT mean unconditional. PoP 7-326: M3=0 matches no CC value, so the
+# instruction is a NOP (destination unchanged); M3=15 matches every CC
+# value, so the move/store is unconditional. Implemented as stated in PoP.
+#
+# Display conventions: one constructor per (mnemonic, mask) encoding — two
+# constructors must never share an encoding (SLEIGH disassembly takes the
+# first match, and the differential harness requires a unique decode).
+# Where Capstone folds a mask to a suffix, the constructor uses Capstone's
+# spelling so the Capstone-generated corpus matches directly. IBM
+# Appendix J synonyms with no Capstone counterpart (LOCRP, LOCRM, LOCRNZ,
+# LOCRZ, LOCRNM, LOCRNP and the SELECT equivalents) are NOT separate
+# constructors; the base-mnemonic+mask form covers those encodings.
+# Compare-style vs arithmetic-style: Capstone folds load-on-condition
+# masks 3/5/6/9/10/12 as NLE/NHE/LH/NLH/HE/LE (IBM J-1 defines no
+# extended mnemonic for those masks); both spellings from the union are
+# implemented. For compare-and-trap mask 6/10/12 Capstone uses LH/HE/LE
+# where IBM J-1 uses NE/NL/NH — Capstone's spelling is implemented since
+# the corpus is Capstone-generated.
+#
+# Compare-and-trap / load-and-trap: the data exception (DXC FF) is modeled
+# explicitly via the trap_compare_data user p-code op (callother) on the
+# mask-match path — never silently dropped. The comparison itself sets CC
+# (0=equal, 1=low, 2=high) like the corresponding COMPARE instruction.
+#
+# SELECT (SELR/SELGR/SELFHR): Capstone 5.0.7 does not decode these at all;
+# implemented from PoP with IBM J-1 extended mnemonics; corpus vectors are
+# decode-only (expected_len, no Capstone mnemonic).
+#
+# MVPG (B254, RRE) is privileged (special-operation exception, DAT,
+# storage keys) and is decode-only, like the existing TRAP2/TRAP4 stubs.
+# ===========================================================================
+
+# User p-code op for the compare-and-trap / load-and-trap data exception
+# (PoP: compare-and-trap-instruction data exception, DXC FF). Emitted on
+# the mask-match path so the trap is explicit in p-code; Ghidra renders it
+# as a CALLOTHER to this userop.
+define pcodeop trap_compare_data;
+
+# RRF-a: 4 bytes. OP(0-15), R3(16-19), M4(20-23), R1(24-27), R2(28-31).
+# Used by SELECT. M4 stays numeric (condition mask).
+define token RRFa(32)
+    RRFa_OP = (16,31)
+    RRFa_R3 = (12,15)
+    RRFa_M4 = (8,11)
+    RRFa_R1 = (4,7)
+    RRFa_R2 = (0,3)
+;
+attach variables [ RRFa_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFa_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+attach variables [ RRFa_R2 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RIE-a: 6 bytes. OP(0-7), R1(8-11), ignored(12-15), I2(16-31),
+# M3(32-35), ignored(36-39), OP2(40-47). Used by CIT/CGIT/CLFIT/CLGIT.
+define token RIEa(48)
+    RIEa_OP = (40,47)
+    RIEa_R1 = (36,39)
+    RIEa_IGN1 = (32,35)
+    RIEa_I2 = (16,31)
+    RIEa_M3 = (12,15)
+    RIEa_IGN2 = (8,11)
+    RIEa_OP2 = (0,7)
+;
+attach variables [ RIEa_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# RIE-g: 6 bytes. OP(0-7), R1(8-11), M3(12-15), I2(16-31),
+# ignored(32-39), OP2(40-47). Used by LOCHI/LOCGHI/LOCHHI.
+define token RIEg(48)
+    RIEg_OP = (40,47)
+    RIEg_R1 = (36,39)
+    RIEg_M3 = (32,35)
+    RIEg_I2 = (16,31)
+    RIEg_IGN = (8,15)
+    RIEg_OP2 = (0,7)
+;
+attach variables [ RIEg_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+# ===========================================================================
+# LOAD ON CONDITION, register forms (RRF-c). PoP 7-315.
+# LOCR B9F2 (32<-32, low half), LOCGR B9E2 (64<-64), LOCFHR B9E0 (32<-32,
+# high half). CC unchanged. M3=0: NOP; M3=15: unconditional (PoP 7-326).
+# ===========================================================================
+# LOCR: low 32 bits.
+:LOCRO "LOCRO " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=1 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRH "LOCRH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=2 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRNLE "LOCRNLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=3 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRL "LOCRL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=4 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRNHE "LOCRNHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=5 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRLH "LOCRLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=6 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRNE "LOCRNE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=7 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRE "LOCRE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=8 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRNLH "LOCRNLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=9 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRHE "LOCRHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=10 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRNL "LOCRNL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=11 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRLE "LOCRLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=12 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRNH "LOCRNH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=13 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCRNO "LOCRNO " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9F2 & RRFc_M3=14 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+:LOCR "LOCR " RRFc_R1 "," RRFc_R2 "," RRFc_M3 is RRFc_OP=0xB9F2 & RRFc_M3 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = RRFc_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & (0xFFFFFFFF << 32)) | (RRFc_R2 & 0xFFFFFFFF);
+<c_done>
+}
+
+# LOCGR: all 64 bits.
+:LOCGRO "LOCGRO " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=1 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRH "LOCGRH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=2 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRNLE "LOCGRNLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=3 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRL "LOCGRL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=4 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRNHE "LOCGRNHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=5 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRLH "LOCGRLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=6 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRNE "LOCGRNE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=7 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRE "LOCGRE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=8 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRNLH "LOCGRNLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=9 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRHE "LOCGRHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=10 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRNL "LOCGRNL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=11 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRLE "LOCGRLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=12 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRNH "LOCGRNH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=13 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGRNO "LOCGRNO " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E2 & RRFc_M3=14 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+:LOCGR "LOCGR " RRFc_R1 "," RRFc_R2 "," RRFc_M3 is RRFc_OP=0xB9E2 & RRFc_M3 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = RRFc_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = RRFc_R2;
+<c_done>
+}
+
+# LOCFHR: high 32 bits.
+:LOCFHRO "LOCFHRO " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=1 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRH "LOCFHRH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=2 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRNLE "LOCFHRNLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=3 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRL "LOCFHRL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=4 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRNHE "LOCFHRNHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=5 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRLH "LOCFHRLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=6 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRNE "LOCFHRNE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=7 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRE "LOCFHRE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=8 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRNLH "LOCFHRNLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=9 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRHE "LOCFHRHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=10 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRNL "LOCFHRNL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=11 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRLE "LOCFHRLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=12 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRNH "LOCFHRNH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=13 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHRNO "LOCFHRNO " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB9E0 & RRFc_M3=14 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+:LOCFHR "LOCFHR " RRFc_R1 "," RRFc_R2 "," RRFc_M3 is RRFc_OP=0xB9E0 & RRFc_M3 & RRFc_R1 & RRFc_R2
+{
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _c_m = RRFc_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RRFc_R1 = (RRFc_R1 & 0xFFFFFFFF) | (RRFc_R2 & (0xFFFFFFFF << 32));
+<c_done>
+}
+
+# ===========================================================================
+# COMPARE AND TRAP, register forms (RRF-c). PoP 7-169.
+# CRT B972 (signed 32), CLRT B973 (unsigned 32), CGRT B960 (signed 64),
+# CLGRT B961 (unsigned 64). Comparison sets CC (0=equal,1=low,2=high); if
+# the M3 bit for that result is one, the compare-and-trap data exception
+# (DXC FF) is recognized — modeled explicitly via trap_compare_data().
+# M3 bit 3 is reserved; only bits 0-2 participate in the trap test.
+# ===========================================================================
+# CRT: cc_scmp32, 32-bit operands.
+:CRTH "CRTH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB972 & RRFc_M3=2 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CRTL "CRTL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB972 & RRFc_M3=4 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CRTLH "CRTLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB972 & RRFc_M3=6 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CRTE "CRTE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB972 & RRFc_M3=8 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CRTHE "CRTHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB972 & RRFc_M3=10 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CRTLE "CRTLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB972 & RRFc_M3=12 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CRT "CRT " RRFc_R1 "," RRFc_R2 "," RRFc_M3 is RRFc_OP=0xB972 & RRFc_M3 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RRFc_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# CLRT: cc_ucmp, 32-bit operands.
+:CLRTH "CLRTH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB973 & RRFc_M3=2 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLRTL "CLRTL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB973 & RRFc_M3=4 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLRTLH "CLRTLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB973 & RRFc_M3=6 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLRTE "CLRTE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB973 & RRFc_M3=8 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLRTHE "CLRTHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB973 & RRFc_M3=10 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLRTLE "CLRTLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB973 & RRFc_M3=12 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLRT "CLRT " RRFc_R1 "," RRFc_R2 "," RRFc_M3 is RRFc_OP=0xB973 & RRFc_M3 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1 & 0xffffffff;
+    b = RRFc_R2 & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RRFc_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# CGRT: cc_scmp64, 64-bit operands.
+:CGRTH "CGRTH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB960 & RRFc_M3=2 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGRTL "CGRTL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB960 & RRFc_M3=4 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGRTLH "CGRTLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB960 & RRFc_M3=6 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGRTE "CGRTE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB960 & RRFc_M3=8 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGRTHE "CGRTHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB960 & RRFc_M3=10 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGRTLE "CGRTLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB960 & RRFc_M3=12 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGRT "CGRT " RRFc_R1 "," RRFc_R2 "," RRFc_M3 is RRFc_OP=0xB960 & RRFc_M3 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RRFc_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# CLGRT: cc_ucmp, 64-bit operands.
+:CLGRTH "CLGRTH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB961 & RRFc_M3=2 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGRTL "CLGRTL " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB961 & RRFc_M3=4 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGRTLH "CLGRTLH " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB961 & RRFc_M3=6 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGRTE "CLGRTE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB961 & RRFc_M3=8 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGRTHE "CLGRTHE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB961 & RRFc_M3=10 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGRTLE "CLGRTLE " RRFc_R1 "," RRFc_R2 is RRFc_OP=0xB961 & RRFc_M3=12 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGRT "CLGRT " RRFc_R1 "," RRFc_R2 "," RRFc_M3 is RRFc_OP=0xB961 & RRFc_M3 & RRFc_R1 & RRFc_R2
+{
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    a = RRFc_R1;
+    b = RRFc_R2;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RRFc_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# ===========================================================================
+# LOAD/STORE ON CONDITION, storage forms (RSY-b, 20-bit displacement).
+# PoP 7-315 (load), 7-452 (store). Display order follows Capstone/HLASM:
+# the mask is the LAST operand: LOC R1,D2(B2),M3 / STOC R1,D2(B2),M3.
+# ===========================================================================
+# LOC: 32-bit, low half (load).
+:LOCO "LOCO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=1 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCH "LOCH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCNLE "LOCNLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCL "LOCL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCNHE "LOCNHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=5 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCLH "LOCLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCNE "LOCNE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=7 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCE "LOCE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCNLH "LOCNLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=9 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHE "LOCHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCNL "LOCNL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=11 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCLE "LOCLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCNH "LOCNH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=13 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCNO "LOCNO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=14 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOC "LOC " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")," RSYb_M3 is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF2
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = RSYb_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+# LOCG: 64-bit (load).
+:LOCGO "LOCGO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=1 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGH "LOCGH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGNLE "LOCGNLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGL "LOCGL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGNHE "LOCGNHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=5 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGLH "LOCGLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGNE "LOCGNE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=7 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGE "LOCGE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGNLH "LOCGNLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=9 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGHE "LOCGHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGNL "LOCGNL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=11 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGLE "LOCGLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGNH "LOCGNH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=13 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCGNO "LOCGNO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=14 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+:LOCG "LOCG " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")," RSYb_M3 is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE2
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = RSYb_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RSYb_R1 = *:8 ea;
+<c_done>
+}
+
+# LOCFH: 32-bit, high half (load).
+:LOCFHO "LOCFHO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=1 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHH "LOCFHH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHNLE "LOCFHNLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHL "LOCFHL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHNHE "LOCFHNHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=5 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHLH "LOCFHLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHNE "LOCFHNE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=7 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHE "LOCFHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHNLH "LOCFHNLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=9 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHHE "LOCFHHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHNL "LOCFHNL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=11 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHLE "LOCFHLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHNH "LOCFHNH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=13 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFHNO "LOCFHNO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=14 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCFH "LOCFH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")," RSYb_M3 is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE0
+{
+    local ea:8;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = RSYb_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    w = *:4 ea;
+    RSYb_R1 = (RSYb_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+# STOC: 32-bit, low half (store).
+:STOCO "STOCO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=1 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCH "STOCH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCNLE "STOCNLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCL "STOCL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCNHE "STOCNHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=5 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCLH "STOCLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCNE "STOCNE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=7 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCE "STOCE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCNLH "STOCNLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=9 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCHE "STOCHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCNL "STOCNL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=11 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCLE "STOCLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCNH "STOCNH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=13 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCNO "STOCNO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=14 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+:STOC "STOC " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")," RSYb_M3 is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xF3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = RSYb_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:4 ea = RSYb_R1;
+<c_done>
+}
+
+# STOCG: 64-bit (store).
+:STOCGO "STOCGO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=1 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGH "STOCGH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGNLE "STOCGNLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGL "STOCGL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGNHE "STOCGNHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=5 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGLH "STOCGLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGNE "STOCGNE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=7 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGE "STOCGE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGNLH "STOCGNLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=9 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGHE "STOCGHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGNL "STOCGNL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=11 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGLE "STOCGLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGNH "STOCGNH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=13 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCGNO "STOCGNO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=14 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+:STOCG "STOCG " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")," RSYb_M3 is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE3
+{
+    local ea:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = RSYb_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    *:8 ea = RSYb_R1;
+<c_done>
+}
+
+# STOCFH: 32-bit, high half (store).
+:STOCFHO "STOCFHO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=1 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHH "STOCFHH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHNLE "STOCFHNLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHL "STOCFHL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHNHE "STOCFHNHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=5 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHLH "STOCFHLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHNE "STOCFHNE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=7 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHE "STOCFHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHNLH "STOCFHNLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=9 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHHE "STOCFHHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHNL "STOCFHNL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=11 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHLE "STOCFHLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHNH "STOCFHNH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=13 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFHNO "STOCFHNO " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=14 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+:STOCFH "STOCFH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")," RSYb_M3 is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0xE1
+{
+    local ea:8;
+    local tmp:8;
+    local sh:8;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    _c_m = RSYb_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    sh = 32;
+    tmp = RSYb_R1 >> sh;
+    *:4 ea = tmp;
+<c_done>
+}
+
+# ===========================================================================
+# COMPARE LOGICAL AND TRAP, storage forms (RSY-b). PoP 7-169.
+# CLT EB23 (unsigned 32), CLGT EB2B (unsigned 64). HLASM/Capstone order:
+# the mask is the SECOND operand: CLT R1,M3,D2(B2).
+# ===========================================================================
+# CLT: unsigned 32-bit compare against storage operand.
+:CLTH "CLTH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x23
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1 & 0xffffffff;
+    b = zext(*:4 ea);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLTL "CLTL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x23
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1 & 0xffffffff;
+    b = zext(*:4 ea);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLTLH "CLTLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x23
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1 & 0xffffffff;
+    b = zext(*:4 ea);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLTE "CLTE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x23
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1 & 0xffffffff;
+    b = zext(*:4 ea);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLTHE "CLTHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x23
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1 & 0xffffffff;
+    b = zext(*:4 ea);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLTLE "CLTLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x23
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1 & 0xffffffff;
+    b = zext(*:4 ea);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLT "CLT " RSYb_R1 "," RSYb_M3 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x23
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1 & 0xffffffff;
+    b = zext(*:4 ea);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RSYb_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# CLGT: unsigned 64-bit compare against storage operand.
+:CLGTH "CLGTH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x2B
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1;
+    b = *:8 ea;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGTL "CLGTL " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x2B
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1;
+    b = *:8 ea;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGTLH "CLGTLH " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x2B
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1;
+    b = *:8 ea;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGTE "CLGTE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x2B
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1;
+    b = *:8 ea;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGTHE "CLGTHE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x2B
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1;
+    b = *:8 ea;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGTLE "CLGTLE " RSYb_R1 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x2B
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1;
+    b = *:8 ea;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGT "CLGT " RSYb_R1 "," RSYb_M3 "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x2B
+{
+    local ea:8;
+    local a:8;
+    local b:8;
+    local _t_ccval:1;
+    local _t_bit:1;
+    ea_D20(ea, RSYb_B2, zero, RSYb_DH2, RSYb_DL2);
+    a = RSYb_R1;
+    b = *:8 ea;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RSYb_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# ===========================================================================
+# LOAD HALFWORD IMMEDIATE ON CONDITION (RIE-g). PoP 7-315.
+# LOCHI EC42: sign-extended I2 -> bits 32-63 of R1 (low 32).
+# LOCGHI EC46: sign-extended I2 -> bits 0-63 of R1 (all 64).
+# LOCHHI EC4E: sign-extended I2 -> bits 0-31 of R1 (high 32).
+# CC unchanged. (There is no LOCFHI; LOCHHI is the high-half form.)
+# ===========================================================================
+# LOCHI: sign-extended I2 into low 32 bits.
+:LOCHIO "LOCHIO " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=1 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHIH "LOCHIH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=2 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHINLE "LOCHINLE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=3 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHIL "LOCHIL " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=4 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHINHE "LOCHINHE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=5 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHILH "LOCHILH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=6 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHINE "LOCHINE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=7 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHIE "LOCHIE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=8 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHINLH "LOCHINLH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=9 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHIHE "LOCHIHE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=10 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHINL "LOCHINL " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=11 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHILE "LOCHILE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=12 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHINH "LOCHINH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=13 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHINO "LOCHINO " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=14 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+:LOCHI "LOCHI " RIEg_R1 "," RIEg_I2 "," RIEg_M3 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x42
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = RIEg_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & (0xFFFFFFFF << 32)) | zext(w);
+<c_done>
+}
+
+# LOCGHI: sign-extended I2 into all 64 bits.
+:LOCGHIO "LOCGHIO " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=1 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHIH "LOCGHIH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=2 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHINLE "LOCGHINLE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=3 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHIL "LOCGHIL " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=4 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHINHE "LOCGHINHE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=5 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHILH "LOCGHILH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=6 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHINE "LOCGHINE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=7 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHIE "LOCGHIE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=8 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHINLH "LOCGHINLH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=9 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHIHE "LOCGHIHE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=10 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHINL "LOCGHINL " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=11 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHILE "LOCGHILE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=12 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHINH "LOCGHINH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=13 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHINO "LOCGHINO " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=14 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+:LOCGHI "LOCGHI " RIEg_R1 "," RIEg_I2 "," RIEg_M3 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x46
+{
+    local _ext_rieg_i2:2;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    _c_m = RIEg_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = sext(_ext_rieg_i2);
+<c_done>
+}
+
+# LOCHHI: sign-extended I2 into high 32 bits.
+:LOCHHIO "LOCHHIO " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=1 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 1;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHIH "LOCHHIH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=2 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 2;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHINLE "LOCHHINLE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=3 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHIL "LOCHHIL " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=4 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 4;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHINHE "LOCHHINHE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=5 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 5;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHILH "LOCHHILH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=6 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 6;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHINE "LOCHHINE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=7 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 7;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHIE "LOCHHIE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=8 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 8;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHINLH "LOCHHINLH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=9 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 9;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHIHE "LOCHHIHE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=10 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 10;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHINL "LOCHHINL " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=11 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 11;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHILE "LOCHHILE " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=12 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 12;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHINH "LOCHHINH " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=13 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 13;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHINO "LOCHHINO " RIEg_R1 "," RIEg_I2 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3=14 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = 14;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+:LOCHHI "LOCHHI " RIEg_R1 "," RIEg_I2 "," RIEg_M3 is RIEg_OP=0xEC & RIEg_R1 & RIEg_M3 & RIEg_I2 & RIEg_IGN & RIEg_OP2=0x4E
+{
+    local _ext_rieg_i2:2;
+    local w:4;
+    local _c_m:1;
+    local _c_ccval:1;
+    local _c_bit:1;
+    _ext_rieg_i2 = RIEg_I2;
+    w = sext(_ext_rieg_i2);
+    _c_m = RIEg_M3;
+    _c_ccval = cc;
+    _c_bit = 8 >> _c_ccval;
+    if ((_c_m & _c_bit) != 0) goto <c_do>;
+    goto <c_done>;
+<c_do>
+    RIEg_R1 = (RIEg_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+<c_done>
+}
+
+# ===========================================================================
+# COMPARE (LOGICAL) IMMEDIATE AND TRAP (RIE-a). PoP 7-169.
+# CIT EC72 (signed 32; I2 sign-extended), CGIT EC70 (signed 64; I2
+# sign-extended), CLFIT EC73 (unsigned 32; I2 zero-extended), CLGIT EC71
+# (unsigned 64; I2 zero-extended). CC set from the comparison; the
+# compare-and-trap data exception is modeled via trap_compare_data().
+# ===========================================================================
+# CIT: cc_scmp32, I2 sext-extended.
+:CITH "CITH " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=2 & RIEa_IGN2 & RIEa_OP2=0x72
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = sext(_ext_riea_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CITL "CITL " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=4 & RIEa_IGN2 & RIEa_OP2=0x72
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = sext(_ext_riea_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CITLH "CITLH " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=6 & RIEa_IGN2 & RIEa_OP2=0x72
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = sext(_ext_riea_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CITE "CITE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=8 & RIEa_IGN2 & RIEa_OP2=0x72
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = sext(_ext_riea_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CITHE "CITHE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=10 & RIEa_IGN2 & RIEa_OP2=0x72
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = sext(_ext_riea_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CITLE "CITLE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=12 & RIEa_IGN2 & RIEa_OP2=0x72
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = sext(_ext_riea_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CIT "CIT " RIEa_R1 "," RIEa_I2 "," RIEa_M3 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3 & RIEa_IGN2 & RIEa_OP2=0x72
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = sext(_ext_riea_i2) & 0xffffffff;
+    cc_scmp32(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RIEa_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# CGIT: cc_scmp64, I2 sext-extended.
+:CGITH "CGITH " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=2 & RIEa_IGN2 & RIEa_OP2=0x70
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = sext(_ext_riea_i2);
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGITL "CGITL " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=4 & RIEa_IGN2 & RIEa_OP2=0x70
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = sext(_ext_riea_i2);
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGITLH "CGITLH " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=6 & RIEa_IGN2 & RIEa_OP2=0x70
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = sext(_ext_riea_i2);
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGITE "CGITE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=8 & RIEa_IGN2 & RIEa_OP2=0x70
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = sext(_ext_riea_i2);
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGITHE "CGITHE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=10 & RIEa_IGN2 & RIEa_OP2=0x70
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = sext(_ext_riea_i2);
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGITLE "CGITLE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=12 & RIEa_IGN2 & RIEa_OP2=0x70
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = sext(_ext_riea_i2);
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CGIT "CGIT " RIEa_R1 "," RIEa_I2 "," RIEa_M3 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3 & RIEa_IGN2 & RIEa_OP2=0x70
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = sext(_ext_riea_i2);
+    cc_scmp64(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RIEa_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# CLFIT: cc_ucmp, I2 zext-extended.
+:CLFITH "CLFITH " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=2 & RIEa_IGN2 & RIEa_OP2=0x73
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = zext(_ext_riea_i2) & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLFITL "CLFITL " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=4 & RIEa_IGN2 & RIEa_OP2=0x73
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = zext(_ext_riea_i2) & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLFITLH "CLFITLH " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=6 & RIEa_IGN2 & RIEa_OP2=0x73
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = zext(_ext_riea_i2) & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLFITE "CLFITE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=8 & RIEa_IGN2 & RIEa_OP2=0x73
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = zext(_ext_riea_i2) & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLFITHE "CLFITHE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=10 & RIEa_IGN2 & RIEa_OP2=0x73
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = zext(_ext_riea_i2) & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLFITLE "CLFITLE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=12 & RIEa_IGN2 & RIEa_OP2=0x73
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = zext(_ext_riea_i2) & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLFIT "CLFIT " RIEa_R1 "," RIEa_I2 "," RIEa_M3 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3 & RIEa_IGN2 & RIEa_OP2=0x73
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1 & 0xffffffff;
+    b = zext(_ext_riea_i2) & 0xffffffff;
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RIEa_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# CLGIT: cc_ucmp, I2 zext-extended.
+:CLGITH "CLGITH " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=2 & RIEa_IGN2 & RIEa_OP2=0x71
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = zext(_ext_riea_i2);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((2 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGITL "CLGITL " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=4 & RIEa_IGN2 & RIEa_OP2=0x71
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = zext(_ext_riea_i2);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((4 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGITLH "CLGITLH " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=6 & RIEa_IGN2 & RIEa_OP2=0x71
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = zext(_ext_riea_i2);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((6 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGITE "CLGITE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=8 & RIEa_IGN2 & RIEa_OP2=0x71
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = zext(_ext_riea_i2);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((8 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGITHE "CLGITHE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=10 & RIEa_IGN2 & RIEa_OP2=0x71
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = zext(_ext_riea_i2);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((10 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGITLE "CLGITLE " RIEa_R1 "," RIEa_I2 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3=12 & RIEa_IGN2 & RIEa_OP2=0x71
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = zext(_ext_riea_i2);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((12 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+:CLGIT "CLGIT " RIEa_R1 "," RIEa_I2 "," RIEa_M3 is RIEa_OP=0xEC & RIEa_R1 & RIEa_IGN1 & RIEa_I2 & RIEa_M3 & RIEa_IGN2 & RIEa_OP2=0x71
+{
+    local a:8;
+    local b:8;
+    local _ext_riea_i2:2;
+    local _t_ccval:1;
+    local _t_bit:1;
+    _ext_riea_i2 = RIEa_I2;
+    a = RIEa_R1;
+    b = zext(_ext_riea_i2);
+    cc_ucmp(a, b);
+    _t_ccval = cc;
+    _t_bit = 4 >> _t_ccval;
+    if ((RIEa_M3 & _t_bit) != 0) goto <trap_fire>;
+    goto <trap_done>;
+<trap_fire>
+    trap_compare_data();
+<trap_done>
+}
+
+# ===========================================================================
+# SELECT (RRF-a). PoP 7-401. R1 = M4-matched ? R2 : R3. CC unchanged.
+# SELR B9F0 (32-bit, low halves), SELGR B9E3 (64-bit), SELFHR B9C0
+# (32-bit, high halves). Extended mnemonics from IBM Appendix J (the
+# arithmetic set O/H/L/NE/E/NL/NH/NO); Capstone 5.0.7 cannot decode these
+# instructions, so the corpus vectors are decode-only.
+# ===========================================================================
+# SELR: 32-bit, low halves.
+:SELRO "SELRO " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4=1 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((1 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+:SELRH "SELRH " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4=2 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((2 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+:SELRL "SELRL " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4=4 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((4 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+:SELRNE "SELRNE " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4=7 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((7 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+:SELRE "SELRE " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4=8 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((8 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+:SELRNL "SELRNL " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4=11 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((11 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+:SELRNH "SELRNH " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4=13 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((13 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+:SELRNO "SELRNO " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4=14 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((14 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+:SELR "SELR " RRFa_R1 "," RRFa_R2 "," RRFa_R3 "," RRFa_M4 is RRFa_OP=0xB9F0 & RRFa_R3 & RRFa_M4 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((RRFa_M4 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R3 & 0xFFFFFFFF);
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & (0xFFFFFFFF << 32)) | (RRFa_R2 & 0xFFFFFFFF);
+<sel_done>
+}
+
+# SELGR: 64-bit.
+:SELGRO "SELGRO " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4=1 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((1 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+:SELGRH "SELGRH " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4=2 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((2 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+:SELGRL "SELGRL " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4=4 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((4 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+:SELGRNE "SELGRNE " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4=7 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((7 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+:SELGRE "SELGRE " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4=8 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((8 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+:SELGRNL "SELGRNL " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4=11 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((11 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+:SELGRNH "SELGRNH " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4=13 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((13 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+:SELGRNO "SELGRNO " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4=14 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((14 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+:SELGR "SELGR " RRFa_R1 "," RRFa_R2 "," RRFa_R3 "," RRFa_M4 is RRFa_OP=0xB9E3 & RRFa_R3 & RRFa_M4 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((RRFa_M4 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = RRFa_R3;
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = RRFa_R2;
+<sel_done>
+}
+
+# SELFHR: 32-bit, high halves.
+:SELFHRO "SELFHRO " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4=1 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((1 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+:SELFHRH "SELFHRH " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4=2 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((2 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+:SELFHRL "SELFHRL " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4=4 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((4 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+:SELFHRNE "SELFHRNE " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4=7 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((7 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+:SELFHRE "SELFHRE " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4=8 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((8 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+:SELFHRNL "SELFHRNL " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4=11 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((11 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+:SELFHRNH "SELFHRNH " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4=13 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((13 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+:SELFHRNO "SELFHRNO " RRFa_R1 "," RRFa_R2 "," RRFa_R3 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4=14 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((14 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+:SELFHR "SELFHR " RRFa_R1 "," RRFa_R2 "," RRFa_R3 "," RRFa_M4 is RRFa_OP=0xB9C0 & RRFa_R3 & RRFa_M4 & RRFa_R1 & RRFa_R2
+{
+    local _s_ccval:1;
+    local _s_bit:1;
+    _s_ccval = cc;
+    _s_bit = 8 >> _s_ccval;
+    if ((RRFa_M4 & _s_bit) != 0) goto <sel_r2>;
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R3 & (0xFFFFFFFF << 32));
+    goto <sel_done>;
+<sel_r2>
+    RRFa_R1 = (RRFa_R1 & 0xFFFFFFFF) | (RRFa_R2 & (0xFFFFFFFF << 32));
+<sel_done>
+}
+
+# ===========================================================================
+# LOAD AND TRAP (RXY-a). PoP 7-309. The second operand is placed unchanged
+# at the first-operand location; if all zeros are placed there, a
+# compare-and-trap-instruction data exception is recognized (DXC FF) —
+# modeled explicitly via trap_compare_data(). CC unchanged.
+# LAT E39F: 32-bit -> bits 32-63 of R1 (low half), bits 0-31 unchanged.
+# LGAT E385: 64-bit -> all of R1.
+# LLGFAT E39D: 32-bit -> bits 32-63 of R1, zeros in bits 0-31.
+# LLGTAT E39C: bits 1-31 of the word -> bits 33-63 of R1, zeros in 0-32.
+# LFHAT E3C8: 32-bit -> bits 0-31 of R1 (high half), bits 32-63 unchanged.
+# ===========================================================================
+:LAT "LAT " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x9F
+{
+    local ea:8;
+    local w:4;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    w = *:4 ea;
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | zext(w);
+    if ((w) == 0) goto <lat_trap>;
+    goto <lat_done>;
+<lat_trap>
+    trap_compare_data();
+<lat_done>
+}
+
+:LGAT "LGAT " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x85
+{
+    local ea:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    RXYa_R1 = *:8 ea;
+    if ((RXYa_R1) == 0) goto <lat_trap>;
+    goto <lat_done>;
+<lat_trap>
+    trap_compare_data();
+<lat_done>
+}
+
+:LLGFAT "LLGFAT " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x9D
+{
+    local ea:8;
+    local w:4;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    w = *:4 ea;
+    RXYa_R1 = zext(w);
+    if ((w) == 0) goto <lat_trap>;
+    goto <lat_done>;
+<lat_trap>
+    trap_compare_data();
+<lat_done>
+}
+
+:LLGTAT "LLGTAT " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x9C
+{
+    local ea:8;
+    local w:4;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    w = *:4 ea;
+    RXYa_R1 = zext(w) & 0x7fffffff;
+    if ((w & 0x7fffffff) == 0) goto <lat_trap>;
+    goto <lat_done>;
+<lat_trap>
+    trap_compare_data();
+<lat_done>
+}
+
+:LFHAT "LFHAT " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0xC8
+{
+    local ea:8;
+    local w:4;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    w = *:4 ea;
+    RXYa_R1 = (RXYa_R1 & 0xFFFFFFFF) | (zext(w) << 32);
+    if ((w) == 0) goto <lat_trap>;
+    goto <lat_done>;
+<lat_trap>
+    trap_compare_data();
+<lat_done>
+}
+
+# ===========================================================================
+# MOVE INVERSE (MVCIN), SS-a, opcode E8. PoP 7-330: the second operand is
+# placed at the first-operand location with the left-to-right order
+# inverted (byte-reversed copy of L+1 bytes). The result is obtained as if
+# the second operand were processed right to left and the first operand
+# left to right. Overlapping by more than one byte => unpredictable.
+# CC unchanged. Loop follows the NC (s390x_arith.sinc) counted-loop idiom.
+# Harness note: display prints the raw L field (length-1); the harness
+# adds 1 for the 'mvcin' mnemonic (SS_LEN_MNEMS), like mvc/xc/nc/oc/clc.
+# ===========================================================================
+:MVCIN "MVCIN " SSa_D1 "(" SSa_L "," SSa_B1 ")," SSa_D2 "(" SSa_B2 ")" is SSa_OP=0xE8 & SSa_L & SSa_B1 & SSa_D1 & SSa_B2 & SSa_D2
+{
+    local ea1:8;
+    local ea2:8;
+    local len:8;
+    local b:1;
+    local _ext_mvcin_l:1;
+    ea_D12(ea1, SSa_B1, zero, SSa_D1);
+    ea_D12(ea2, SSa_B2, zero, SSa_D2);
+    _ext_mvcin_l = SSa_L;
+    # Second operand processed right-to-left: start at its last byte.
+    ea2 = ea2 + zext(_ext_mvcin_l);
+    len = zext(_ext_mvcin_l) + 1;
+    <mcv_loop>
+    if (len == 0) goto <mcv_done>;
+    b = *:1 (ea2);
+    *:1 ea1 = b;
+    ea1 = ea1 + 1;
+    ea2 = ea2 - 1;
+    len = len - 1;
+    goto <mcv_loop>;
+    <mcv_done>
+}
+
+# ===========================================================================
+# MOVE PAGE (MVPG), RRE, opcode B254 — decode-only. PoP 10-x: privileged
+# (special-operation exception in problem state; DAT and storage-key
+# controlled) 4 KiB page copy. Cannot be modeled honestly in p-code.
+# ===========================================================================
+:MVPG "MVPG " RRE_R1 "," RRE_R2 is RRE_OP=0xB254 & RRE_R1 & RRE_R2
+{
+}
+
+# ===========================================================================
+# LOAD FPC (LFPC), S format, opcode B29D. PoP 9-31: the 4-byte second
+# operand in storage is placed into the FPC (floating-point-control)
+# register. CC unchanged. (LFAS, the signaling variant, is not covered.)
+# ===========================================================================
+:LFPC "LFPC " S_D2 "(" S_B2 ")" is S_OP=0xB29D & S_B2 & S_D2
+{
+    local ea:8;
+    ea_D12(ea, S_B2, zero, S_D2);
+    fpc = *:4 ea;
+}
+

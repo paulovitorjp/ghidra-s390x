@@ -1,0 +1,2402 @@
+{
+ "T1201": {
+  "spec_mnemonic": "CLCL_8_14",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "8,14",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1202": {
+  "spec_mnemonic": "CLCL_10_0",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "10,0",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1203": {
+  "spec_mnemonic": "CLCL_10_2",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "10,2",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1204": {
+  "spec_mnemonic": "CLCL_10_4",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "10,4",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1205": {
+  "spec_mnemonic": "CLCL_10_6",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "10,6",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1206": {
+  "spec_mnemonic": "CLCL_10_8",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "10,8",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1207": {
+  "spec_mnemonic": "CLCL_10_10",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "10,10",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1208": {
+  "spec_mnemonic": "CLCL_10_12",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "10,12",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1209": {
+  "spec_mnemonic": "CLCL_10_14",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "10,14",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1210": {
+  "spec_mnemonic": "CLCL_12_0",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "12,0",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1211": {
+  "spec_mnemonic": "CLCL_12_2",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "12,2",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1212": {
+  "spec_mnemonic": "CLCL_12_4",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "12,4",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1213": {
+  "spec_mnemonic": "CLCL_12_6",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "12,6",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1214": {
+  "spec_mnemonic": "CLCL_12_8",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "12,8",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1215": {
+  "spec_mnemonic": "CLCL_12_10",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "12,10",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1216": {
+  "spec_mnemonic": "CLCL_12_12",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "12,12",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1217": {
+  "spec_mnemonic": "CLCL_12_14",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "12,14",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1218": {
+  "spec_mnemonic": "CLCL_14_0",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "14,0",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1219": {
+  "spec_mnemonic": "CLCL_14_2",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "14,2",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1220": {
+  "spec_mnemonic": "CLCL_14_4",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "14,4",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1221": {
+  "spec_mnemonic": "CLCL_14_6",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "14,6",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1222": {
+  "spec_mnemonic": "CLCL_14_8",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "14,8",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1223": {
+  "spec_mnemonic": "CLCL_14_10",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "14,10",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1224": {
+  "spec_mnemonic": "CLCL_14_12",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "14,12",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1225": {
+  "spec_mnemonic": "CLCL_14_14",
+  "hlasm_mnemonic": "CLCL",
+  "operands": "14,14",
+  "srcfile": "s390x_gaps.sinc"
+ },
+ "T1226": {
+  "spec_mnemonic": "bsm_0_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1227": {
+  "spec_mnemonic": "bsm_0_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1228": {
+  "spec_mnemonic": "bsm_0_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1229": {
+  "spec_mnemonic": "bsm_0_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1230": {
+  "spec_mnemonic": "bsm_0_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1231": {
+  "spec_mnemonic": "bsm_0_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1232": {
+  "spec_mnemonic": "bsm_0_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1233": {
+  "spec_mnemonic": "bsm_0_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1234": {
+  "spec_mnemonic": "bsm_0_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1235": {
+  "spec_mnemonic": "bsm_0_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1236": {
+  "spec_mnemonic": "bsm_0_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1237": {
+  "spec_mnemonic": "bsm_0_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1238": {
+  "spec_mnemonic": "bsm_0_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1239": {
+  "spec_mnemonic": "bsm_0_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1240": {
+  "spec_mnemonic": "bsm_0_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1241": {
+  "spec_mnemonic": "bsm_0_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "0,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1242": {
+  "spec_mnemonic": "bsm_1_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1243": {
+  "spec_mnemonic": "bsm_1_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1244": {
+  "spec_mnemonic": "bsm_1_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1245": {
+  "spec_mnemonic": "bsm_1_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1246": {
+  "spec_mnemonic": "bsm_1_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1247": {
+  "spec_mnemonic": "bsm_1_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1248": {
+  "spec_mnemonic": "bsm_1_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1249": {
+  "spec_mnemonic": "bsm_1_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1250": {
+  "spec_mnemonic": "bsm_1_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1251": {
+  "spec_mnemonic": "bsm_1_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1252": {
+  "spec_mnemonic": "bsm_1_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1253": {
+  "spec_mnemonic": "bsm_1_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1254": {
+  "spec_mnemonic": "bsm_1_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1255": {
+  "spec_mnemonic": "bsm_1_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1256": {
+  "spec_mnemonic": "bsm_1_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1257": {
+  "spec_mnemonic": "bsm_1_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "1,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1258": {
+  "spec_mnemonic": "bsm_2_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1259": {
+  "spec_mnemonic": "bsm_2_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1260": {
+  "spec_mnemonic": "bsm_2_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1261": {
+  "spec_mnemonic": "bsm_2_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1262": {
+  "spec_mnemonic": "bsm_2_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1263": {
+  "spec_mnemonic": "bsm_2_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1264": {
+  "spec_mnemonic": "bsm_2_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1265": {
+  "spec_mnemonic": "bsm_2_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1266": {
+  "spec_mnemonic": "bsm_2_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1267": {
+  "spec_mnemonic": "bsm_2_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1268": {
+  "spec_mnemonic": "bsm_2_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1269": {
+  "spec_mnemonic": "bsm_2_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1270": {
+  "spec_mnemonic": "bsm_2_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1271": {
+  "spec_mnemonic": "bsm_2_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1272": {
+  "spec_mnemonic": "bsm_2_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1273": {
+  "spec_mnemonic": "bsm_2_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "2,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1274": {
+  "spec_mnemonic": "bsm_3_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1275": {
+  "spec_mnemonic": "bsm_3_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1276": {
+  "spec_mnemonic": "bsm_3_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1277": {
+  "spec_mnemonic": "bsm_3_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1278": {
+  "spec_mnemonic": "bsm_3_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1279": {
+  "spec_mnemonic": "bsm_3_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1280": {
+  "spec_mnemonic": "bsm_3_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1281": {
+  "spec_mnemonic": "bsm_3_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1282": {
+  "spec_mnemonic": "bsm_3_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1283": {
+  "spec_mnemonic": "bsm_3_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1284": {
+  "spec_mnemonic": "bsm_3_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1285": {
+  "spec_mnemonic": "bsm_3_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1286": {
+  "spec_mnemonic": "bsm_3_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1287": {
+  "spec_mnemonic": "bsm_3_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1288": {
+  "spec_mnemonic": "bsm_3_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1289": {
+  "spec_mnemonic": "bsm_3_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "3,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1290": {
+  "spec_mnemonic": "bsm_4_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1291": {
+  "spec_mnemonic": "bsm_4_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1292": {
+  "spec_mnemonic": "bsm_4_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1293": {
+  "spec_mnemonic": "bsm_4_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1294": {
+  "spec_mnemonic": "bsm_4_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1295": {
+  "spec_mnemonic": "bsm_4_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1296": {
+  "spec_mnemonic": "bsm_4_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1297": {
+  "spec_mnemonic": "bsm_4_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1298": {
+  "spec_mnemonic": "bsm_4_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1299": {
+  "spec_mnemonic": "bsm_4_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1300": {
+  "spec_mnemonic": "bsm_4_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1301": {
+  "spec_mnemonic": "bsm_4_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1302": {
+  "spec_mnemonic": "bsm_4_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1303": {
+  "spec_mnemonic": "bsm_4_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1304": {
+  "spec_mnemonic": "bsm_4_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1305": {
+  "spec_mnemonic": "bsm_4_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "4,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1306": {
+  "spec_mnemonic": "bsm_5_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1307": {
+  "spec_mnemonic": "bsm_5_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1308": {
+  "spec_mnemonic": "bsm_5_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1309": {
+  "spec_mnemonic": "bsm_5_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1310": {
+  "spec_mnemonic": "bsm_5_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1311": {
+  "spec_mnemonic": "bsm_5_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1312": {
+  "spec_mnemonic": "bsm_5_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1313": {
+  "spec_mnemonic": "bsm_5_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1314": {
+  "spec_mnemonic": "bsm_5_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1315": {
+  "spec_mnemonic": "bsm_5_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1316": {
+  "spec_mnemonic": "bsm_5_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1317": {
+  "spec_mnemonic": "bsm_5_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1318": {
+  "spec_mnemonic": "bsm_5_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1319": {
+  "spec_mnemonic": "bsm_5_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1320": {
+  "spec_mnemonic": "bsm_5_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1321": {
+  "spec_mnemonic": "bsm_5_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "5,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1322": {
+  "spec_mnemonic": "bsm_6_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1323": {
+  "spec_mnemonic": "bsm_6_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1324": {
+  "spec_mnemonic": "bsm_6_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1325": {
+  "spec_mnemonic": "bsm_6_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1326": {
+  "spec_mnemonic": "bsm_6_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1327": {
+  "spec_mnemonic": "bsm_6_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1328": {
+  "spec_mnemonic": "bsm_6_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1329": {
+  "spec_mnemonic": "bsm_6_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1330": {
+  "spec_mnemonic": "bsm_6_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1331": {
+  "spec_mnemonic": "bsm_6_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1332": {
+  "spec_mnemonic": "bsm_6_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1333": {
+  "spec_mnemonic": "bsm_6_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1334": {
+  "spec_mnemonic": "bsm_6_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1335": {
+  "spec_mnemonic": "bsm_6_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1336": {
+  "spec_mnemonic": "bsm_6_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1337": {
+  "spec_mnemonic": "bsm_6_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "6,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1338": {
+  "spec_mnemonic": "bsm_7_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1339": {
+  "spec_mnemonic": "bsm_7_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1340": {
+  "spec_mnemonic": "bsm_7_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1341": {
+  "spec_mnemonic": "bsm_7_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1342": {
+  "spec_mnemonic": "bsm_7_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1343": {
+  "spec_mnemonic": "bsm_7_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1344": {
+  "spec_mnemonic": "bsm_7_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1345": {
+  "spec_mnemonic": "bsm_7_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1346": {
+  "spec_mnemonic": "bsm_7_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1347": {
+  "spec_mnemonic": "bsm_7_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1348": {
+  "spec_mnemonic": "bsm_7_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1349": {
+  "spec_mnemonic": "bsm_7_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1350": {
+  "spec_mnemonic": "bsm_7_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1351": {
+  "spec_mnemonic": "bsm_7_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1352": {
+  "spec_mnemonic": "bsm_7_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1353": {
+  "spec_mnemonic": "bsm_7_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "7,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1354": {
+  "spec_mnemonic": "bsm_8_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1355": {
+  "spec_mnemonic": "bsm_8_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1356": {
+  "spec_mnemonic": "bsm_8_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1357": {
+  "spec_mnemonic": "bsm_8_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1358": {
+  "spec_mnemonic": "bsm_8_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1359": {
+  "spec_mnemonic": "bsm_8_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1360": {
+  "spec_mnemonic": "bsm_8_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1361": {
+  "spec_mnemonic": "bsm_8_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1362": {
+  "spec_mnemonic": "bsm_8_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1363": {
+  "spec_mnemonic": "bsm_8_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1364": {
+  "spec_mnemonic": "bsm_8_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1365": {
+  "spec_mnemonic": "bsm_8_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1366": {
+  "spec_mnemonic": "bsm_8_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1367": {
+  "spec_mnemonic": "bsm_8_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1368": {
+  "spec_mnemonic": "bsm_8_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1369": {
+  "spec_mnemonic": "bsm_8_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "8,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1370": {
+  "spec_mnemonic": "bsm_9_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1371": {
+  "spec_mnemonic": "bsm_9_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1372": {
+  "spec_mnemonic": "bsm_9_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1373": {
+  "spec_mnemonic": "bsm_9_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1374": {
+  "spec_mnemonic": "bsm_9_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1375": {
+  "spec_mnemonic": "bsm_9_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1376": {
+  "spec_mnemonic": "bsm_9_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1377": {
+  "spec_mnemonic": "bsm_9_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1378": {
+  "spec_mnemonic": "bsm_9_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1379": {
+  "spec_mnemonic": "bsm_9_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1380": {
+  "spec_mnemonic": "bsm_9_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1381": {
+  "spec_mnemonic": "bsm_9_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1382": {
+  "spec_mnemonic": "bsm_9_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1383": {
+  "spec_mnemonic": "bsm_9_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1384": {
+  "spec_mnemonic": "bsm_9_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1385": {
+  "spec_mnemonic": "bsm_9_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "9,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1386": {
+  "spec_mnemonic": "bsm_10_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1387": {
+  "spec_mnemonic": "bsm_10_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1388": {
+  "spec_mnemonic": "bsm_10_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1389": {
+  "spec_mnemonic": "bsm_10_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1390": {
+  "spec_mnemonic": "bsm_10_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1391": {
+  "spec_mnemonic": "bsm_10_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1392": {
+  "spec_mnemonic": "bsm_10_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1393": {
+  "spec_mnemonic": "bsm_10_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1394": {
+  "spec_mnemonic": "bsm_10_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1395": {
+  "spec_mnemonic": "bsm_10_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1396": {
+  "spec_mnemonic": "bsm_10_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1397": {
+  "spec_mnemonic": "bsm_10_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1398": {
+  "spec_mnemonic": "bsm_10_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1399": {
+  "spec_mnemonic": "bsm_10_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1400": {
+  "spec_mnemonic": "bsm_10_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1401": {
+  "spec_mnemonic": "bsm_10_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "10,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1402": {
+  "spec_mnemonic": "bsm_11_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1403": {
+  "spec_mnemonic": "bsm_11_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1404": {
+  "spec_mnemonic": "bsm_11_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1405": {
+  "spec_mnemonic": "bsm_11_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1406": {
+  "spec_mnemonic": "bsm_11_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1407": {
+  "spec_mnemonic": "bsm_11_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1408": {
+  "spec_mnemonic": "bsm_11_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1409": {
+  "spec_mnemonic": "bsm_11_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1410": {
+  "spec_mnemonic": "bsm_11_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1411": {
+  "spec_mnemonic": "bsm_11_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1412": {
+  "spec_mnemonic": "bsm_11_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1413": {
+  "spec_mnemonic": "bsm_11_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1414": {
+  "spec_mnemonic": "bsm_11_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1415": {
+  "spec_mnemonic": "bsm_11_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1416": {
+  "spec_mnemonic": "bsm_11_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1417": {
+  "spec_mnemonic": "bsm_11_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "11,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1418": {
+  "spec_mnemonic": "bsm_12_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1419": {
+  "spec_mnemonic": "bsm_12_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1420": {
+  "spec_mnemonic": "bsm_12_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1421": {
+  "spec_mnemonic": "bsm_12_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1422": {
+  "spec_mnemonic": "bsm_12_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1423": {
+  "spec_mnemonic": "bsm_12_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1424": {
+  "spec_mnemonic": "bsm_12_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1425": {
+  "spec_mnemonic": "bsm_12_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1426": {
+  "spec_mnemonic": "bsm_12_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1427": {
+  "spec_mnemonic": "bsm_12_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1428": {
+  "spec_mnemonic": "bsm_12_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1429": {
+  "spec_mnemonic": "bsm_12_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1430": {
+  "spec_mnemonic": "bsm_12_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1431": {
+  "spec_mnemonic": "bsm_12_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1432": {
+  "spec_mnemonic": "bsm_12_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1433": {
+  "spec_mnemonic": "bsm_12_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "12,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1434": {
+  "spec_mnemonic": "bsm_13_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1435": {
+  "spec_mnemonic": "bsm_13_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1436": {
+  "spec_mnemonic": "bsm_13_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1437": {
+  "spec_mnemonic": "bsm_13_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1438": {
+  "spec_mnemonic": "bsm_13_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1439": {
+  "spec_mnemonic": "bsm_13_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1440": {
+  "spec_mnemonic": "bsm_13_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1441": {
+  "spec_mnemonic": "bsm_13_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1442": {
+  "spec_mnemonic": "bsm_13_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1443": {
+  "spec_mnemonic": "bsm_13_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1444": {
+  "spec_mnemonic": "bsm_13_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1445": {
+  "spec_mnemonic": "bsm_13_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1446": {
+  "spec_mnemonic": "bsm_13_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1447": {
+  "spec_mnemonic": "bsm_13_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1448": {
+  "spec_mnemonic": "bsm_13_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1449": {
+  "spec_mnemonic": "bsm_13_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "13,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1450": {
+  "spec_mnemonic": "bsm_14_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1451": {
+  "spec_mnemonic": "bsm_14_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1452": {
+  "spec_mnemonic": "bsm_14_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1453": {
+  "spec_mnemonic": "bsm_14_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1454": {
+  "spec_mnemonic": "bsm_14_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1455": {
+  "spec_mnemonic": "bsm_14_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1456": {
+  "spec_mnemonic": "bsm_14_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1457": {
+  "spec_mnemonic": "bsm_14_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1458": {
+  "spec_mnemonic": "bsm_14_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1459": {
+  "spec_mnemonic": "bsm_14_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1460": {
+  "spec_mnemonic": "bsm_14_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1461": {
+  "spec_mnemonic": "bsm_14_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1462": {
+  "spec_mnemonic": "bsm_14_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1463": {
+  "spec_mnemonic": "bsm_14_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1464": {
+  "spec_mnemonic": "bsm_14_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1465": {
+  "spec_mnemonic": "bsm_14_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "14,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1466": {
+  "spec_mnemonic": "bsm_15_0",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1467": {
+  "spec_mnemonic": "bsm_15_1",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1468": {
+  "spec_mnemonic": "bsm_15_2",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1469": {
+  "spec_mnemonic": "bsm_15_3",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1470": {
+  "spec_mnemonic": "bsm_15_4",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1471": {
+  "spec_mnemonic": "bsm_15_5",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1472": {
+  "spec_mnemonic": "bsm_15_6",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1473": {
+  "spec_mnemonic": "bsm_15_7",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1474": {
+  "spec_mnemonic": "bsm_15_8",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1475": {
+  "spec_mnemonic": "bsm_15_9",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1476": {
+  "spec_mnemonic": "bsm_15_10",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1477": {
+  "spec_mnemonic": "bsm_15_11",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1478": {
+  "spec_mnemonic": "bsm_15_12",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1479": {
+  "spec_mnemonic": "bsm_15_13",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1480": {
+  "spec_mnemonic": "bsm_15_14",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1481": {
+  "spec_mnemonic": "bsm_15_15",
+  "hlasm_mnemonic": "BSM",
+  "operands": "15,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1482": {
+  "spec_mnemonic": "bassm_0_0",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1483": {
+  "spec_mnemonic": "bassm_0_1",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1484": {
+  "spec_mnemonic": "bassm_0_2",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1485": {
+  "spec_mnemonic": "bassm_0_3",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1486": {
+  "spec_mnemonic": "bassm_0_4",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1487": {
+  "spec_mnemonic": "bassm_0_5",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1488": {
+  "spec_mnemonic": "bassm_0_6",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1489": {
+  "spec_mnemonic": "bassm_0_7",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1490": {
+  "spec_mnemonic": "bassm_0_8",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1491": {
+  "spec_mnemonic": "bassm_0_9",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1492": {
+  "spec_mnemonic": "bassm_0_10",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1493": {
+  "spec_mnemonic": "bassm_0_11",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1494": {
+  "spec_mnemonic": "bassm_0_12",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1495": {
+  "spec_mnemonic": "bassm_0_13",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1496": {
+  "spec_mnemonic": "bassm_0_14",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1497": {
+  "spec_mnemonic": "bassm_0_15",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "0,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1498": {
+  "spec_mnemonic": "bassm_1_0",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1499": {
+  "spec_mnemonic": "bassm_1_1",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1500": {
+  "spec_mnemonic": "bassm_1_2",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1501": {
+  "spec_mnemonic": "bassm_1_3",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1502": {
+  "spec_mnemonic": "bassm_1_4",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1503": {
+  "spec_mnemonic": "bassm_1_5",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1504": {
+  "spec_mnemonic": "bassm_1_6",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1505": {
+  "spec_mnemonic": "bassm_1_7",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1506": {
+  "spec_mnemonic": "bassm_1_8",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1507": {
+  "spec_mnemonic": "bassm_1_9",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1508": {
+  "spec_mnemonic": "bassm_1_10",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1509": {
+  "spec_mnemonic": "bassm_1_11",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1510": {
+  "spec_mnemonic": "bassm_1_12",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1511": {
+  "spec_mnemonic": "bassm_1_13",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1512": {
+  "spec_mnemonic": "bassm_1_14",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1513": {
+  "spec_mnemonic": "bassm_1_15",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "1,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1514": {
+  "spec_mnemonic": "bassm_2_0",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1515": {
+  "spec_mnemonic": "bassm_2_1",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1516": {
+  "spec_mnemonic": "bassm_2_2",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1517": {
+  "spec_mnemonic": "bassm_2_3",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1518": {
+  "spec_mnemonic": "bassm_2_4",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1519": {
+  "spec_mnemonic": "bassm_2_5",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1520": {
+  "spec_mnemonic": "bassm_2_6",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1521": {
+  "spec_mnemonic": "bassm_2_7",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1522": {
+  "spec_mnemonic": "bassm_2_8",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1523": {
+  "spec_mnemonic": "bassm_2_9",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1524": {
+  "spec_mnemonic": "bassm_2_10",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1525": {
+  "spec_mnemonic": "bassm_2_11",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1526": {
+  "spec_mnemonic": "bassm_2_12",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1527": {
+  "spec_mnemonic": "bassm_2_13",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1528": {
+  "spec_mnemonic": "bassm_2_14",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1529": {
+  "spec_mnemonic": "bassm_2_15",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "2,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1530": {
+  "spec_mnemonic": "bassm_3_0",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1531": {
+  "spec_mnemonic": "bassm_3_1",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1532": {
+  "spec_mnemonic": "bassm_3_2",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1533": {
+  "spec_mnemonic": "bassm_3_3",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1534": {
+  "spec_mnemonic": "bassm_3_4",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1535": {
+  "spec_mnemonic": "bassm_3_5",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1536": {
+  "spec_mnemonic": "bassm_3_6",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1537": {
+  "spec_mnemonic": "bassm_3_7",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1538": {
+  "spec_mnemonic": "bassm_3_8",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1539": {
+  "spec_mnemonic": "bassm_3_9",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1540": {
+  "spec_mnemonic": "bassm_3_10",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1541": {
+  "spec_mnemonic": "bassm_3_11",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1542": {
+  "spec_mnemonic": "bassm_3_12",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1543": {
+  "spec_mnemonic": "bassm_3_13",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1544": {
+  "spec_mnemonic": "bassm_3_14",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1545": {
+  "spec_mnemonic": "bassm_3_15",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "3,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1546": {
+  "spec_mnemonic": "bassm_4_0",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1547": {
+  "spec_mnemonic": "bassm_4_1",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1548": {
+  "spec_mnemonic": "bassm_4_2",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1549": {
+  "spec_mnemonic": "bassm_4_3",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1550": {
+  "spec_mnemonic": "bassm_4_4",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1551": {
+  "spec_mnemonic": "bassm_4_5",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1552": {
+  "spec_mnemonic": "bassm_4_6",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1553": {
+  "spec_mnemonic": "bassm_4_7",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1554": {
+  "spec_mnemonic": "bassm_4_8",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1555": {
+  "spec_mnemonic": "bassm_4_9",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1556": {
+  "spec_mnemonic": "bassm_4_10",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1557": {
+  "spec_mnemonic": "bassm_4_11",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1558": {
+  "spec_mnemonic": "bassm_4_12",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1559": {
+  "spec_mnemonic": "bassm_4_13",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1560": {
+  "spec_mnemonic": "bassm_4_14",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1561": {
+  "spec_mnemonic": "bassm_4_15",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "4,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1562": {
+  "spec_mnemonic": "bassm_5_0",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1563": {
+  "spec_mnemonic": "bassm_5_1",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1564": {
+  "spec_mnemonic": "bassm_5_2",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1565": {
+  "spec_mnemonic": "bassm_5_3",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1566": {
+  "spec_mnemonic": "bassm_5_4",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1567": {
+  "spec_mnemonic": "bassm_5_5",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1568": {
+  "spec_mnemonic": "bassm_5_6",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1569": {
+  "spec_mnemonic": "bassm_5_7",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1570": {
+  "spec_mnemonic": "bassm_5_8",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1571": {
+  "spec_mnemonic": "bassm_5_9",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1572": {
+  "spec_mnemonic": "bassm_5_10",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1573": {
+  "spec_mnemonic": "bassm_5_11",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1574": {
+  "spec_mnemonic": "bassm_5_12",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1575": {
+  "spec_mnemonic": "bassm_5_13",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1576": {
+  "spec_mnemonic": "bassm_5_14",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1577": {
+  "spec_mnemonic": "bassm_5_15",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "5,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1578": {
+  "spec_mnemonic": "bassm_6_0",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1579": {
+  "spec_mnemonic": "bassm_6_1",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1580": {
+  "spec_mnemonic": "bassm_6_2",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1581": {
+  "spec_mnemonic": "bassm_6_3",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1582": {
+  "spec_mnemonic": "bassm_6_4",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1583": {
+  "spec_mnemonic": "bassm_6_5",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1584": {
+  "spec_mnemonic": "bassm_6_6",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,6",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1585": {
+  "spec_mnemonic": "bassm_6_7",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,7",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1586": {
+  "spec_mnemonic": "bassm_6_8",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,8",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1587": {
+  "spec_mnemonic": "bassm_6_9",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,9",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1588": {
+  "spec_mnemonic": "bassm_6_10",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,10",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1589": {
+  "spec_mnemonic": "bassm_6_11",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,11",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1590": {
+  "spec_mnemonic": "bassm_6_12",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,12",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1591": {
+  "spec_mnemonic": "bassm_6_13",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,13",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1592": {
+  "spec_mnemonic": "bassm_6_14",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,14",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1593": {
+  "spec_mnemonic": "bassm_6_15",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "6,15",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1594": {
+  "spec_mnemonic": "bassm_7_0",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "7,0",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1595": {
+  "spec_mnemonic": "bassm_7_1",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "7,1",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1596": {
+  "spec_mnemonic": "bassm_7_2",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "7,2",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1597": {
+  "spec_mnemonic": "bassm_7_3",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "7,3",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1598": {
+  "spec_mnemonic": "bassm_7_4",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "7,4",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1599": {
+  "spec_mnemonic": "bassm_7_5",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "7,5",
+  "srcfile": "s390x_gaps2.sinc"
+ },
+ "T1600": {
+  "spec_mnemonic": "bassm_7_6",
+  "hlasm_mnemonic": "BASSM",
+  "operands": "7,6",
+  "srcfile": "s390x_gaps2.sinc"
+ }
+}

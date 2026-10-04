@@ -1,0 +1,2038 @@
+# GENERATED FILE — do not hand-edit.
+# Produced by tools/gen_muldiv.py: unrolled even-R1 pair-register
+# multiply/divide constructors (M, MFY, MR, MG, ML, MLR, MLG, MLGR,
+# D, DR, DL, DLR, DLG, DLGR, DSG, DSGR, DSGF, DSGFR).
+# Each instruction: 8 even-R1 constructors with exact pair pcode,
+# plus 1 opaque odd-R1 fallback (specification exception on HW).
+# Opcodes/semantics verified against SA22-7832-14 (see script header).
+# Shared macros (sx32, mul128u, udiv64, udiv128, sdiv32_exc,
+# sdiv64_exc, trap_fixed_point_divide) are in
+# s390x_muldiv.sinc — include it BEFORE this file.
+
+:M_0 "M " "0" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1=0 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r1 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:M_2 "M " "2" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1=2 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r3 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:M_4 "M " "4" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1=4 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r5 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:M_6 "M " "6" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1=6 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r7 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:M_8 "M " "8" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1=8 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r9 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:M_10 "M " "10" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1=10 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r11 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:M_12 "M " "12" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1=12 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r13 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:M_14 "M " "14" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1=14 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r15 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:M_odd "M " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5C & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:MFY_0 "MFY " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r1 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MFY_2 "MFY " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r3 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MFY_4 "MFY " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r5 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MFY_6 "MFY " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r7 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MFY_8 "MFY " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r9 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MFY_10 "MFY " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r11 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MFY_12 "MFY " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r13 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MFY_14 "MFY " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = sext(w);
+        mc = r15 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MFY_odd "MFY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:MR_0 "MR " "0" "," RR_R2 is RR_OP=0x1C & RR_R1=0 & RR_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RR_R2 & 0xffffffff;
+        sx32(mp, mp);
+        mc = r1 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MR_2 "MR " "2" "," RR_R2 is RR_OP=0x1C & RR_R1=2 & RR_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RR_R2 & 0xffffffff;
+        sx32(mp, mp);
+        mc = r3 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MR_4 "MR " "4" "," RR_R2 is RR_OP=0x1C & RR_R1=4 & RR_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RR_R2 & 0xffffffff;
+        sx32(mp, mp);
+        mc = r5 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MR_6 "MR " "6" "," RR_R2 is RR_OP=0x1C & RR_R1=6 & RR_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RR_R2 & 0xffffffff;
+        sx32(mp, mp);
+        mc = r7 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MR_8 "MR " "8" "," RR_R2 is RR_OP=0x1C & RR_R1=8 & RR_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RR_R2 & 0xffffffff;
+        sx32(mp, mp);
+        mc = r9 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MR_10 "MR " "10" "," RR_R2 is RR_OP=0x1C & RR_R1=10 & RR_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RR_R2 & 0xffffffff;
+        sx32(mp, mp);
+        mc = r11 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MR_12 "MR " "12" "," RR_R2 is RR_OP=0x1C & RR_R1=12 & RR_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RR_R2 & 0xffffffff;
+        sx32(mp, mp);
+        mc = r13 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MR_14 "MR " "14" "," RR_R2 is RR_OP=0x1C & RR_R1=14 & RR_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RR_R2 & 0xffffffff;
+        sx32(mp, mp);
+        mc = r15 & 0xffffffff;
+        sx32(mc, mc);
+        p = mc * mp;
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MR_odd "MR " RR_R1 "," RR_R2 is RR_OP=0x1C & RR_R1 & RR_R2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:MG_0 "MG " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local a:8; local b:8; local hi:8; local lo:8;
+        local sa:8; local sb:8; local nhi:8; local nlo:8;
+        a = r1;
+        b = *:8 ea;
+        sa = (a >> 63) & 1;
+        sb = (b >> 63) & 1;
+        if (sa == 0) goto <mg_0_apos>;
+        a = 0 - a;
+        <mg_0_apos>
+        if (sb == 0) goto <mg_0_bpos>;
+        b = 0 - b;
+        <mg_0_bpos>
+        mul128u(hi, lo, a, b);
+        if (sa == sb) goto <mg_0_done>;
+        nlo = 0 - lo;
+        nhi = 0 - hi;
+        if (lo == 0) goto <mg_0_set>;
+        nhi = nhi - 1;
+        <mg_0_set>
+        hi = nhi;
+        lo = nlo;
+        <mg_0_done>
+        r0 = hi;
+        r1 = lo;
+    }
+
+:MG_2 "MG " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local a:8; local b:8; local hi:8; local lo:8;
+        local sa:8; local sb:8; local nhi:8; local nlo:8;
+        a = r3;
+        b = *:8 ea;
+        sa = (a >> 63) & 1;
+        sb = (b >> 63) & 1;
+        if (sa == 0) goto <mg_2_apos>;
+        a = 0 - a;
+        <mg_2_apos>
+        if (sb == 0) goto <mg_2_bpos>;
+        b = 0 - b;
+        <mg_2_bpos>
+        mul128u(hi, lo, a, b);
+        if (sa == sb) goto <mg_2_done>;
+        nlo = 0 - lo;
+        nhi = 0 - hi;
+        if (lo == 0) goto <mg_2_set>;
+        nhi = nhi - 1;
+        <mg_2_set>
+        hi = nhi;
+        lo = nlo;
+        <mg_2_done>
+        r2 = hi;
+        r3 = lo;
+    }
+
+:MG_4 "MG " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local a:8; local b:8; local hi:8; local lo:8;
+        local sa:8; local sb:8; local nhi:8; local nlo:8;
+        a = r5;
+        b = *:8 ea;
+        sa = (a >> 63) & 1;
+        sb = (b >> 63) & 1;
+        if (sa == 0) goto <mg_4_apos>;
+        a = 0 - a;
+        <mg_4_apos>
+        if (sb == 0) goto <mg_4_bpos>;
+        b = 0 - b;
+        <mg_4_bpos>
+        mul128u(hi, lo, a, b);
+        if (sa == sb) goto <mg_4_done>;
+        nlo = 0 - lo;
+        nhi = 0 - hi;
+        if (lo == 0) goto <mg_4_set>;
+        nhi = nhi - 1;
+        <mg_4_set>
+        hi = nhi;
+        lo = nlo;
+        <mg_4_done>
+        r4 = hi;
+        r5 = lo;
+    }
+
+:MG_6 "MG " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local a:8; local b:8; local hi:8; local lo:8;
+        local sa:8; local sb:8; local nhi:8; local nlo:8;
+        a = r7;
+        b = *:8 ea;
+        sa = (a >> 63) & 1;
+        sb = (b >> 63) & 1;
+        if (sa == 0) goto <mg_6_apos>;
+        a = 0 - a;
+        <mg_6_apos>
+        if (sb == 0) goto <mg_6_bpos>;
+        b = 0 - b;
+        <mg_6_bpos>
+        mul128u(hi, lo, a, b);
+        if (sa == sb) goto <mg_6_done>;
+        nlo = 0 - lo;
+        nhi = 0 - hi;
+        if (lo == 0) goto <mg_6_set>;
+        nhi = nhi - 1;
+        <mg_6_set>
+        hi = nhi;
+        lo = nlo;
+        <mg_6_done>
+        r6 = hi;
+        r7 = lo;
+    }
+
+:MG_8 "MG " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local a:8; local b:8; local hi:8; local lo:8;
+        local sa:8; local sb:8; local nhi:8; local nlo:8;
+        a = r9;
+        b = *:8 ea;
+        sa = (a >> 63) & 1;
+        sb = (b >> 63) & 1;
+        if (sa == 0) goto <mg_8_apos>;
+        a = 0 - a;
+        <mg_8_apos>
+        if (sb == 0) goto <mg_8_bpos>;
+        b = 0 - b;
+        <mg_8_bpos>
+        mul128u(hi, lo, a, b);
+        if (sa == sb) goto <mg_8_done>;
+        nlo = 0 - lo;
+        nhi = 0 - hi;
+        if (lo == 0) goto <mg_8_set>;
+        nhi = nhi - 1;
+        <mg_8_set>
+        hi = nhi;
+        lo = nlo;
+        <mg_8_done>
+        r8 = hi;
+        r9 = lo;
+    }
+
+:MG_10 "MG " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local a:8; local b:8; local hi:8; local lo:8;
+        local sa:8; local sb:8; local nhi:8; local nlo:8;
+        a = r11;
+        b = *:8 ea;
+        sa = (a >> 63) & 1;
+        sb = (b >> 63) & 1;
+        if (sa == 0) goto <mg_10_apos>;
+        a = 0 - a;
+        <mg_10_apos>
+        if (sb == 0) goto <mg_10_bpos>;
+        b = 0 - b;
+        <mg_10_bpos>
+        mul128u(hi, lo, a, b);
+        if (sa == sb) goto <mg_10_done>;
+        nlo = 0 - lo;
+        nhi = 0 - hi;
+        if (lo == 0) goto <mg_10_set>;
+        nhi = nhi - 1;
+        <mg_10_set>
+        hi = nhi;
+        lo = nlo;
+        <mg_10_done>
+        r10 = hi;
+        r11 = lo;
+    }
+
+:MG_12 "MG " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local a:8; local b:8; local hi:8; local lo:8;
+        local sa:8; local sb:8; local nhi:8; local nlo:8;
+        a = r13;
+        b = *:8 ea;
+        sa = (a >> 63) & 1;
+        sb = (b >> 63) & 1;
+        if (sa == 0) goto <mg_12_apos>;
+        a = 0 - a;
+        <mg_12_apos>
+        if (sb == 0) goto <mg_12_bpos>;
+        b = 0 - b;
+        <mg_12_bpos>
+        mul128u(hi, lo, a, b);
+        if (sa == sb) goto <mg_12_done>;
+        nlo = 0 - lo;
+        nhi = 0 - hi;
+        if (lo == 0) goto <mg_12_set>;
+        nhi = nhi - 1;
+        <mg_12_set>
+        hi = nhi;
+        lo = nlo;
+        <mg_12_done>
+        r12 = hi;
+        r13 = lo;
+    }
+
+:MG_14 "MG " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local a:8; local b:8; local hi:8; local lo:8;
+        local sa:8; local sb:8; local nhi:8; local nlo:8;
+        a = r15;
+        b = *:8 ea;
+        sa = (a >> 63) & 1;
+        sb = (b >> 63) & 1;
+        if (sa == 0) goto <mg_14_apos>;
+        a = 0 - a;
+        <mg_14_apos>
+        if (sb == 0) goto <mg_14_bpos>;
+        b = 0 - b;
+        <mg_14_bpos>
+        mul128u(hi, lo, a, b);
+        if (sa == sb) goto <mg_14_done>;
+        nlo = 0 - lo;
+        nhi = 0 - hi;
+        if (lo == 0) goto <mg_14_set>;
+        nhi = nhi - 1;
+        <mg_14_set>
+        hi = nhi;
+        lo = nlo;
+        <mg_14_done>
+        r14 = hi;
+        r15 = lo;
+    }
+
+:MG_odd "MG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:ML_0 "ML " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = zext(w);
+        mc = r1 & 0xffffffff;
+        p = mc * mp;
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:ML_2 "ML " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = zext(w);
+        mc = r3 & 0xffffffff;
+        p = mc * mp;
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:ML_4 "ML " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = zext(w);
+        mc = r5 & 0xffffffff;
+        p = mc * mp;
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:ML_6 "ML " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = zext(w);
+        mc = r7 & 0xffffffff;
+        p = mc * mp;
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:ML_8 "ML " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = zext(w);
+        mc = r9 & 0xffffffff;
+        p = mc * mp;
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:ML_10 "ML " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = zext(w);
+        mc = r11 & 0xffffffff;
+        p = mc * mp;
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:ML_12 "ML " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = zext(w);
+        mc = r13 & 0xffffffff;
+        p = mc * mp;
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:ML_14 "ML " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local mc:8; local mp:8; local p:8;
+        w = *:4 ea;
+        mp = zext(w);
+        mc = r15 & 0xffffffff;
+        p = mc * mp;
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:ML_odd "ML " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:MLR_0 "MLR " "0" "," RRE_R2 is RRE_OP=0xB996 & RRE_R1=0 & RRE_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RRE_R2 & 0xffffffff;
+        mc = r1 & 0xffffffff;
+        p = mc * mp;
+        r0 = (r0 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MLR_2 "MLR " "2" "," RRE_R2 is RRE_OP=0xB996 & RRE_R1=2 & RRE_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RRE_R2 & 0xffffffff;
+        mc = r3 & 0xffffffff;
+        p = mc * mp;
+        r2 = (r2 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MLR_4 "MLR " "4" "," RRE_R2 is RRE_OP=0xB996 & RRE_R1=4 & RRE_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RRE_R2 & 0xffffffff;
+        mc = r5 & 0xffffffff;
+        p = mc * mp;
+        r4 = (r4 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MLR_6 "MLR " "6" "," RRE_R2 is RRE_OP=0xB996 & RRE_R1=6 & RRE_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RRE_R2 & 0xffffffff;
+        mc = r7 & 0xffffffff;
+        p = mc * mp;
+        r6 = (r6 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MLR_8 "MLR " "8" "," RRE_R2 is RRE_OP=0xB996 & RRE_R1=8 & RRE_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RRE_R2 & 0xffffffff;
+        mc = r9 & 0xffffffff;
+        p = mc * mp;
+        r8 = (r8 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MLR_10 "MLR " "10" "," RRE_R2 is RRE_OP=0xB996 & RRE_R1=10 & RRE_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RRE_R2 & 0xffffffff;
+        mc = r11 & 0xffffffff;
+        p = mc * mp;
+        r10 = (r10 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MLR_12 "MLR " "12" "," RRE_R2 is RRE_OP=0xB996 & RRE_R1=12 & RRE_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RRE_R2 & 0xffffffff;
+        mc = r13 & 0xffffffff;
+        p = mc * mp;
+        r12 = (r12 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MLR_14 "MLR " "14" "," RRE_R2 is RRE_OP=0xB996 & RRE_R1=14 & RRE_R2
+    {
+        local mc:8; local mp:8; local p:8;
+        mp = RRE_R2 & 0xffffffff;
+        mc = r15 & 0xffffffff;
+        p = mc * mp;
+        r14 = (r14 & (0xFFFFFFFF << 32)) | ((p >> 32) & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
+    }
+
+:MLR_odd "MLR " RRE_R1 "," RRE_R2 is RRE_OP=0xB996 & RRE_R1 & RRE_R2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:MLG_0 "MLG " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local b:8; local hi:8; local lo:8;
+        b = *:8 ea;
+        mul128u(hi, lo, r1, b);
+        r0 = hi;
+        r1 = lo;
+    }
+
+:MLG_2 "MLG " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local b:8; local hi:8; local lo:8;
+        b = *:8 ea;
+        mul128u(hi, lo, r3, b);
+        r2 = hi;
+        r3 = lo;
+    }
+
+:MLG_4 "MLG " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local b:8; local hi:8; local lo:8;
+        b = *:8 ea;
+        mul128u(hi, lo, r5, b);
+        r4 = hi;
+        r5 = lo;
+    }
+
+:MLG_6 "MLG " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local b:8; local hi:8; local lo:8;
+        b = *:8 ea;
+        mul128u(hi, lo, r7, b);
+        r6 = hi;
+        r7 = lo;
+    }
+
+:MLG_8 "MLG " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local b:8; local hi:8; local lo:8;
+        b = *:8 ea;
+        mul128u(hi, lo, r9, b);
+        r8 = hi;
+        r9 = lo;
+    }
+
+:MLG_10 "MLG " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local b:8; local hi:8; local lo:8;
+        b = *:8 ea;
+        mul128u(hi, lo, r11, b);
+        r10 = hi;
+        r11 = lo;
+    }
+
+:MLG_12 "MLG " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local b:8; local hi:8; local lo:8;
+        b = *:8 ea;
+        mul128u(hi, lo, r13, b);
+        r12 = hi;
+        r13 = lo;
+    }
+
+:MLG_14 "MLG " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local b:8; local hi:8; local lo:8;
+        b = *:8 ea;
+        mul128u(hi, lo, r15, b);
+        r14 = hi;
+        r15 = lo;
+    }
+
+:MLG_odd "MLG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:MLGR_0 "MLGR " "0" "," RRE_R2 is RRE_OP=0xB986 & RRE_R1=0 & RRE_R2
+    {
+        local b:8; local hi:8; local lo:8;
+        b = RRE_R2;
+        mul128u(hi, lo, r1, b);
+        r0 = hi;
+        r1 = lo;
+    }
+
+:MLGR_2 "MLGR " "2" "," RRE_R2 is RRE_OP=0xB986 & RRE_R1=2 & RRE_R2
+    {
+        local b:8; local hi:8; local lo:8;
+        b = RRE_R2;
+        mul128u(hi, lo, r3, b);
+        r2 = hi;
+        r3 = lo;
+    }
+
+:MLGR_4 "MLGR " "4" "," RRE_R2 is RRE_OP=0xB986 & RRE_R1=4 & RRE_R2
+    {
+        local b:8; local hi:8; local lo:8;
+        b = RRE_R2;
+        mul128u(hi, lo, r5, b);
+        r4 = hi;
+        r5 = lo;
+    }
+
+:MLGR_6 "MLGR " "6" "," RRE_R2 is RRE_OP=0xB986 & RRE_R1=6 & RRE_R2
+    {
+        local b:8; local hi:8; local lo:8;
+        b = RRE_R2;
+        mul128u(hi, lo, r7, b);
+        r6 = hi;
+        r7 = lo;
+    }
+
+:MLGR_8 "MLGR " "8" "," RRE_R2 is RRE_OP=0xB986 & RRE_R1=8 & RRE_R2
+    {
+        local b:8; local hi:8; local lo:8;
+        b = RRE_R2;
+        mul128u(hi, lo, r9, b);
+        r8 = hi;
+        r9 = lo;
+    }
+
+:MLGR_10 "MLGR " "10" "," RRE_R2 is RRE_OP=0xB986 & RRE_R1=10 & RRE_R2
+    {
+        local b:8; local hi:8; local lo:8;
+        b = RRE_R2;
+        mul128u(hi, lo, r11, b);
+        r10 = hi;
+        r11 = lo;
+    }
+
+:MLGR_12 "MLGR " "12" "," RRE_R2 is RRE_OP=0xB986 & RRE_R1=12 & RRE_R2
+    {
+        local b:8; local hi:8; local lo:8;
+        b = RRE_R2;
+        mul128u(hi, lo, r13, b);
+        r12 = hi;
+        r13 = lo;
+    }
+
+:MLGR_14 "MLGR " "14" "," RRE_R2 is RRE_OP=0xB986 & RRE_R1=14 & RRE_R2
+    {
+        local b:8; local hi:8; local lo:8;
+        b = RRE_R2;
+        mul128u(hi, lo, r15, b);
+        r14 = hi;
+        r15 = lo;
+    }
+
+:MLGR_odd "MLGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB986 & RRE_R1 & RRE_R2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:D_0 "D " "0" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1=0 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = ((r0 & 0xffffffff) << 32) | (r1 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r1 & 0xffffffff, r0 & 0xffffffff);
+        r0 = (r0 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:D_2 "D " "2" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1=2 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = ((r2 & 0xffffffff) << 32) | (r3 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r3 & 0xffffffff, r2 & 0xffffffff);
+        r2 = (r2 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:D_4 "D " "4" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1=4 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = ((r4 & 0xffffffff) << 32) | (r5 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r5 & 0xffffffff, r4 & 0xffffffff);
+        r4 = (r4 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:D_6 "D " "6" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1=6 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = ((r6 & 0xffffffff) << 32) | (r7 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r7 & 0xffffffff, r6 & 0xffffffff);
+        r6 = (r6 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:D_8 "D " "8" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1=8 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = ((r8 & 0xffffffff) << 32) | (r9 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r9 & 0xffffffff, r8 & 0xffffffff);
+        r8 = (r8 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:D_10 "D " "10" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1=10 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = ((r10 & 0xffffffff) << 32) | (r11 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r11 & 0xffffffff, r10 & 0xffffffff);
+        r10 = (r10 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:D_12 "D " "12" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1=12 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = ((r12 & 0xffffffff) << 32) | (r13 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r13 & 0xffffffff, r12 & 0xffffffff);
+        r12 = (r12 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:D_14 "D " "14" "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1=14 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        local ea:8;
+        ea_D12(ea, RXa_B2, RXa_X2, RXa_D2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = ((r14 & 0xffffffff) << 32) | (r15 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r15 & 0xffffffff, r14 & 0xffffffff);
+        r14 = (r14 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:D_odd "D " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x5D & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DR_0 "DR " "0" "," RR_R2 is RR_OP=0x1D & RR_R1=0 & RR_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RR_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = ((r0 & 0xffffffff) << 32) | (r1 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r1 & 0xffffffff, r0 & 0xffffffff);
+        r0 = (r0 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DR_2 "DR " "2" "," RR_R2 is RR_OP=0x1D & RR_R1=2 & RR_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RR_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = ((r2 & 0xffffffff) << 32) | (r3 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r3 & 0xffffffff, r2 & 0xffffffff);
+        r2 = (r2 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DR_4 "DR " "4" "," RR_R2 is RR_OP=0x1D & RR_R1=4 & RR_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RR_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = ((r4 & 0xffffffff) << 32) | (r5 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r5 & 0xffffffff, r4 & 0xffffffff);
+        r4 = (r4 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DR_6 "DR " "6" "," RR_R2 is RR_OP=0x1D & RR_R1=6 & RR_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RR_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = ((r6 & 0xffffffff) << 32) | (r7 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r7 & 0xffffffff, r6 & 0xffffffff);
+        r6 = (r6 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DR_8 "DR " "8" "," RR_R2 is RR_OP=0x1D & RR_R1=8 & RR_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RR_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = ((r8 & 0xffffffff) << 32) | (r9 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r9 & 0xffffffff, r8 & 0xffffffff);
+        r8 = (r8 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DR_10 "DR " "10" "," RR_R2 is RR_OP=0x1D & RR_R1=10 & RR_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RR_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = ((r10 & 0xffffffff) << 32) | (r11 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r11 & 0xffffffff, r10 & 0xffffffff);
+        r10 = (r10 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DR_12 "DR " "12" "," RR_R2 is RR_OP=0x1D & RR_R1=12 & RR_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RR_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = ((r12 & 0xffffffff) << 32) | (r13 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r13 & 0xffffffff, r12 & 0xffffffff);
+        r12 = (r12 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DR_14 "DR " "14" "," RR_R2 is RR_OP=0x1D & RR_R1=14 & RR_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RR_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = ((r14 & 0xffffffff) << 32) | (r15 & 0xffffffff);
+        sdiv32_exc(q, r, dvd, dvs, r15 & 0xffffffff, r14 & 0xffffffff);
+        r14 = (r14 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DR_odd "DR " RR_R1 "," RR_R2 is RR_OP=0x1D & RR_R1 & RR_R2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DL_0 "DL " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = zext(w);
+        dvd = ((r0 & 0xffffffff) << 32) | (r1 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r0 = (r0 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DL_2 "DL " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = zext(w);
+        dvd = ((r2 & 0xffffffff) << 32) | (r3 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r2 = (r2 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DL_4 "DL " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = zext(w);
+        dvd = ((r4 & 0xffffffff) << 32) | (r5 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r4 = (r4 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DL_6 "DL " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = zext(w);
+        dvd = ((r6 & 0xffffffff) << 32) | (r7 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r6 = (r6 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DL_8 "DL " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = zext(w);
+        dvd = ((r8 & 0xffffffff) << 32) | (r9 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r8 = (r8 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DL_10 "DL " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = zext(w);
+        dvd = ((r10 & 0xffffffff) << 32) | (r11 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r10 = (r10 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DL_12 "DL " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = zext(w);
+        dvd = ((r12 & 0xffffffff) << 32) | (r13 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r12 = (r12 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DL_14 "DL " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = zext(w);
+        dvd = ((r14 & 0xffffffff) << 32) | (r15 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r14 = (r14 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DL_odd "DL " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DLR_0 "DLR " "0" "," RRE_R2 is RRE_OP=0xB997 & RRE_R1=0 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        dvd = ((r0 & 0xffffffff) << 32) | (r1 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r0 = (r0 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r1 = (r1 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DLR_2 "DLR " "2" "," RRE_R2 is RRE_OP=0xB997 & RRE_R1=2 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        dvd = ((r2 & 0xffffffff) << 32) | (r3 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r2 = (r2 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r3 = (r3 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DLR_4 "DLR " "4" "," RRE_R2 is RRE_OP=0xB997 & RRE_R1=4 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        dvd = ((r4 & 0xffffffff) << 32) | (r5 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r4 = (r4 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r5 = (r5 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DLR_6 "DLR " "6" "," RRE_R2 is RRE_OP=0xB997 & RRE_R1=6 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        dvd = ((r6 & 0xffffffff) << 32) | (r7 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r6 = (r6 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r7 = (r7 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DLR_8 "DLR " "8" "," RRE_R2 is RRE_OP=0xB997 & RRE_R1=8 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        dvd = ((r8 & 0xffffffff) << 32) | (r9 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r8 = (r8 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r9 = (r9 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DLR_10 "DLR " "10" "," RRE_R2 is RRE_OP=0xB997 & RRE_R1=10 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        dvd = ((r10 & 0xffffffff) << 32) | (r11 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r10 = (r10 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r11 = (r11 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DLR_12 "DLR " "12" "," RRE_R2 is RRE_OP=0xB997 & RRE_R1=12 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        dvd = ((r12 & 0xffffffff) << 32) | (r13 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r12 = (r12 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r13 = (r13 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DLR_14 "DLR " "14" "," RRE_R2 is RRE_OP=0xB997 & RRE_R1=14 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        dvd = ((r14 & 0xffffffff) << 32) | (r15 & 0xffffffff);
+        # Exception via udiv64 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv64(q, r, dvd, dvs);
+        r14 = (r14 & (0xFFFFFFFF << 32)) | (r & 0xffffffff);
+        r15 = (r15 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
+    }
+
+:DLR_odd "DLR " RRE_R1 "," RRE_R2 is RRE_OP=0xB997 & RRE_R1 & RRE_R2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DLG_0 "DLG " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local d:8; local q:8; local r:8;
+        d = *:8 ea;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r0, r1, d);
+        r0 = r;
+        r1 = q;
+    }
+
+:DLG_2 "DLG " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local d:8; local q:8; local r:8;
+        d = *:8 ea;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r2, r3, d);
+        r2 = r;
+        r3 = q;
+    }
+
+:DLG_4 "DLG " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local d:8; local q:8; local r:8;
+        d = *:8 ea;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r4, r5, d);
+        r4 = r;
+        r5 = q;
+    }
+
+:DLG_6 "DLG " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local d:8; local q:8; local r:8;
+        d = *:8 ea;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r6, r7, d);
+        r6 = r;
+        r7 = q;
+    }
+
+:DLG_8 "DLG " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local d:8; local q:8; local r:8;
+        d = *:8 ea;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r8, r9, d);
+        r8 = r;
+        r9 = q;
+    }
+
+:DLG_10 "DLG " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local d:8; local q:8; local r:8;
+        d = *:8 ea;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r10, r11, d);
+        r10 = r;
+        r11 = q;
+    }
+
+:DLG_12 "DLG " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local d:8; local q:8; local r:8;
+        d = *:8 ea;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r12, r13, d);
+        r12 = r;
+        r13 = q;
+    }
+
+:DLG_14 "DLG " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local d:8; local q:8; local r:8;
+        d = *:8 ea;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r14, r15, d);
+        r14 = r;
+        r15 = q;
+    }
+
+:DLG_odd "DLG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DLGR_0 "DLGR " "0" "," RRE_R2 is RRE_OP=0xB987 & RRE_R1=0 & RRE_R2
+    {
+        local d:8; local q:8; local r:8;
+        d = RRE_R2;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r0, r1, d);
+        r0 = r;
+        r1 = q;
+    }
+
+:DLGR_2 "DLGR " "2" "," RRE_R2 is RRE_OP=0xB987 & RRE_R1=2 & RRE_R2
+    {
+        local d:8; local q:8; local r:8;
+        d = RRE_R2;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r2, r3, d);
+        r2 = r;
+        r3 = q;
+    }
+
+:DLGR_4 "DLGR " "4" "," RRE_R2 is RRE_OP=0xB987 & RRE_R1=4 & RRE_R2
+    {
+        local d:8; local q:8; local r:8;
+        d = RRE_R2;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r4, r5, d);
+        r4 = r;
+        r5 = q;
+    }
+
+:DLGR_6 "DLGR " "6" "," RRE_R2 is RRE_OP=0xB987 & RRE_R1=6 & RRE_R2
+    {
+        local d:8; local q:8; local r:8;
+        d = RRE_R2;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r6, r7, d);
+        r6 = r;
+        r7 = q;
+    }
+
+:DLGR_8 "DLGR " "8" "," RRE_R2 is RRE_OP=0xB987 & RRE_R1=8 & RRE_R2
+    {
+        local d:8; local q:8; local r:8;
+        d = RRE_R2;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r8, r9, d);
+        r8 = r;
+        r9 = q;
+    }
+
+:DLGR_10 "DLGR " "10" "," RRE_R2 is RRE_OP=0xB987 & RRE_R1=10 & RRE_R2
+    {
+        local d:8; local q:8; local r:8;
+        d = RRE_R2;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r10, r11, d);
+        r10 = r;
+        r11 = q;
+    }
+
+:DLGR_12 "DLGR " "12" "," RRE_R2 is RRE_OP=0xB987 & RRE_R1=12 & RRE_R2
+    {
+        local d:8; local q:8; local r:8;
+        d = RRE_R2;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r12, r13, d);
+        r12 = r;
+        r13 = q;
+    }
+
+:DLGR_14 "DLGR " "14" "," RRE_R2 is RRE_OP=0xB987 & RRE_R1=14 & RRE_R2
+    {
+        local d:8; local q:8; local r:8;
+        d = RRE_R2;
+        # Exception via udiv128 (zero divisor / quotient overflow ->
+        # trap_fixed_point_divide; registers preserved on trap).
+        udiv128(q, r, r14, r15, d);
+        r14 = r;
+        r15 = q;
+    }
+
+:DLGR_odd "DLGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB987 & RRE_R1 & RRE_R2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DSG_0 "DSG " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r1;
+        dvs = *:8 ea;
+        sdiv64_exc(q, r, dvd, dvs, r1, r0);
+        r0 = r;
+        r1 = q;
+    }
+
+:DSG_2 "DSG " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r3;
+        dvs = *:8 ea;
+        sdiv64_exc(q, r, dvd, dvs, r3, r2);
+        r2 = r;
+        r3 = q;
+    }
+
+:DSG_4 "DSG " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r5;
+        dvs = *:8 ea;
+        sdiv64_exc(q, r, dvd, dvs, r5, r4);
+        r4 = r;
+        r5 = q;
+    }
+
+:DSG_6 "DSG " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r7;
+        dvs = *:8 ea;
+        sdiv64_exc(q, r, dvd, dvs, r7, r6);
+        r6 = r;
+        r7 = q;
+    }
+
+:DSG_8 "DSG " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r9;
+        dvs = *:8 ea;
+        sdiv64_exc(q, r, dvd, dvs, r9, r8);
+        r8 = r;
+        r9 = q;
+    }
+
+:DSG_10 "DSG " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r11;
+        dvs = *:8 ea;
+        sdiv64_exc(q, r, dvd, dvs, r11, r10);
+        r10 = r;
+        r11 = q;
+    }
+
+:DSG_12 "DSG " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r13;
+        dvs = *:8 ea;
+        sdiv64_exc(q, r, dvd, dvs, r13, r12);
+        r12 = r;
+        r13 = q;
+    }
+
+:DSG_14 "DSG " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r15;
+        dvs = *:8 ea;
+        sdiv64_exc(q, r, dvd, dvs, r15, r14);
+        r14 = r;
+        r15 = q;
+    }
+
+:DSG_odd "DSG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DSGR_0 "DSGR " "0" "," RRE_R2 is RRE_OP=0xB90D & RRE_R1=0 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r1;
+        dvs = RRE_R2;
+        sdiv64_exc(q, r, dvd, dvs, r1, r0);
+        r0 = r;
+        r1 = q;
+    }
+
+:DSGR_2 "DSGR " "2" "," RRE_R2 is RRE_OP=0xB90D & RRE_R1=2 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r3;
+        dvs = RRE_R2;
+        sdiv64_exc(q, r, dvd, dvs, r3, r2);
+        r2 = r;
+        r3 = q;
+    }
+
+:DSGR_4 "DSGR " "4" "," RRE_R2 is RRE_OP=0xB90D & RRE_R1=4 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r5;
+        dvs = RRE_R2;
+        sdiv64_exc(q, r, dvd, dvs, r5, r4);
+        r4 = r;
+        r5 = q;
+    }
+
+:DSGR_6 "DSGR " "6" "," RRE_R2 is RRE_OP=0xB90D & RRE_R1=6 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r7;
+        dvs = RRE_R2;
+        sdiv64_exc(q, r, dvd, dvs, r7, r6);
+        r6 = r;
+        r7 = q;
+    }
+
+:DSGR_8 "DSGR " "8" "," RRE_R2 is RRE_OP=0xB90D & RRE_R1=8 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r9;
+        dvs = RRE_R2;
+        sdiv64_exc(q, r, dvd, dvs, r9, r8);
+        r8 = r;
+        r9 = q;
+    }
+
+:DSGR_10 "DSGR " "10" "," RRE_R2 is RRE_OP=0xB90D & RRE_R1=10 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r11;
+        dvs = RRE_R2;
+        sdiv64_exc(q, r, dvd, dvs, r11, r10);
+        r10 = r;
+        r11 = q;
+    }
+
+:DSGR_12 "DSGR " "12" "," RRE_R2 is RRE_OP=0xB90D & RRE_R1=12 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r13;
+        dvs = RRE_R2;
+        sdiv64_exc(q, r, dvd, dvs, r13, r12);
+        r12 = r;
+        r13 = q;
+    }
+
+:DSGR_14 "DSGR " "14" "," RRE_R2 is RRE_OP=0xB90D & RRE_R1=14 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvd = r15;
+        dvs = RRE_R2;
+        sdiv64_exc(q, r, dvd, dvs, r15, r14);
+        r14 = r;
+        r15 = q;
+    }
+
+:DSGR_odd "DSGR " RRE_R1 "," RRE_R2 is RRE_OP=0xB90D & RRE_R1 & RRE_R2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DSGF_0 "DSGF " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = r1;
+        sdiv64_exc(q, r, dvd, dvs, r1, r0);
+        r0 = r;
+        r1 = q;
+    }
+
+:DSGF_2 "DSGF " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = r3;
+        sdiv64_exc(q, r, dvd, dvs, r3, r2);
+        r2 = r;
+        r3 = q;
+    }
+
+:DSGF_4 "DSGF " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = r5;
+        sdiv64_exc(q, r, dvd, dvs, r5, r4);
+        r4 = r;
+        r5 = q;
+    }
+
+:DSGF_6 "DSGF " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = r7;
+        sdiv64_exc(q, r, dvd, dvs, r7, r6);
+        r6 = r;
+        r7 = q;
+    }
+
+:DSGF_8 "DSGF " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = r9;
+        sdiv64_exc(q, r, dvd, dvs, r9, r8);
+        r8 = r;
+        r9 = q;
+    }
+
+:DSGF_10 "DSGF " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = r11;
+        sdiv64_exc(q, r, dvd, dvs, r11, r10);
+        r10 = r;
+        r11 = q;
+    }
+
+:DSGF_12 "DSGF " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = r13;
+        sdiv64_exc(q, r, dvd, dvs, r13, r12);
+        r12 = r;
+        r13 = q;
+    }
+
+:DSGF_14 "DSGF " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        local ea:8;
+        ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+        local w:4;
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        w = *:4 ea;
+        dvs = sext(w);
+        dvd = r15;
+        sdiv64_exc(q, r, dvd, dvs, r15, r14);
+        r14 = r;
+        r15 = q;
+    }
+
+:DSGF_odd "DSGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }
+
+:DSGFR_0 "DSGFR " "0" "," RRE_R2 is RRE_OP=0xB91D & RRE_R1=0 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = r1;
+        sdiv64_exc(q, r, dvd, dvs, r1, r0);
+        r0 = r;
+        r1 = q;
+    }
+
+:DSGFR_2 "DSGFR " "2" "," RRE_R2 is RRE_OP=0xB91D & RRE_R1=2 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = r3;
+        sdiv64_exc(q, r, dvd, dvs, r3, r2);
+        r2 = r;
+        r3 = q;
+    }
+
+:DSGFR_4 "DSGFR " "4" "," RRE_R2 is RRE_OP=0xB91D & RRE_R1=4 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = r5;
+        sdiv64_exc(q, r, dvd, dvs, r5, r4);
+        r4 = r;
+        r5 = q;
+    }
+
+:DSGFR_6 "DSGFR " "6" "," RRE_R2 is RRE_OP=0xB91D & RRE_R1=6 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = r7;
+        sdiv64_exc(q, r, dvd, dvs, r7, r6);
+        r6 = r;
+        r7 = q;
+    }
+
+:DSGFR_8 "DSGFR " "8" "," RRE_R2 is RRE_OP=0xB91D & RRE_R1=8 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = r9;
+        sdiv64_exc(q, r, dvd, dvs, r9, r8);
+        r8 = r;
+        r9 = q;
+    }
+
+:DSGFR_10 "DSGFR " "10" "," RRE_R2 is RRE_OP=0xB91D & RRE_R1=10 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = r11;
+        sdiv64_exc(q, r, dvd, dvs, r11, r10);
+        r10 = r;
+        r11 = q;
+    }
+
+:DSGFR_12 "DSGFR " "12" "," RRE_R2 is RRE_OP=0xB91D & RRE_R1=12 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = r13;
+        sdiv64_exc(q, r, dvd, dvs, r13, r12);
+        r12 = r;
+        r13 = q;
+    }
+
+:DSGFR_14 "DSGFR " "14" "," RRE_R2 is RRE_OP=0xB91D & RRE_R1=14 & RRE_R2
+    {
+        local dvd:8; local dvs:8; local q:8; local r:8;
+        dvs = RRE_R2 & 0xffffffff;
+        sx32(dvs, dvs);
+        dvd = r15;
+        sdiv64_exc(q, r, dvd, dvs, r15, r14);
+        r14 = r;
+        r15 = q;
+    }
+
+:DSGFR_odd "DSGFR " RRE_R1 "," RRE_R2 is RRE_OP=0xB91D & RRE_R1 & RRE_R2
+    {
+        # R1 is odd: the hardware raises a specification exception
+        # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
+    }

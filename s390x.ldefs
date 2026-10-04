@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language_definitions>
+  <language processor="s390x" endian="big" size="64" variant="default" version="1.0"
+            slafile="s390x.sla" processorspec="s390x.pspec" id="s390x:BE:64:default">
+    <description>IBM z/Architecture (s390x) 64-bit big-endian</description>
+    <compiler name="default" spec="s390x.cspec" id="default"/>
+    <compiler name="zos" spec="s390x-zos.cspec" id="zos"/>
+    <compiler name="zos_xplink" spec="s390x-xplink.cspec" id="zos_xplink"/>
+  </language>
+</language_definitions>

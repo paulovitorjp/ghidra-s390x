@@ -1,0 +1,1143 @@
+[
+  {
+    "bytes_hex": "fc3222345678",
+    "capstone_mnemonic": "mp",
+    "capstone_op_str": "0x234(4, %r2), 0x678(3, %r5)",
+    "category": "ssc",
+    "notes": "MP real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "fd3222345678",
+    "capstone_mnemonic": "dp",
+    "capstone_op_str": "0x234(4, %r2), 0x678(3, %r5)",
+    "category": "ssc",
+    "notes": "DP real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "b2a50004",
+    "capstone_mnemonic": "tre",
+    "capstone_op_str": "%r0, %r4",
+    "category": "rre",
+    "notes": "TRE real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e00f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r0, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e10f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r1 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e20f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r2, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e30f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r3, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r3 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e40f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r4, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e50f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r5, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r5 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e60f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r6, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e70f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r7, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r7 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e80f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r8, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4e90f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r9, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r9 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4ea0f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r10, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4eb0f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r11, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r11 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4ec0f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r12, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4ed0f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r13, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r13 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4ee0f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r14, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4ef0f000",
+    "capstone_mnemonic": "cvd",
+    "capstone_op_str": "%r15, 0(%r15)",
+    "category": "rx",
+    "notes": "CVD r15 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f00f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r0, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f10f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r1, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r1 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f20f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r2, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f30f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r3, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r3 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f40f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r4, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f50f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r5, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r5 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f60f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r6, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f70f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r7, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r7 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f80f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r8, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4f90f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r9, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r9 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4fa0f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r10, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4fb0f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r11, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r11 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4fc0f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r12, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4fd0f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r13, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r13 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4fe0f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r14, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "4ff0f000",
+    "capstone_mnemonic": "cvb",
+    "capstone_op_str": "%r15, 0(%r15)",
+    "category": "rx",
+    "notes": "CVB r15 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e00",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r0",
+    "category": "rr",
+    "notes": "MVCL r0,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e02",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r2",
+    "category": "rr",
+    "notes": "MVCL r0,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e04",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r4",
+    "category": "rr",
+    "notes": "MVCL r0,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e06",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r6",
+    "category": "rr",
+    "notes": "MVCL r0,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e08",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r8",
+    "category": "rr",
+    "notes": "MVCL r0,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e0a",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r10",
+    "category": "rr",
+    "notes": "MVCL r0,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e0c",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r12",
+    "category": "rr",
+    "notes": "MVCL r0,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e0e",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r0, %r14",
+    "category": "rr",
+    "notes": "MVCL r0,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e20",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r2, %r0",
+    "category": "rr",
+    "notes": "MVCL r2,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e22",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r2, %r2",
+    "category": "rr",
+    "notes": "MVCL r2,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e24",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r2, %r4",
+    "category": "rr",
+    "notes": "MVCL r2,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e26",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r2, %r6",
+    "category": "rr",
+    "notes": "MVCL r2,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e28",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r2, %r8",
+    "category": "rr",
+    "notes": "MVCL r2,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e2a",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r2, %r10",
+    "category": "rr",
+    "notes": "MVCL r2,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e2c",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r2, %r12",
+    "category": "rr",
+    "notes": "MVCL r2,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e2e",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r2, %r14",
+    "category": "rr",
+    "notes": "MVCL r2,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e40",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r4, %r0",
+    "category": "rr",
+    "notes": "MVCL r4,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e42",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r4, %r2",
+    "category": "rr",
+    "notes": "MVCL r4,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e44",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r4, %r4",
+    "category": "rr",
+    "notes": "MVCL r4,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e46",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r4, %r6",
+    "category": "rr",
+    "notes": "MVCL r4,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e48",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r4, %r8",
+    "category": "rr",
+    "notes": "MVCL r4,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e4a",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r4, %r10",
+    "category": "rr",
+    "notes": "MVCL r4,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e4c",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r4, %r12",
+    "category": "rr",
+    "notes": "MVCL r4,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e4e",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r4, %r14",
+    "category": "rr",
+    "notes": "MVCL r4,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e60",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r6, %r0",
+    "category": "rr",
+    "notes": "MVCL r6,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e62",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r6, %r2",
+    "category": "rr",
+    "notes": "MVCL r6,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e64",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r6, %r4",
+    "category": "rr",
+    "notes": "MVCL r6,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e66",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r6, %r6",
+    "category": "rr",
+    "notes": "MVCL r6,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e68",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r6, %r8",
+    "category": "rr",
+    "notes": "MVCL r6,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e6a",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r6, %r10",
+    "category": "rr",
+    "notes": "MVCL r6,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e6c",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r6, %r12",
+    "category": "rr",
+    "notes": "MVCL r6,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e6e",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r6, %r14",
+    "category": "rr",
+    "notes": "MVCL r6,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e80",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r8, %r0",
+    "category": "rr",
+    "notes": "MVCL r8,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e82",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r8, %r2",
+    "category": "rr",
+    "notes": "MVCL r8,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e84",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r8, %r4",
+    "category": "rr",
+    "notes": "MVCL r8,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e86",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r8, %r6",
+    "category": "rr",
+    "notes": "MVCL r8,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e88",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r8, %r8",
+    "category": "rr",
+    "notes": "MVCL r8,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e8a",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r8, %r10",
+    "category": "rr",
+    "notes": "MVCL r8,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e8c",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r8, %r12",
+    "category": "rr",
+    "notes": "MVCL r8,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0e8e",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r8, %r14",
+    "category": "rr",
+    "notes": "MVCL r8,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ea0",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r10, %r0",
+    "category": "rr",
+    "notes": "MVCL r10,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ea2",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r10, %r2",
+    "category": "rr",
+    "notes": "MVCL r10,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ea4",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r10, %r4",
+    "category": "rr",
+    "notes": "MVCL r10,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ea6",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r10, %r6",
+    "category": "rr",
+    "notes": "MVCL r10,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ea8",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r10, %r8",
+    "category": "rr",
+    "notes": "MVCL r10,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0eaa",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r10, %r10",
+    "category": "rr",
+    "notes": "MVCL r10,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0eac",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r10, %r12",
+    "category": "rr",
+    "notes": "MVCL r10,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0eae",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r10, %r14",
+    "category": "rr",
+    "notes": "MVCL r10,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ec0",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r12, %r0",
+    "category": "rr",
+    "notes": "MVCL r12,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ec2",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r12, %r2",
+    "category": "rr",
+    "notes": "MVCL r12,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ec4",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r12, %r4",
+    "category": "rr",
+    "notes": "MVCL r12,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ec6",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r12, %r6",
+    "category": "rr",
+    "notes": "MVCL r12,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ec8",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r12, %r8",
+    "category": "rr",
+    "notes": "MVCL r12,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0eca",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r12, %r10",
+    "category": "rr",
+    "notes": "MVCL r12,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ecc",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r12, %r12",
+    "category": "rr",
+    "notes": "MVCL r12,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ece",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r12, %r14",
+    "category": "rr",
+    "notes": "MVCL r12,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ee0",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r14, %r0",
+    "category": "rr",
+    "notes": "MVCL r14,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ee2",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r14, %r2",
+    "category": "rr",
+    "notes": "MVCL r14,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ee4",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r14, %r4",
+    "category": "rr",
+    "notes": "MVCL r14,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ee6",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r14, %r6",
+    "category": "rr",
+    "notes": "MVCL r14,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0ee8",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r14, %r8",
+    "category": "rr",
+    "notes": "MVCL r14,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0eea",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r14, %r10",
+    "category": "rr",
+    "notes": "MVCL r14,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0eec",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r14, %r12",
+    "category": "rr",
+    "notes": "MVCL r14,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0eee",
+    "capstone_mnemonic": "mvcl",
+    "capstone_op_str": "%r14, %r14",
+    "category": "rr",
+    "notes": "MVCL r14,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f00",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r0",
+    "category": "rr",
+    "notes": "CLCL r0,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f02",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r2",
+    "category": "rr",
+    "notes": "CLCL r0,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f04",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r4",
+    "category": "rr",
+    "notes": "CLCL r0,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f06",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r6",
+    "category": "rr",
+    "notes": "CLCL r0,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f08",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r8",
+    "category": "rr",
+    "notes": "CLCL r0,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f0a",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r10",
+    "category": "rr",
+    "notes": "CLCL r0,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f0c",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r12",
+    "category": "rr",
+    "notes": "CLCL r0,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f0e",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r0, %r14",
+    "category": "rr",
+    "notes": "CLCL r0,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f20",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r2, %r0",
+    "category": "rr",
+    "notes": "CLCL r2,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f22",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r2, %r2",
+    "category": "rr",
+    "notes": "CLCL r2,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f24",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r2, %r4",
+    "category": "rr",
+    "notes": "CLCL r2,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f26",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r2, %r6",
+    "category": "rr",
+    "notes": "CLCL r2,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f28",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r2, %r8",
+    "category": "rr",
+    "notes": "CLCL r2,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f2a",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r2, %r10",
+    "category": "rr",
+    "notes": "CLCL r2,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f2c",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r2, %r12",
+    "category": "rr",
+    "notes": "CLCL r2,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f2e",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r2, %r14",
+    "category": "rr",
+    "notes": "CLCL r2,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f40",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r4, %r0",
+    "category": "rr",
+    "notes": "CLCL r4,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f42",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r4, %r2",
+    "category": "rr",
+    "notes": "CLCL r4,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f44",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r4, %r4",
+    "category": "rr",
+    "notes": "CLCL r4,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f46",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r4, %r6",
+    "category": "rr",
+    "notes": "CLCL r4,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f48",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r4, %r8",
+    "category": "rr",
+    "notes": "CLCL r4,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f4a",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r4, %r10",
+    "category": "rr",
+    "notes": "CLCL r4,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f4c",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r4, %r12",
+    "category": "rr",
+    "notes": "CLCL r4,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f4e",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r4, %r14",
+    "category": "rr",
+    "notes": "CLCL r4,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f60",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r6, %r0",
+    "category": "rr",
+    "notes": "CLCL r6,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f62",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r6, %r2",
+    "category": "rr",
+    "notes": "CLCL r6,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f64",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r6, %r4",
+    "category": "rr",
+    "notes": "CLCL r6,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f66",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r6, %r6",
+    "category": "rr",
+    "notes": "CLCL r6,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f68",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r6, %r8",
+    "category": "rr",
+    "notes": "CLCL r6,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f6a",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r6, %r10",
+    "category": "rr",
+    "notes": "CLCL r6,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f6c",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r6, %r12",
+    "category": "rr",
+    "notes": "CLCL r6,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f6e",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r6, %r14",
+    "category": "rr",
+    "notes": "CLCL r6,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f80",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r8, %r0",
+    "category": "rr",
+    "notes": "CLCL r8,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f82",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r8, %r2",
+    "category": "rr",
+    "notes": "CLCL r8,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f84",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r8, %r4",
+    "category": "rr",
+    "notes": "CLCL r8,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f86",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r8, %r6",
+    "category": "rr",
+    "notes": "CLCL r8,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f88",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r8, %r8",
+    "category": "rr",
+    "notes": "CLCL r8,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f8a",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r8, %r10",
+    "category": "rr",
+    "notes": "CLCL r8,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f8c",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r8, %r12",
+    "category": "rr",
+    "notes": "CLCL r8,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0f8e",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r8, %r14",
+    "category": "rr",
+    "notes": "CLCL r8,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fa0",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r10, %r0",
+    "category": "rr",
+    "notes": "CLCL r10,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fa2",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r10, %r2",
+    "category": "rr",
+    "notes": "CLCL r10,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fa4",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r10, %r4",
+    "category": "rr",
+    "notes": "CLCL r10,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fa6",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r10, %r6",
+    "category": "rr",
+    "notes": "CLCL r10,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fa8",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r10, %r8",
+    "category": "rr",
+    "notes": "CLCL r10,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0faa",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r10, %r10",
+    "category": "rr",
+    "notes": "CLCL r10,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fac",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r10, %r12",
+    "category": "rr",
+    "notes": "CLCL r10,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fae",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r10, %r14",
+    "category": "rr",
+    "notes": "CLCL r10,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fc0",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r12, %r0",
+    "category": "rr",
+    "notes": "CLCL r12,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fc2",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r12, %r2",
+    "category": "rr",
+    "notes": "CLCL r12,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fc4",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r12, %r4",
+    "category": "rr",
+    "notes": "CLCL r12,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fc6",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r12, %r6",
+    "category": "rr",
+    "notes": "CLCL r12,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fc8",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r12, %r8",
+    "category": "rr",
+    "notes": "CLCL r12,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fca",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r12, %r10",
+    "category": "rr",
+    "notes": "CLCL r12,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fcc",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r12, %r12",
+    "category": "rr",
+    "notes": "CLCL r12,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fce",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r12, %r14",
+    "category": "rr",
+    "notes": "CLCL r12,r14 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fe0",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r14, %r0",
+    "category": "rr",
+    "notes": "CLCL r14,r0 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fe2",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r14, %r2",
+    "category": "rr",
+    "notes": "CLCL r14,r2 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fe4",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r14, %r4",
+    "category": "rr",
+    "notes": "CLCL r14,r4 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fe6",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r14, %r6",
+    "category": "rr",
+    "notes": "CLCL r14,r6 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fe8",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r14, %r8",
+    "category": "rr",
+    "notes": "CLCL r14,r8 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fea",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r14, %r10",
+    "category": "rr",
+    "notes": "CLCL r14,r10 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fec",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r14, %r12",
+    "category": "rr",
+    "notes": "CLCL r14,r12 real p-code (dec2)"
+  },
+  {
+    "bytes_hex": "0fee",
+    "capstone_mnemonic": "clcl",
+    "capstone_op_str": "%r14, %r14",
+    "category": "rr",
+    "notes": "CLCL r14,r14 real p-code (dec2)"
+  }
+]

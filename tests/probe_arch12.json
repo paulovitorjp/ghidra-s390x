@@ -1,0 +1,18 @@
+{
+ "job": "TASM0099",
+ "jobid": null,
+ "listdsn": "MUSE.ASM.LIST99",
+ "labels": {
+  "T0001": "1A12",
+  "T0002": "E71230100006",
+  "T0003": "B3D23012",
+  "T0004": "000000000000",
+  "T0005": "E71200000056",
+  "T0006": "A7F40002"
+ },
+ "errors": [
+  "** AS MA175S Delimiter error, expected comma -"
+ ],
+ "missing": [],
+ "found_count": 6
+}

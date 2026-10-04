@@ -1,0 +1,282 @@
+[
+  {
+    "bytes_hex": "4700c000",
+    "capstone_mnemonic": "bc",
+    "capstone_op_str": "0, 0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 0: never branches; Capstone prints the mask operand"
+  },
+  {
+    "bytes_hex": "4710c000",
+    "capstone_mnemonic": "bo",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 1: branch on overflow"
+  },
+  {
+    "bytes_hex": "4720c000",
+    "capstone_mnemonic": "bh",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 2: branch on high"
+  },
+  {
+    "bytes_hex": "4730c000",
+    "capstone_mnemonic": "bnle",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 3"
+  },
+  {
+    "bytes_hex": "4740c000",
+    "capstone_mnemonic": "bl",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 4: branch on low"
+  },
+  {
+    "bytes_hex": "4750c000",
+    "capstone_mnemonic": "bnhe",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 5"
+  },
+  {
+    "bytes_hex": "4760c000",
+    "capstone_mnemonic": "blh",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 6"
+  },
+  {
+    "bytes_hex": "4770c000",
+    "capstone_mnemonic": "bne",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 7"
+  },
+  {
+    "bytes_hex": "4780c000",
+    "capstone_mnemonic": "be",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 8: branch on equal"
+  },
+  {
+    "bytes_hex": "4790c000",
+    "capstone_mnemonic": "bnlh",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 9"
+  },
+  {
+    "bytes_hex": "47a0c000",
+    "capstone_mnemonic": "bhe",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 10"
+  },
+  {
+    "bytes_hex": "47b0c000",
+    "capstone_mnemonic": "bnl",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 11"
+  },
+  {
+    "bytes_hex": "47c0c000",
+    "capstone_mnemonic": "ble",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 12"
+  },
+  {
+    "bytes_hex": "47d0c000",
+    "capstone_mnemonic": "bnh",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 13"
+  },
+  {
+    "bytes_hex": "47e0c000",
+    "capstone_mnemonic": "bno",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 14"
+  },
+  {
+    "bytes_hex": "47f0c000",
+    "capstone_mnemonic": "b",
+    "capstone_op_str": "0(%r12)",
+    "category": "branch",
+    "notes": "BC mask 15: unconditional"
+  },
+  {
+    "bytes_hex": "47f1c010",
+    "capstone_mnemonic": "b",
+    "capstone_op_str": "0x10(%r1, %r12)",
+    "category": "branch",
+    "notes": "BC with index register and nonzero displacement"
+  },
+  {
+    "bytes_hex": "4610c100",
+    "capstone_mnemonic": "bct",
+    "capstone_op_str": "%r1, 0x100(%r12)",
+    "category": "branch",
+    "notes": "BCT: 32-bit count, RX EA"
+  },
+  {
+    "bytes_hex": "e310c0080046",
+    "capstone_mnemonic": "bctg",
+    "capstone_op_str": "%r1, 8(%r12)",
+    "category": "branch",
+    "notes": "BCTG: 64-bit count, RXY EA, DH2=0"
+  },
+  {
+    "bytes_hex": "0612",
+    "capstone_mnemonic": "bctr",
+    "capstone_op_str": "%r1, %r2",
+    "category": "branch",
+    "notes": "BCTR: R2 field != 0 (branching form)"
+  },
+  {
+    "bytes_hex": "0601",
+    "capstone_mnemonic": "bctr",
+    "capstone_op_str": "%r0, %r1",
+    "category": "branch",
+    "notes": "BCTR: R1=0 still decrements r0 (no R1=0 exception per PoP)"
+  },
+  {
+    "bytes_hex": "0600",
+    "capstone_mnemonic": "bctr",
+    "capstone_op_str": "%r0, %r0",
+    "category": "branch",
+    "notes": "BCTR: R2 field = 0 -> count without branching"
+  },
+  {
+    "bytes_hex": "b9460012",
+    "capstone_mnemonic": "bctgr",
+    "capstone_op_str": "%r1, %r2",
+    "category": "branch",
+    "notes": "BCTGR: R2 field != 0 (branching form)"
+  },
+  {
+    "bytes_hex": "b9460000",
+    "capstone_mnemonic": "bctgr",
+    "capstone_op_str": "%r0, %r0",
+    "category": "branch",
+    "notes": "BCTGR: R2 field = 0 -> count without branching"
+  },
+  {
+    "bytes_hex": "a7160004",
+    "capstone_mnemonic": "brct",
+    "capstone_op_str": "%r1, 8",
+    "category": "branch",
+    "notes": "BRCT: forward, RI2=4 -> target 8 at pc 0"
+  },
+  {
+    "bytes_hex": "a716fffe",
+    "capstone_mnemonic": "brct",
+    "capstone_op_str": "%r1, -4",
+    "category": "branch",
+    "notes": "BRCT: backward, RI2=-2 -> target -4 at pc 0"
+  },
+  {
+    "bytes_hex": "a7270004",
+    "capstone_mnemonic": "brctg",
+    "capstone_op_str": "%r2, 8",
+    "category": "branch",
+    "notes": "BRCTG: forward, 64-bit count"
+  },
+  {
+    "bytes_hex": "a727fffe",
+    "capstone_mnemonic": "brctg",
+    "capstone_op_str": "%r2, -4",
+    "category": "branch",
+    "notes": "BRCTG: backward, 64-bit count"
+  },
+  {
+    "bytes_hex": "8612c000",
+    "capstone_mnemonic": "bxh",
+    "capstone_op_str": "%r1, %r2, 0(%r12)",
+    "category": "branch",
+    "notes": "BXH: R3=2 (even) -> increment r2, compare r3"
+  },
+  {
+    "bytes_hex": "8614c000",
+    "capstone_mnemonic": "bxh",
+    "capstone_op_str": "%r1, %r4, 0(%r12)",
+    "category": "branch",
+    "notes": "BXH: R3=4 (even) -> increment r4, compare r5"
+  },
+  {
+    "bytes_hex": "8615c000",
+    "capstone_mnemonic": "bxh",
+    "capstone_op_str": "%r1, %r5, 0(%r12)",
+    "category": "branch",
+    "notes": "BXH: R3=5 (odd) -> r5 is both increment and compare"
+  },
+  {
+    "bytes_hex": "8712c000",
+    "capstone_mnemonic": "bxle",
+    "capstone_op_str": "%r1, %r2, 0(%r12)",
+    "category": "branch",
+    "notes": "BXLE: 32-bit low-or-equal"
+  },
+  {
+    "bytes_hex": "eb12c0000044",
+    "capstone_mnemonic": "bxhg",
+    "capstone_op_str": "%r1, %r2, 0(%r12)",
+    "category": "branch",
+    "notes": "BXHG: 64-bit, RSY EA"
+  },
+  {
+    "bytes_hex": "eb12c0000045",
+    "capstone_mnemonic": "bxleg",
+    "capstone_op_str": "%r1, %r2, 0(%r12)",
+    "category": "branch",
+    "notes": "BXLEG: 64-bit low-or-equal"
+  },
+  {
+    "bytes_hex": "8412fffe",
+    "capstone_mnemonic": "brxh",
+    "capstone_op_str": "%r1, %r2, -4",
+    "category": "branch",
+    "notes": "BRXH: backward, RSI relative"
+  },
+  {
+    "bytes_hex": "84120004",
+    "capstone_mnemonic": "brxh",
+    "capstone_op_str": "%r1, %r2, 8",
+    "category": "branch",
+    "notes": "BRXH: forward, RSI relative"
+  },
+  {
+    "bytes_hex": "8512fffe",
+    "capstone_mnemonic": "brxle",
+    "capstone_op_str": "%r1, %r2, -4",
+    "category": "branch",
+    "notes": "BRXLE: backward, low-or-equal"
+  },
+  {
+    "bytes_hex": "ec12fffe0044",
+    "capstone_mnemonic": "brxhg",
+    "capstone_op_str": "%r1, %r2, -4",
+    "category": "branch",
+    "notes": "BRXHG: backward, RIEe relative, 64-bit"
+  },
+  {
+    "bytes_hex": "ec1200040044",
+    "capstone_mnemonic": "brxhg",
+    "capstone_op_str": "%r1, %r2, 8",
+    "category": "branch",
+    "notes": "BRXHG: forward, RIEe relative"
+  },
+  {
+    "bytes_hex": "ec12fffe0045",
+    "capstone_mnemonic": "brxlg",
+    "capstone_op_str": "%r1, %r2, -4",
+    "category": "branch",
+    "notes": "BRXLG: backward, low-or-equal, 64-bit"
+  }
+]

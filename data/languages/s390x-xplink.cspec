@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- s390x-xplink.cspec - z/OS Language Environment XPLINK calling
+     convention for z/Architecture, 64-bit (AMODE64).
+
+     This is the "zos_xplink" compiler variant of the s390x language. It
+     models XPLINK (Extra Performance Linkage) as used by z/OS XL C/C++
+     and by HLASM routines built with the EDCXPRLG/EDCXEPLG macros, as
+     opposed to the classic non-XPLINK OS linkage in s390x-zos.cspec
+     ("zos") and the Linux s390x ABI in s390x.cspec ("default").
+
+     Conventions modeled (64-bit / AMODE64). Sources:
+       * IBM z/OS V2R1 Language Environment Programming Guide,
+         "Using XPLINK", Table 7 "Comparing non-XPLINK and XPLINK
+         register conventions" (stack pointer R4 biased, return address
+         R7, entry point R6, environment R5, CAA R12, parm list at fixed
+         offset 64/x'40' in the caller's stack frame with the first
+         three words in R1-R3 and FP values in FPR0,2,4,6, return code
+         in R3 with extended value in R1,R2).
+       * IBM z/OS XL C/C++ Programming Guide, "XPLINK register
+         conventions" (same table; notes the 2K bias on R4, i.e. the
+         parm area is at 2112/x'840' off the biased R4).
+       * IBM "XPLINK Assembler" (ibm.com/docs), "Comparison of
+         non-XPLINK and XPLINK register conventions" (where caller's
+         registers are saved: R0 not saved/not preserved, R1-R3 not
+         saved/not preserved, R4 not saved but recalculated (or saved
+         and restored), R5 not saved/not preserved, R6 saved in
+         callee's stack frame but NOT restored, R7-R15 saved in
+         callee's stack frame with R7 "not guaranteed to be restored").
+       * eclipse-omr doc/diagnostics/CallingConventions.md (z/OS
+         section): corroborates R1-R3/F0,F2,F4,F6 params, R3 scalar
+         return (AMODE64), F0 FP return, callee-preserved R6-R8..R15
+         and F8-F15, and notes R4 "is not saved by the callee in
+         storage... recalculated on callee return. So from the caller's
+         POV, it's a preserved register".
+
+     Register roles:
+       * R4 = stack pointer (biased: R4 = address of the current stack
+         frame / DSA minus 2048). The stack grows toward lower
+         addresses; the callee's frame starts at caller_R4 - DSA_size.
+         NOTE for decompiler output: because of the 2K bias, stack
+         offsets are relative to the biased R4, so the outgoing
+         parameter area appears at offset 2112 (0x840) = 64 + 2048,
+         matching the unbiased 64/x'40' frame offset in the IBM tables.
+       * R7 = return address (BASR R7,R6 target register).
+       * R6 = entry-point address on entry (not guaranteed: a routine
+         may be called via branch-relative, leaving R6 undefined).
+       * R5 = environment pointer (XPLINK counterpart of the
+         non-XPLINK R0 writable-static anchor). Volatile.
+       * R12 = CAA (common anchor area) address; preserved.
+       * R13-R15 have no special XPLINK role; callee-saved.
+     Parameter passing:
+       * First three integer/pointer words in R1, R2, R3.
+       * Floating-point values in F0, F2, F4, F6.
+       * Remaining arguments in the caller's stack frame starting at
+         fixed offset 64 (0x40) unbiased, i.e. 2112 (0x840) off the
+         biased R4, 8 bytes per slot in AMODE64.
+     Return values (AMODE64):
+       * Integer/pointer scalars in R3; floating-point in F0.
+       * Aggregates / packed decimal are left-adjusted starting in R1
+         (may also occupy R2, R3). Only the R3 scalar and F0 float
+         returns are modeled as prototype outputs; multi-register
+         aggregate returns need a manual prototype override.
+     Callee-saved (unaffected): R4 (recalculated), R8-R15, F8-F15.
+     Killed by calls: R0-R3 (params/scratch), R5 (environment), R6, R7,
+     F0-F7.
+       NOTE on R6/R7: IBM's XPLINK Assembler doc says R6 is "saved in
+       callee's stack frame, not restored" and R7 "is not guaranteed to
+       be restored". eclipse-omr instead marks both callee-preserved.
+       The conservative (sound for decompilation) choice is to treat
+       both as killed: a non-leaf callee may leave a stale value.
+     Not modeled: vector registers (V0-V31 upper halves / V16-V31) are
+     treated as killed by calls; long-double (16-byte) FP args may span
+     FPR pairs, which the decompiler resolves from the data types.
+
+     Data sizes follow z/OS 64-bit C (same as s390x-zos.cspec): int and
+     long are 4 bytes even in 64-bit mode (unlike LP64), long long and
+     pointers are 8 bytes, wchar_t is 2 bytes (UTF-16), long double is
+     16 bytes. -->
+<compiler_spec>
+
+  <data_organization>
+    <absolute_max_alignment value="16"/>
+    <machine_alignment value="8"/>
+    <default_alignment value="1"/>
+    <default_pointer_alignment value="8"/>
+    <pointer_size value="8"/>
+    <wchar_size value="2"/>
+    <short_size value="2"/>
+    <integer_size value="4"/>
+    <long_size value="4"/>
+    <long_long_size value="8"/>
+    <float_size value="4"/>
+    <double_size value="8"/>
+    <long_double_size value="16"/>
+    <size_alignment_map>
+      <entry size="1" alignment="1"/>
+      <entry size="4" alignment="4"/>
+      <entry size="8" alignment="8"/>
+      <entry size="16" alignment="8"/>
+    </size_alignment_map>
+  </data_organization>
+
+  <!-- R4 = biased stack pointer (frame address - 2048), stack grows down -->
+  <stackpointer register="r4" space="ram"/>
+
+  <returnaddress>
+    <register name="r7"/>
+  </returnaddress>
+
+  <global>
+    <range space="ram"/>
+  </global>
+
+  <default_proto>
+    <prototype name="default" extrapop="unknown" stackshift="0">
+      <input>
+        <!-- floating-point args in F0, F2, F4, F6.
+             NOTE: float-class pentries must precede general-class
+             pentries ("parameter list entries must be ordered by
+             storage class"), and maxsize must not exceed the 8-byte
+             FPR storage ("<pentry> maxsize is bigger than memory
+             range"). -->
+        <pentry minsize="4" maxsize="8" metatype="float">
+          <register name="f0"/>
+        </pentry>
+        <pentry minsize="4" maxsize="8" metatype="float">
+          <register name="f2"/>
+        </pentry>
+        <pentry minsize="4" maxsize="8" metatype="float">
+          <register name="f4"/>
+        </pentry>
+        <pentry minsize="4" maxsize="8" metatype="float">
+          <register name="f6"/>
+        </pentry>
+        <!-- first three integer/pointer words in R1-R3 -->
+        <pentry minsize="1" maxsize="8">
+          <register name="r1"/>
+        </pentry>
+        <pentry minsize="1" maxsize="8">
+          <register name="r2"/>
+        </pentry>
+        <pentry minsize="1" maxsize="8">
+          <register name="r3"/>
+        </pentry>
+        <!-- remaining args in the caller's frame at fixed offset 64
+             unbiased = 2112 off the biased R4, 8 bytes per slot -->
+        <pentry minsize="1" maxsize="800" align="8">
+          <addr offset="2112" space="stack"/>
+        </pentry>
+      </input>
+      <output>
+        <!-- floating-point return in F0 (float class first, maxsize 8) -->
+        <pentry minsize="4" maxsize="8" metatype="float">
+          <register name="f0"/>
+        </pentry>
+        <!-- integer/pointer scalar return in R3 (AMODE64) -->
+        <pentry minsize="1" maxsize="8">
+          <register name="r3"/>
+        </pentry>
+      </output>
+      <unaffected>
+        <!-- R4 recalculated by the callee; preserved from caller's POV -->
+        <register name="r4"/>
+        <register name="r8"/>
+        <register name="r9"/>
+        <register name="r10"/>
+        <register name="r11"/>
+        <register name="r12"/>
+        <register name="r13"/>
+        <register name="r14"/>
+        <register name="r15"/>
+        <register name="f8"/>
+        <register name="f9"/>
+        <register name="f10"/>
+        <register name="f11"/>
+        <register name="f12"/>
+        <register name="f13"/>
+        <register name="f14"/>
+        <register name="f15"/>
+      </unaffected>
+    </prototype>
+  </default_proto>
+
+</compiler_spec>

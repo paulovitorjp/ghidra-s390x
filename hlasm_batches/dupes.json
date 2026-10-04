@@ -1,0 +1,37 @@
+[
+ {
+  "spec_mnemonic": "br",
+  "hlasm_mnemonic": "BR",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": null
+ },
+ {
+  "spec_mnemonic": "br_nop",
+  "hlasm_mnemonic": "BR",
+  "operands": "2",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": null
+ },
+ {
+  "spec_mnemonic": "jlnl",
+  "hlasm_mnemonic": "BRC",
+  "operands": "11,BT1",
+  "srcfile": "s390x_branch.sinc",
+  "rewrite_note": "JLNL->BRC mask=11"
+ },
+ {
+  "spec_mnemonic": "bctr_nobr",
+  "hlasm_mnemonic": "BCTR",
+  "operands": "1,2",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": null
+ },
+ {
+  "spec_mnemonic": "bctgr_nobr",
+  "hlasm_mnemonic": "BCTGR",
+  "operands": "1,2",
+  "srcfile": "s390x_branch2.sinc",
+  "rewrite_note": null
+ }
+]

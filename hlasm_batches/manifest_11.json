@@ -1,0 +1,2102 @@
+{
+ "T4001": {
+  "spec_mnemonic": "STMH_11_8",
+  "hlasm_mnemonic": "STMH",
+  "operands": "11,8,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4002": {
+  "spec_mnemonic": "STMH_11_9",
+  "hlasm_mnemonic": "STMH",
+  "operands": "11,9,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4003": {
+  "spec_mnemonic": "STMH_11_10",
+  "hlasm_mnemonic": "STMH",
+  "operands": "11,10,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4004": {
+  "spec_mnemonic": "STMH_11_11",
+  "hlasm_mnemonic": "STMH",
+  "operands": "11,11,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4005": {
+  "spec_mnemonic": "STMH_11_12",
+  "hlasm_mnemonic": "STMH",
+  "operands": "11,12,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4006": {
+  "spec_mnemonic": "STMH_11_13",
+  "hlasm_mnemonic": "STMH",
+  "operands": "11,13,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4007": {
+  "spec_mnemonic": "STMH_11_14",
+  "hlasm_mnemonic": "STMH",
+  "operands": "11,14,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4008": {
+  "spec_mnemonic": "STMH_11_15",
+  "hlasm_mnemonic": "STMH",
+  "operands": "11,15,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4009": {
+  "spec_mnemonic": "STMH_12_0",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,0,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4010": {
+  "spec_mnemonic": "STMH_12_1",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,1,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4011": {
+  "spec_mnemonic": "STMH_12_2",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,2,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4012": {
+  "spec_mnemonic": "STMH_12_3",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,3,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4013": {
+  "spec_mnemonic": "STMH_12_4",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,4,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4014": {
+  "spec_mnemonic": "STMH_12_5",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,5,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4015": {
+  "spec_mnemonic": "STMH_12_6",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,6,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4016": {
+  "spec_mnemonic": "STMH_12_7",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,7,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4017": {
+  "spec_mnemonic": "STMH_12_8",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,8,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4018": {
+  "spec_mnemonic": "STMH_12_9",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,9,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4019": {
+  "spec_mnemonic": "STMH_12_10",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,10,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4020": {
+  "spec_mnemonic": "STMH_12_11",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,11,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4021": {
+  "spec_mnemonic": "STMH_12_12",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,12,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4022": {
+  "spec_mnemonic": "STMH_12_13",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,13,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4023": {
+  "spec_mnemonic": "STMH_12_14",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,14,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4024": {
+  "spec_mnemonic": "STMH_12_15",
+  "hlasm_mnemonic": "STMH",
+  "operands": "12,15,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4025": {
+  "spec_mnemonic": "STMH_13_0",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,0,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4026": {
+  "spec_mnemonic": "STMH_13_1",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,1,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4027": {
+  "spec_mnemonic": "STMH_13_2",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,2,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4028": {
+  "spec_mnemonic": "STMH_13_3",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,3,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4029": {
+  "spec_mnemonic": "STMH_13_4",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,4,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4030": {
+  "spec_mnemonic": "STMH_13_5",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,5,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4031": {
+  "spec_mnemonic": "STMH_13_6",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,6,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4032": {
+  "spec_mnemonic": "STMH_13_7",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,7,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4033": {
+  "spec_mnemonic": "STMH_13_8",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,8,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4034": {
+  "spec_mnemonic": "STMH_13_9",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,9,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4035": {
+  "spec_mnemonic": "STMH_13_10",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,10,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4036": {
+  "spec_mnemonic": "STMH_13_11",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,11,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4037": {
+  "spec_mnemonic": "STMH_13_12",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,12,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4038": {
+  "spec_mnemonic": "STMH_13_13",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,13,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4039": {
+  "spec_mnemonic": "STMH_13_14",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,14,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4040": {
+  "spec_mnemonic": "STMH_13_15",
+  "hlasm_mnemonic": "STMH",
+  "operands": "13,15,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4041": {
+  "spec_mnemonic": "STMH_14_0",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,0,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4042": {
+  "spec_mnemonic": "STMH_14_1",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,1,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4043": {
+  "spec_mnemonic": "STMH_14_2",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,2,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4044": {
+  "spec_mnemonic": "STMH_14_3",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,3,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4045": {
+  "spec_mnemonic": "STMH_14_4",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,4,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4046": {
+  "spec_mnemonic": "STMH_14_5",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,5,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4047": {
+  "spec_mnemonic": "STMH_14_6",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,6,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4048": {
+  "spec_mnemonic": "STMH_14_7",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,7,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4049": {
+  "spec_mnemonic": "STMH_14_8",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,8,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4050": {
+  "spec_mnemonic": "STMH_14_9",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,9,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4051": {
+  "spec_mnemonic": "STMH_14_10",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,10,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4052": {
+  "spec_mnemonic": "STMH_14_11",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,11,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4053": {
+  "spec_mnemonic": "STMH_14_12",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,12,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4054": {
+  "spec_mnemonic": "STMH_14_13",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,13,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4055": {
+  "spec_mnemonic": "STMH_14_14",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,14,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4056": {
+  "spec_mnemonic": "STMH_14_15",
+  "hlasm_mnemonic": "STMH",
+  "operands": "14,15,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4057": {
+  "spec_mnemonic": "STMH_15_0",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,0,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4058": {
+  "spec_mnemonic": "STMH_15_1",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,1,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4059": {
+  "spec_mnemonic": "STMH_15_2",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,2,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4060": {
+  "spec_mnemonic": "STMH_15_3",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,3,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4061": {
+  "spec_mnemonic": "STMH_15_4",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,4,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4062": {
+  "spec_mnemonic": "STMH_15_5",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,5,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4063": {
+  "spec_mnemonic": "STMH_15_6",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,6,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4064": {
+  "spec_mnemonic": "STMH_15_7",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,7,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4065": {
+  "spec_mnemonic": "STMH_15_8",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,8,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4066": {
+  "spec_mnemonic": "STMH_15_9",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,9,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4067": {
+  "spec_mnemonic": "STMH_15_10",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,10,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4068": {
+  "spec_mnemonic": "STMH_15_11",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,11,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4069": {
+  "spec_mnemonic": "STMH_15_12",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,12,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4070": {
+  "spec_mnemonic": "STMH_15_13",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,13,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4071": {
+  "spec_mnemonic": "STMH_15_14",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,14,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4072": {
+  "spec_mnemonic": "STMH_15_15",
+  "hlasm_mnemonic": "STMH",
+  "operands": "15,15,74565(3)",
+  "srcfile": "s390x_loadstore_gen.sinc"
+ },
+ "T4073": {
+  "spec_mnemonic": "MH",
+  "hlasm_mnemonic": "MH",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4074": {
+  "spec_mnemonic": "MHY",
+  "hlasm_mnemonic": "MHY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4075": {
+  "spec_mnemonic": "MHI",
+  "hlasm_mnemonic": "MHI",
+  "operands": "1,4660",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4076": {
+  "spec_mnemonic": "MGH",
+  "hlasm_mnemonic": "MGH",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4077": {
+  "spec_mnemonic": "MGHI",
+  "hlasm_mnemonic": "MGHI",
+  "operands": "1,4660",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4078": {
+  "spec_mnemonic": "MS",
+  "hlasm_mnemonic": "MS",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4079": {
+  "spec_mnemonic": "MSY",
+  "hlasm_mnemonic": "MSY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4080": {
+  "spec_mnemonic": "MSR",
+  "hlasm_mnemonic": "MSR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4081": {
+  "spec_mnemonic": "MSFI",
+  "hlasm_mnemonic": "MSFI",
+  "operands": "1,305419896",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4082": {
+  "spec_mnemonic": "MSG",
+  "hlasm_mnemonic": "MSG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4083": {
+  "spec_mnemonic": "MSGR",
+  "hlasm_mnemonic": "MSGR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4084": {
+  "spec_mnemonic": "MSGF",
+  "hlasm_mnemonic": "MSGF",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4085": {
+  "spec_mnemonic": "MSGFR",
+  "hlasm_mnemonic": "MSGFR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4086": {
+  "spec_mnemonic": "MSGFI",
+  "hlasm_mnemonic": "MSGFI",
+  "operands": "1,305419896",
+  "srcfile": "s390x_muldiv.sinc"
+ },
+ "T4087": {
+  "spec_mnemonic": "M_0",
+  "hlasm_mnemonic": "M",
+  "operands": "0,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4088": {
+  "spec_mnemonic": "M_2",
+  "hlasm_mnemonic": "M",
+  "operands": "2,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4089": {
+  "spec_mnemonic": "M_4",
+  "hlasm_mnemonic": "M",
+  "operands": "4,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4090": {
+  "spec_mnemonic": "M_6",
+  "hlasm_mnemonic": "M",
+  "operands": "6,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4091": {
+  "spec_mnemonic": "M_8",
+  "hlasm_mnemonic": "M",
+  "operands": "8,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4092": {
+  "spec_mnemonic": "M_10",
+  "hlasm_mnemonic": "M",
+  "operands": "10,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4093": {
+  "spec_mnemonic": "M_12",
+  "hlasm_mnemonic": "M",
+  "operands": "12,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4094": {
+  "spec_mnemonic": "M_14",
+  "hlasm_mnemonic": "M",
+  "operands": "14,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4095": {
+  "spec_mnemonic": "M_odd",
+  "hlasm_mnemonic": "M",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4096": {
+  "spec_mnemonic": "MFY_0",
+  "hlasm_mnemonic": "MFY",
+  "operands": "0,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4097": {
+  "spec_mnemonic": "MFY_2",
+  "hlasm_mnemonic": "MFY",
+  "operands": "2,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4098": {
+  "spec_mnemonic": "MFY_4",
+  "hlasm_mnemonic": "MFY",
+  "operands": "4,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4099": {
+  "spec_mnemonic": "MFY_6",
+  "hlasm_mnemonic": "MFY",
+  "operands": "6,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4100": {
+  "spec_mnemonic": "MFY_8",
+  "hlasm_mnemonic": "MFY",
+  "operands": "8,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4101": {
+  "spec_mnemonic": "MFY_10",
+  "hlasm_mnemonic": "MFY",
+  "operands": "10,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4102": {
+  "spec_mnemonic": "MFY_12",
+  "hlasm_mnemonic": "MFY",
+  "operands": "12,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4103": {
+  "spec_mnemonic": "MFY_14",
+  "hlasm_mnemonic": "MFY",
+  "operands": "14,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4104": {
+  "spec_mnemonic": "MFY_odd",
+  "hlasm_mnemonic": "MFY",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4105": {
+  "spec_mnemonic": "MR_0",
+  "hlasm_mnemonic": "MR",
+  "operands": "0,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4106": {
+  "spec_mnemonic": "MR_2",
+  "hlasm_mnemonic": "MR",
+  "operands": "2,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4107": {
+  "spec_mnemonic": "MR_4",
+  "hlasm_mnemonic": "MR",
+  "operands": "4,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4108": {
+  "spec_mnemonic": "MR_6",
+  "hlasm_mnemonic": "MR",
+  "operands": "6,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4109": {
+  "spec_mnemonic": "MR_8",
+  "hlasm_mnemonic": "MR",
+  "operands": "8,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4110": {
+  "spec_mnemonic": "MR_10",
+  "hlasm_mnemonic": "MR",
+  "operands": "10,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4111": {
+  "spec_mnemonic": "MR_12",
+  "hlasm_mnemonic": "MR",
+  "operands": "12,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4112": {
+  "spec_mnemonic": "MR_14",
+  "hlasm_mnemonic": "MR",
+  "operands": "14,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4113": {
+  "spec_mnemonic": "MR_odd",
+  "hlasm_mnemonic": "MR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4114": {
+  "spec_mnemonic": "MG_0",
+  "hlasm_mnemonic": "MG",
+  "operands": "0,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4115": {
+  "spec_mnemonic": "MG_2",
+  "hlasm_mnemonic": "MG",
+  "operands": "2,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4116": {
+  "spec_mnemonic": "MG_4",
+  "hlasm_mnemonic": "MG",
+  "operands": "4,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4117": {
+  "spec_mnemonic": "MG_6",
+  "hlasm_mnemonic": "MG",
+  "operands": "6,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4118": {
+  "spec_mnemonic": "MG_8",
+  "hlasm_mnemonic": "MG",
+  "operands": "8,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4119": {
+  "spec_mnemonic": "MG_10",
+  "hlasm_mnemonic": "MG",
+  "operands": "10,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4120": {
+  "spec_mnemonic": "MG_12",
+  "hlasm_mnemonic": "MG",
+  "operands": "12,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4121": {
+  "spec_mnemonic": "MG_14",
+  "hlasm_mnemonic": "MG",
+  "operands": "14,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4122": {
+  "spec_mnemonic": "MG_odd",
+  "hlasm_mnemonic": "MG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4123": {
+  "spec_mnemonic": "ML_0",
+  "hlasm_mnemonic": "ML",
+  "operands": "0,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4124": {
+  "spec_mnemonic": "ML_2",
+  "hlasm_mnemonic": "ML",
+  "operands": "2,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4125": {
+  "spec_mnemonic": "ML_4",
+  "hlasm_mnemonic": "ML",
+  "operands": "4,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4126": {
+  "spec_mnemonic": "ML_6",
+  "hlasm_mnemonic": "ML",
+  "operands": "6,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4127": {
+  "spec_mnemonic": "ML_8",
+  "hlasm_mnemonic": "ML",
+  "operands": "8,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4128": {
+  "spec_mnemonic": "ML_10",
+  "hlasm_mnemonic": "ML",
+  "operands": "10,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4129": {
+  "spec_mnemonic": "ML_12",
+  "hlasm_mnemonic": "ML",
+  "operands": "12,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4130": {
+  "spec_mnemonic": "ML_14",
+  "hlasm_mnemonic": "ML",
+  "operands": "14,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4131": {
+  "spec_mnemonic": "ML_odd",
+  "hlasm_mnemonic": "ML",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4132": {
+  "spec_mnemonic": "MLR_0",
+  "hlasm_mnemonic": "MLR",
+  "operands": "0,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4133": {
+  "spec_mnemonic": "MLR_2",
+  "hlasm_mnemonic": "MLR",
+  "operands": "2,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4134": {
+  "spec_mnemonic": "MLR_4",
+  "hlasm_mnemonic": "MLR",
+  "operands": "4,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4135": {
+  "spec_mnemonic": "MLR_6",
+  "hlasm_mnemonic": "MLR",
+  "operands": "6,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4136": {
+  "spec_mnemonic": "MLR_8",
+  "hlasm_mnemonic": "MLR",
+  "operands": "8,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4137": {
+  "spec_mnemonic": "MLR_10",
+  "hlasm_mnemonic": "MLR",
+  "operands": "10,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4138": {
+  "spec_mnemonic": "MLR_12",
+  "hlasm_mnemonic": "MLR",
+  "operands": "12,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4139": {
+  "spec_mnemonic": "MLR_14",
+  "hlasm_mnemonic": "MLR",
+  "operands": "14,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4140": {
+  "spec_mnemonic": "MLR_odd",
+  "hlasm_mnemonic": "MLR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4141": {
+  "spec_mnemonic": "MLG_0",
+  "hlasm_mnemonic": "MLG",
+  "operands": "0,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4142": {
+  "spec_mnemonic": "MLG_2",
+  "hlasm_mnemonic": "MLG",
+  "operands": "2,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4143": {
+  "spec_mnemonic": "MLG_4",
+  "hlasm_mnemonic": "MLG",
+  "operands": "4,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4144": {
+  "spec_mnemonic": "MLG_6",
+  "hlasm_mnemonic": "MLG",
+  "operands": "6,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4145": {
+  "spec_mnemonic": "MLG_8",
+  "hlasm_mnemonic": "MLG",
+  "operands": "8,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4146": {
+  "spec_mnemonic": "MLG_10",
+  "hlasm_mnemonic": "MLG",
+  "operands": "10,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4147": {
+  "spec_mnemonic": "MLG_12",
+  "hlasm_mnemonic": "MLG",
+  "operands": "12,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4148": {
+  "spec_mnemonic": "MLG_14",
+  "hlasm_mnemonic": "MLG",
+  "operands": "14,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4149": {
+  "spec_mnemonic": "MLG_odd",
+  "hlasm_mnemonic": "MLG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4150": {
+  "spec_mnemonic": "MLGR_0",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "0,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4151": {
+  "spec_mnemonic": "MLGR_2",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "2,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4152": {
+  "spec_mnemonic": "MLGR_4",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "4,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4153": {
+  "spec_mnemonic": "MLGR_6",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "6,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4154": {
+  "spec_mnemonic": "MLGR_8",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "8,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4155": {
+  "spec_mnemonic": "MLGR_10",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "10,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4156": {
+  "spec_mnemonic": "MLGR_12",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "12,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4157": {
+  "spec_mnemonic": "MLGR_14",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "14,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4158": {
+  "spec_mnemonic": "MLGR_odd",
+  "hlasm_mnemonic": "MLGR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4159": {
+  "spec_mnemonic": "D_0",
+  "hlasm_mnemonic": "D",
+  "operands": "0,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4160": {
+  "spec_mnemonic": "D_2",
+  "hlasm_mnemonic": "D",
+  "operands": "2,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4161": {
+  "spec_mnemonic": "D_4",
+  "hlasm_mnemonic": "D",
+  "operands": "4,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4162": {
+  "spec_mnemonic": "D_6",
+  "hlasm_mnemonic": "D",
+  "operands": "6,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4163": {
+  "spec_mnemonic": "D_8",
+  "hlasm_mnemonic": "D",
+  "operands": "8,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4164": {
+  "spec_mnemonic": "D_10",
+  "hlasm_mnemonic": "D",
+  "operands": "10,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4165": {
+  "spec_mnemonic": "D_12",
+  "hlasm_mnemonic": "D",
+  "operands": "12,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4166": {
+  "spec_mnemonic": "D_14",
+  "hlasm_mnemonic": "D",
+  "operands": "14,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4167": {
+  "spec_mnemonic": "D_odd",
+  "hlasm_mnemonic": "D",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4168": {
+  "spec_mnemonic": "DR_0",
+  "hlasm_mnemonic": "DR",
+  "operands": "0,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4169": {
+  "spec_mnemonic": "DR_2",
+  "hlasm_mnemonic": "DR",
+  "operands": "2,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4170": {
+  "spec_mnemonic": "DR_4",
+  "hlasm_mnemonic": "DR",
+  "operands": "4,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4171": {
+  "spec_mnemonic": "DR_6",
+  "hlasm_mnemonic": "DR",
+  "operands": "6,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4172": {
+  "spec_mnemonic": "DR_8",
+  "hlasm_mnemonic": "DR",
+  "operands": "8,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4173": {
+  "spec_mnemonic": "DR_10",
+  "hlasm_mnemonic": "DR",
+  "operands": "10,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4174": {
+  "spec_mnemonic": "DR_12",
+  "hlasm_mnemonic": "DR",
+  "operands": "12,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4175": {
+  "spec_mnemonic": "DR_14",
+  "hlasm_mnemonic": "DR",
+  "operands": "14,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4176": {
+  "spec_mnemonic": "DR_odd",
+  "hlasm_mnemonic": "DR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4177": {
+  "spec_mnemonic": "DL_0",
+  "hlasm_mnemonic": "DL",
+  "operands": "0,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4178": {
+  "spec_mnemonic": "DL_2",
+  "hlasm_mnemonic": "DL",
+  "operands": "2,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4179": {
+  "spec_mnemonic": "DL_4",
+  "hlasm_mnemonic": "DL",
+  "operands": "4,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4180": {
+  "spec_mnemonic": "DL_6",
+  "hlasm_mnemonic": "DL",
+  "operands": "6,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4181": {
+  "spec_mnemonic": "DL_8",
+  "hlasm_mnemonic": "DL",
+  "operands": "8,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4182": {
+  "spec_mnemonic": "DL_10",
+  "hlasm_mnemonic": "DL",
+  "operands": "10,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4183": {
+  "spec_mnemonic": "DL_12",
+  "hlasm_mnemonic": "DL",
+  "operands": "12,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4184": {
+  "spec_mnemonic": "DL_14",
+  "hlasm_mnemonic": "DL",
+  "operands": "14,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4185": {
+  "spec_mnemonic": "DL_odd",
+  "hlasm_mnemonic": "DL",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4186": {
+  "spec_mnemonic": "DLR_0",
+  "hlasm_mnemonic": "DLR",
+  "operands": "0,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4187": {
+  "spec_mnemonic": "DLR_2",
+  "hlasm_mnemonic": "DLR",
+  "operands": "2,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4188": {
+  "spec_mnemonic": "DLR_4",
+  "hlasm_mnemonic": "DLR",
+  "operands": "4,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4189": {
+  "spec_mnemonic": "DLR_6",
+  "hlasm_mnemonic": "DLR",
+  "operands": "6,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4190": {
+  "spec_mnemonic": "DLR_8",
+  "hlasm_mnemonic": "DLR",
+  "operands": "8,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4191": {
+  "spec_mnemonic": "DLR_10",
+  "hlasm_mnemonic": "DLR",
+  "operands": "10,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4192": {
+  "spec_mnemonic": "DLR_12",
+  "hlasm_mnemonic": "DLR",
+  "operands": "12,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4193": {
+  "spec_mnemonic": "DLR_14",
+  "hlasm_mnemonic": "DLR",
+  "operands": "14,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4194": {
+  "spec_mnemonic": "DLR_odd",
+  "hlasm_mnemonic": "DLR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4195": {
+  "spec_mnemonic": "DLG_0",
+  "hlasm_mnemonic": "DLG",
+  "operands": "0,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4196": {
+  "spec_mnemonic": "DLG_2",
+  "hlasm_mnemonic": "DLG",
+  "operands": "2,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4197": {
+  "spec_mnemonic": "DLG_4",
+  "hlasm_mnemonic": "DLG",
+  "operands": "4,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4198": {
+  "spec_mnemonic": "DLG_6",
+  "hlasm_mnemonic": "DLG",
+  "operands": "6,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4199": {
+  "spec_mnemonic": "DLG_8",
+  "hlasm_mnemonic": "DLG",
+  "operands": "8,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4200": {
+  "spec_mnemonic": "DLG_10",
+  "hlasm_mnemonic": "DLG",
+  "operands": "10,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4201": {
+  "spec_mnemonic": "DLG_12",
+  "hlasm_mnemonic": "DLG",
+  "operands": "12,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4202": {
+  "spec_mnemonic": "DLG_14",
+  "hlasm_mnemonic": "DLG",
+  "operands": "14,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4203": {
+  "spec_mnemonic": "DLG_odd",
+  "hlasm_mnemonic": "DLG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4204": {
+  "spec_mnemonic": "DLGR_0",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "0,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4205": {
+  "spec_mnemonic": "DLGR_2",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "2,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4206": {
+  "spec_mnemonic": "DLGR_4",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "4,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4207": {
+  "spec_mnemonic": "DLGR_6",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "6,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4208": {
+  "spec_mnemonic": "DLGR_8",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "8,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4209": {
+  "spec_mnemonic": "DLGR_10",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "10,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4210": {
+  "spec_mnemonic": "DLGR_12",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "12,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4211": {
+  "spec_mnemonic": "DLGR_14",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "14,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4212": {
+  "spec_mnemonic": "DLGR_odd",
+  "hlasm_mnemonic": "DLGR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4213": {
+  "spec_mnemonic": "DSG_0",
+  "hlasm_mnemonic": "DSG",
+  "operands": "0,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4214": {
+  "spec_mnemonic": "DSG_2",
+  "hlasm_mnemonic": "DSG",
+  "operands": "2,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4215": {
+  "spec_mnemonic": "DSG_4",
+  "hlasm_mnemonic": "DSG",
+  "operands": "4,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4216": {
+  "spec_mnemonic": "DSG_6",
+  "hlasm_mnemonic": "DSG",
+  "operands": "6,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4217": {
+  "spec_mnemonic": "DSG_8",
+  "hlasm_mnemonic": "DSG",
+  "operands": "8,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4218": {
+  "spec_mnemonic": "DSG_10",
+  "hlasm_mnemonic": "DSG",
+  "operands": "10,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4219": {
+  "spec_mnemonic": "DSG_12",
+  "hlasm_mnemonic": "DSG",
+  "operands": "12,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4220": {
+  "spec_mnemonic": "DSG_14",
+  "hlasm_mnemonic": "DSG",
+  "operands": "14,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4221": {
+  "spec_mnemonic": "DSG_odd",
+  "hlasm_mnemonic": "DSG",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4222": {
+  "spec_mnemonic": "DSGR_0",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "0,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4223": {
+  "spec_mnemonic": "DSGR_2",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "2,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4224": {
+  "spec_mnemonic": "DSGR_4",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "4,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4225": {
+  "spec_mnemonic": "DSGR_6",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "6,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4226": {
+  "spec_mnemonic": "DSGR_8",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "8,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4227": {
+  "spec_mnemonic": "DSGR_10",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "10,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4228": {
+  "spec_mnemonic": "DSGR_12",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "12,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4229": {
+  "spec_mnemonic": "DSGR_14",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "14,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4230": {
+  "spec_mnemonic": "DSGR_odd",
+  "hlasm_mnemonic": "DSGR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4231": {
+  "spec_mnemonic": "DSGF_0",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "0,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4232": {
+  "spec_mnemonic": "DSGF_2",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "2,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4233": {
+  "spec_mnemonic": "DSGF_4",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "4,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4234": {
+  "spec_mnemonic": "DSGF_6",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "6,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4235": {
+  "spec_mnemonic": "DSGF_8",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "8,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4236": {
+  "spec_mnemonic": "DSGF_10",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "10,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4237": {
+  "spec_mnemonic": "DSGF_12",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "12,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4238": {
+  "spec_mnemonic": "DSGF_14",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "14,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4239": {
+  "spec_mnemonic": "DSGF_odd",
+  "hlasm_mnemonic": "DSGF",
+  "operands": "1,74565(2,3)",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4240": {
+  "spec_mnemonic": "DSGFR_0",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "0,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4241": {
+  "spec_mnemonic": "DSGFR_2",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "2,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4242": {
+  "spec_mnemonic": "DSGFR_4",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "4,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4243": {
+  "spec_mnemonic": "DSGFR_6",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "6,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4244": {
+  "spec_mnemonic": "DSGFR_8",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "8,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4245": {
+  "spec_mnemonic": "DSGFR_10",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "10,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4246": {
+  "spec_mnemonic": "DSGFR_12",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "12,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4247": {
+  "spec_mnemonic": "DSGFR_14",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "14,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4248": {
+  "spec_mnemonic": "DSGFR_odd",
+  "hlasm_mnemonic": "DSGFR",
+  "operands": "1,2",
+  "srcfile": "s390x_muldiv_gen.sinc"
+ },
+ "T4249": {
+  "spec_mnemonic": "sck",
+  "hlasm_mnemonic": "SCK",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4250": {
+  "spec_mnemonic": "stck",
+  "hlasm_mnemonic": "STCK",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4251": {
+  "spec_mnemonic": "sckc",
+  "hlasm_mnemonic": "SCKC",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4252": {
+  "spec_mnemonic": "stckc",
+  "hlasm_mnemonic": "STCKC",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4253": {
+  "spec_mnemonic": "spt",
+  "hlasm_mnemonic": "SPT",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4254": {
+  "spec_mnemonic": "stpt",
+  "hlasm_mnemonic": "STPT",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4255": {
+  "spec_mnemonic": "stcke",
+  "hlasm_mnemonic": "STCKE",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4256": {
+  "spec_mnemonic": "stckf",
+  "hlasm_mnemonic": "STCKF",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4257": {
+  "spec_mnemonic": "spka",
+  "hlasm_mnemonic": "SPKA",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4258": {
+  "spec_mnemonic": "stap",
+  "hlasm_mnemonic": "STAP",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4259": {
+  "spec_mnemonic": "stidp",
+  "hlasm_mnemonic": "STIDP",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4260": {
+  "spec_mnemonic": "stsi",
+  "hlasm_mnemonic": "STSI",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4261": {
+  "spec_mnemonic": "sacf",
+  "hlasm_mnemonic": "SACF",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4262": {
+  "spec_mnemonic": "pc",
+  "hlasm_mnemonic": "PC",
+  "operands": "16(3)",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4263": {
+  "spec_mnemonic": "spm",
+  "hlasm_mnemonic": "SPM",
+  "operands": "1",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4264": {
+  "spec_mnemonic": "ipm",
+  "hlasm_mnemonic": "IPM",
+  "operands": "1",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4265": {
+  "spec_mnemonic": "km",
+  "hlasm_mnemonic": "KM",
+  "operands": "1,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4266": {
+  "spec_mnemonic": "kmc",
+  "hlasm_mnemonic": "KMC",
+  "operands": "1,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4267": {
+  "spec_mnemonic": "kmf",
+  "hlasm_mnemonic": "KMF",
+  "operands": "1,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4268": {
+  "spec_mnemonic": "kmo",
+  "hlasm_mnemonic": "KMO",
+  "operands": "1,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4269": {
+  "spec_mnemonic": "kmac",
+  "hlasm_mnemonic": "KMAC",
+  "operands": "1,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4270": {
+  "spec_mnemonic": "pcc",
+  "hlasm_mnemonic": "PCC",
+  "operands": "",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4271": {
+  "spec_mnemonic": "pckmo",
+  "hlasm_mnemonic": "PCKMO",
+  "operands": "",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4272": {
+  "spec_mnemonic": "ppno",
+  "hlasm_mnemonic": "PPNO",
+  "operands": "1,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4273": {
+  "spec_mnemonic": "kma",
+  "hlasm_mnemonic": "KMA",
+  "operands": "1,3,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4274": {
+  "spec_mnemonic": "kmctr",
+  "hlasm_mnemonic": "KMCTR",
+  "operands": "1,3,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4275": {
+  "spec_mnemonic": "kimd",
+  "hlasm_mnemonic": "KIMD",
+  "operands": "1,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4276": {
+  "spec_mnemonic": "klmd",
+  "hlasm_mnemonic": "KLMD",
+  "operands": "1,2",
+  "srcfile": "s390x_system.sinc"
+ },
+ "T4277": {
+  "spec_mnemonic": "vl",
+  "hlasm_mnemonic": "VL",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4278": {
+  "spec_mnemonic": "vl",
+  "hlasm_mnemonic": "VL",
+  "operands": "17,16(2,3)",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4279": {
+  "spec_mnemonic": "vst",
+  "hlasm_mnemonic": "VST",
+  "operands": "1,16(2,3)",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4280": {
+  "spec_mnemonic": "vst",
+  "hlasm_mnemonic": "VST",
+  "operands": "17,16(2,3)",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4281": {
+  "spec_mnemonic": "vlr",
+  "hlasm_mnemonic": "VLR",
+  "operands": "1,2",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4282": {
+  "spec_mnemonic": "vlr",
+  "hlasm_mnemonic": "VLR",
+  "operands": "1,18",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4283": {
+  "spec_mnemonic": "vlr",
+  "hlasm_mnemonic": "VLR",
+  "operands": "17,2",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4284": {
+  "spec_mnemonic": "vlr",
+  "hlasm_mnemonic": "VLR",
+  "operands": "17,18",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4285": {
+  "spec_mnemonic": "vab",
+  "hlasm_mnemonic": "VAB",
+  "operands": "1,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4286": {
+  "spec_mnemonic": "vab",
+  "hlasm_mnemonic": "VAB",
+  "operands": "1,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4287": {
+  "spec_mnemonic": "vab",
+  "hlasm_mnemonic": "VAB",
+  "operands": "1,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4288": {
+  "spec_mnemonic": "vab",
+  "hlasm_mnemonic": "VAB",
+  "operands": "1,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4289": {
+  "spec_mnemonic": "vab",
+  "hlasm_mnemonic": "VAB",
+  "operands": "17,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4290": {
+  "spec_mnemonic": "vab",
+  "hlasm_mnemonic": "VAB",
+  "operands": "17,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4291": {
+  "spec_mnemonic": "vab",
+  "hlasm_mnemonic": "VAB",
+  "operands": "17,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4292": {
+  "spec_mnemonic": "vab",
+  "hlasm_mnemonic": "VAB",
+  "operands": "17,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4293": {
+  "spec_mnemonic": "vsb",
+  "hlasm_mnemonic": "VSB",
+  "operands": "1,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4294": {
+  "spec_mnemonic": "vsb",
+  "hlasm_mnemonic": "VSB",
+  "operands": "1,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4295": {
+  "spec_mnemonic": "vsb",
+  "hlasm_mnemonic": "VSB",
+  "operands": "1,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4296": {
+  "spec_mnemonic": "vsb",
+  "hlasm_mnemonic": "VSB",
+  "operands": "1,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4297": {
+  "spec_mnemonic": "vsb",
+  "hlasm_mnemonic": "VSB",
+  "operands": "17,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4298": {
+  "spec_mnemonic": "vsb",
+  "hlasm_mnemonic": "VSB",
+  "operands": "17,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4299": {
+  "spec_mnemonic": "vsb",
+  "hlasm_mnemonic": "VSB",
+  "operands": "17,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4300": {
+  "spec_mnemonic": "vsb",
+  "hlasm_mnemonic": "VSB",
+  "operands": "17,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4301": {
+  "spec_mnemonic": "vah",
+  "hlasm_mnemonic": "VAH",
+  "operands": "1,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4302": {
+  "spec_mnemonic": "vah",
+  "hlasm_mnemonic": "VAH",
+  "operands": "1,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4303": {
+  "spec_mnemonic": "vah",
+  "hlasm_mnemonic": "VAH",
+  "operands": "1,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4304": {
+  "spec_mnemonic": "vah",
+  "hlasm_mnemonic": "VAH",
+  "operands": "1,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4305": {
+  "spec_mnemonic": "vah",
+  "hlasm_mnemonic": "VAH",
+  "operands": "17,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4306": {
+  "spec_mnemonic": "vah",
+  "hlasm_mnemonic": "VAH",
+  "operands": "17,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4307": {
+  "spec_mnemonic": "vah",
+  "hlasm_mnemonic": "VAH",
+  "operands": "17,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4308": {
+  "spec_mnemonic": "vah",
+  "hlasm_mnemonic": "VAH",
+  "operands": "17,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4309": {
+  "spec_mnemonic": "vsh",
+  "hlasm_mnemonic": "VSH",
+  "operands": "1,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4310": {
+  "spec_mnemonic": "vsh",
+  "hlasm_mnemonic": "VSH",
+  "operands": "1,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4311": {
+  "spec_mnemonic": "vsh",
+  "hlasm_mnemonic": "VSH",
+  "operands": "1,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4312": {
+  "spec_mnemonic": "vsh",
+  "hlasm_mnemonic": "VSH",
+  "operands": "1,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4313": {
+  "spec_mnemonic": "vsh",
+  "hlasm_mnemonic": "VSH",
+  "operands": "17,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4314": {
+  "spec_mnemonic": "vsh",
+  "hlasm_mnemonic": "VSH",
+  "operands": "17,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4315": {
+  "spec_mnemonic": "vsh",
+  "hlasm_mnemonic": "VSH",
+  "operands": "17,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4316": {
+  "spec_mnemonic": "vsh",
+  "hlasm_mnemonic": "VSH",
+  "operands": "17,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4317": {
+  "spec_mnemonic": "vaf",
+  "hlasm_mnemonic": "VAF",
+  "operands": "1,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4318": {
+  "spec_mnemonic": "vaf",
+  "hlasm_mnemonic": "VAF",
+  "operands": "1,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4319": {
+  "spec_mnemonic": "vaf",
+  "hlasm_mnemonic": "VAF",
+  "operands": "1,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4320": {
+  "spec_mnemonic": "vaf",
+  "hlasm_mnemonic": "VAF",
+  "operands": "1,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4321": {
+  "spec_mnemonic": "vaf",
+  "hlasm_mnemonic": "VAF",
+  "operands": "17,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4322": {
+  "spec_mnemonic": "vaf",
+  "hlasm_mnemonic": "VAF",
+  "operands": "17,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4323": {
+  "spec_mnemonic": "vaf",
+  "hlasm_mnemonic": "VAF",
+  "operands": "17,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4324": {
+  "spec_mnemonic": "vaf",
+  "hlasm_mnemonic": "VAF",
+  "operands": "17,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4325": {
+  "spec_mnemonic": "vsf",
+  "hlasm_mnemonic": "VSF",
+  "operands": "1,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4326": {
+  "spec_mnemonic": "vsf",
+  "hlasm_mnemonic": "VSF",
+  "operands": "1,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4327": {
+  "spec_mnemonic": "vsf",
+  "hlasm_mnemonic": "VSF",
+  "operands": "1,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4328": {
+  "spec_mnemonic": "vsf",
+  "hlasm_mnemonic": "VSF",
+  "operands": "1,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4329": {
+  "spec_mnemonic": "vsf",
+  "hlasm_mnemonic": "VSF",
+  "operands": "17,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4330": {
+  "spec_mnemonic": "vsf",
+  "hlasm_mnemonic": "VSF",
+  "operands": "17,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4331": {
+  "spec_mnemonic": "vsf",
+  "hlasm_mnemonic": "VSF",
+  "operands": "17,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4332": {
+  "spec_mnemonic": "vsf",
+  "hlasm_mnemonic": "VSF",
+  "operands": "17,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4333": {
+  "spec_mnemonic": "vag",
+  "hlasm_mnemonic": "VAG",
+  "operands": "1,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4334": {
+  "spec_mnemonic": "vag",
+  "hlasm_mnemonic": "VAG",
+  "operands": "1,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4335": {
+  "spec_mnemonic": "vag",
+  "hlasm_mnemonic": "VAG",
+  "operands": "1,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4336": {
+  "spec_mnemonic": "vag",
+  "hlasm_mnemonic": "VAG",
+  "operands": "1,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4337": {
+  "spec_mnemonic": "vag",
+  "hlasm_mnemonic": "VAG",
+  "operands": "17,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4338": {
+  "spec_mnemonic": "vag",
+  "hlasm_mnemonic": "VAG",
+  "operands": "17,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4339": {
+  "spec_mnemonic": "vag",
+  "hlasm_mnemonic": "VAG",
+  "operands": "17,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4340": {
+  "spec_mnemonic": "vag",
+  "hlasm_mnemonic": "VAG",
+  "operands": "17,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4341": {
+  "spec_mnemonic": "vsg",
+  "hlasm_mnemonic": "VSG",
+  "operands": "1,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4342": {
+  "spec_mnemonic": "vsg",
+  "hlasm_mnemonic": "VSG",
+  "operands": "1,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4343": {
+  "spec_mnemonic": "vsg",
+  "hlasm_mnemonic": "VSG",
+  "operands": "1,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4344": {
+  "spec_mnemonic": "vsg",
+  "hlasm_mnemonic": "VSG",
+  "operands": "1,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4345": {
+  "spec_mnemonic": "vsg",
+  "hlasm_mnemonic": "VSG",
+  "operands": "17,2,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4346": {
+  "spec_mnemonic": "vsg",
+  "hlasm_mnemonic": "VSG",
+  "operands": "17,2,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4347": {
+  "spec_mnemonic": "vsg",
+  "hlasm_mnemonic": "VSG",
+  "operands": "17,18,3",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4348": {
+  "spec_mnemonic": "vsg",
+  "hlasm_mnemonic": "VSG",
+  "operands": "17,18,19",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4349": {
+  "spec_mnemonic": "vgbm",
+  "hlasm_mnemonic": "VGBM",
+  "operands": "1,4660",
+  "srcfile": "s390x_vector.sinc"
+ },
+ "T4350": {
+  "spec_mnemonic": "vgbm",
+  "hlasm_mnemonic": "VGBM",
+  "operands": "17,4660",
+  "srcfile": "s390x_vector.sinc"
+ }
+}

@@ -1,0 +1,384 @@
+# ============================================================================
+# s390x_fp2.sinc — Extended and old HFP (hexadecimal floating-point)
+# instructions for the s390x SLEIGH spec.
+#
+# This file closes the extended/old-HFP gaps: the RR opcodes 0x25 (LDXR),
+# 0x26 (MXR), 0x35 (LEDR), 0x36 (AXR), 0x37 (SXR); the RX-a opcode 0x67
+# (MXD); the RRE opcodes B360-B363/B365-B367/B369 (LPXR, LNXR, LTXR, LCXR,
+# LXR, LEXR, FIXR, CXR); the RRD opcodes B32E/B32F/B33E/B33F
+# (MAER, MSER, MADR, MSDR) and B338-B33D (MAYLR, MYLR, MAYR, MYR, MAYHR,
+# MYHR); and the RXF opcodes ED2E/ED2F/ED3E/ED3F
+# (MAE, MSE, MAD, MSD). 28 constructors total.
+#
+# (The RXF unnormalized trio MAYL/MYL/MY and MAYH/MYH/MAY already exist in
+# s390x_fp.sinc; they are not duplicated here.)
+#
+# Inclusion: add the line
+#     @include "s390x_fp2.sinc"
+# to data/languages/s390x.slaspec AFTER the s390x_fp.sinc line. This file
+# reuses the tokens, attachments, EA macros and fp_cc_* macros defined in
+# s390x_fp.sinc (RRl, RXl, RREl, RREls, RRDs, RRDl, RXFs, RXFl, ea_D12,
+# fp_cc_hfp, fp_cc_compare_hfp, cc_set) and defines one new token below.
+#
+# Opcode sources: IBM z/Architecture Principles of Operation SA22-7832-14
+# (15th ed., April 2025), Chapter 18 and Appendix B, Figures B-2/B-3
+# (verified against a local copy of the PDF, September 2026). B364 and
+# B368 are unassigned in the PoP and are intentionally absent here.
+#
+# Conventions and deliberate approximations (same as s390x_fp.sinc):
+# - HFP is NOT IEEE-754. There is no HFP p-code operator, so HFP arithmetic
+#   is modeled with the IEEE FLOAT_* operators as an approximation. Every
+#   HFP arithmetic constructor carries a TODO. Dataflow (registers read /
+#   written, CC set) follows the PoP; bit-level HFP semantics do not.
+# - Extended-format (128-bit) operands use a single FPR attach for the
+#   high-order 64 bits and OVER-ACCEPT the "valid register pair"
+#   requirement (PoP 9-8: pairs are (0,2),(4,6),(8,10),(12,14),
+#   (1,3),(5,7),(9,11),(13,15)). The low-order 64 bits (F(R1+2)) are not
+#   modeled; each such constructor carries a TODO.
+# - LOAD ROUNDED (LEDR, LDXR, LEXR): HFP rounding adds one to the leftmost
+#   dropped bit position and propagates the carry (PoP 18-17); this is
+#   approximated with round()/float2float(). The CC is unchanged per PoP.
+# - IEEE exception flags (HFP exponent overflow/underflow, significance)
+#   are NOT modeled; each affected constructor carries an explicit TODO.
+# - Multiply-and-add/subtract (MAE/MSE/MAD/MSD, MAER/MSER/MADR/MSDR,
+#   MAYL/MYL/MY and RRD forms) are modeled as multiply-then-add, not
+#   fused. CC is unchanged for all of them (PoP 18-19/18-20/18-22).
+# - MULTIPLY (MXR, MXD): the PoP (18-17/18-18) leaves the CC unchanged.
+#   (Note: the older MDR/MD/MXDR/MDER constructors in s390x_fp.sinc set
+#   the CC via fp_cc_hfp; that is a pre-existing deviation, not followed
+#   here.)
+# - LOAD POSITIVE/NEGATIVE (extended): PoP 18-16 sets CC 0=result zero,
+#   2=result greater than zero (LPXR) / 1=result less than zero (LNXR).
+#   (Note: the older LPDR/LNDR/LCDR constructors in s390x_fp.sinc say
+#   "CC unchanged"; that is a pre-existing deviation, not followed here.)
+# Reference: IBM z/Architecture Principles of Operation SA22-7832-14.
+# ============================================================================
+
+# RRsl: RR (16b), R1 -> short-FP alias (fNh, target high half), R2 -> full
+# FPR. Needed for LEDR (long HFP source, short HFP target).
+define token RRsl(16)
+    RRsl_OP = (8,15)
+    RRsl_R1 = (4,7)
+    RRsl_R2 = (0,3)
+;
+
+attach variables [ RRsl_R1 ] [ f0h f1h f2h f3h f4h f5h f6h f7h f8h f9h f10h f11h f12h f13h f14h f15h ];
+attach variables [ RRsl_R2 ] [ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 ];
+
+# ============================================================================
+# HFP RR (16-bit): extended/old gaps. R1/R2 designate FP register pairs for
+# the extended operands (over-accepted; only high-order 64 bits modeled).
+# ============================================================================
+
+:LDXR "LDXR " RRl_R1 "," RRl_R2 is RRl_OP=0x25 & RRl_R1 & RRl_R2
+{
+    # LOAD ROUNDED (extended to long HFP): R1 = round(R2 pair).
+    # TODO: R2 must designate a valid FP register pair (PoP 9-8,
+    #   over-accepted); only the high-order 64 bits of the source are
+    #   modeled; HFP rounding approximated by IEEE double rounding.
+    # PoP 18-17: CC unchanged.
+    RRl_R1 = RRl_R2;
+}
+
+:MXR "MXR " RRl_R1 "," RRl_R2 is RRl_OP=0x26 & RRl_R1 & RRl_R2
+{
+    # MULTIPLY (extended HFP): R1(pair) = R1 * R2.
+    # TODO: R1/R2 must designate valid FP register pairs (PoP 9-8,
+    #   over-accepted); only the high-order 64 bits are modeled.
+    # HFP approx. PoP 18-17: CC unchanged.
+    RRl_R1 = RRl_R1 f* RRl_R2;
+}
+
+:LEDR "LEDR " RRsl_R1 "," RRsl_R2 is RRsl_OP=0x35 & RRsl_R1 & RRsl_R2
+{
+    # LOAD ROUNDED (long to short HFP): R1(high half) = round(R2).
+    # TODO: HFP rounding (PoP 18-17) approximated by round(); the low 32
+    #   bits of R1 are untouched, like hardware. CC unchanged.
+    local r:8;
+    r = round(RRsl_R2);
+    RRsl_R1 = float2float(r);
+}
+
+:AXR "AXR " RRl_R1 "," RRl_R2 is RRl_OP=0x36 & RRl_R1 & RRl_R2
+{
+    # ADD NORMALIZED (extended HFP): R1(pair) = R1 + R2.
+    # TODO: R1/R2 must designate valid FP register pairs (PoP 9-8,
+    #   over-accepted); only the high-order 64 bits are modeled;
+    #   HFP exponent overflow/underflow and significance exceptions are
+    #   not modeled. HFP approx. PoP 18-8: CC set (0=zero,1=neg,2=pos).
+    local a:8; local z:8;
+    a = RRl_R1 f+ RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+:SXR "SXR " RRl_R1 "," RRl_R2 is RRl_OP=0x37 & RRl_R1 & RRl_R2
+{
+    # SUBTRACT NORMALIZED (extended HFP): R1(pair) = R1 - R2.
+    # TODO: as for AXR. PoP 18-24: CC set (0=zero,1=neg,2=pos).
+    local a:8; local z:8;
+    a = RRl_R1 f- RRl_R2; z = 0;
+    RRl_R1 = a;
+    fp_cc_hfp(a, z);
+}
+
+# ============================================================================
+# HFP RX-a (32-bit): MXD.
+# ============================================================================
+
+:MXD "MXD " RXl_R1 "," RXl_D2 "(" RXl_X2 "," RXl_B2 ")" is RXl_OP=0x67 & RXl_R1 & RXl_X2 & RXl_B2 & RXl_D2
+{
+    # MULTIPLY (long to extended HFP): R1(pair) = R1 * MEM[EA].
+    # TODO: R1 must designate a valid FP register pair (PoP 9-8,
+    #   over-accepted); only the high-order 64 bits are modeled.
+    # HFP approx. PoP 18-18: CC unchanged.
+    local ea:8;
+    ea_D12(ea, RXl_B2, RXl_X2, RXl_D2);
+    RXl_R1 = RXl_R1 f* *:8 ea;
+}
+
+# ============================================================================
+# HFP RRE (32-bit): extended sign/test/move/compare/round/integer ops.
+# R1/R2 designate FP register pairs (over-accepted; high 64 bits modeled).
+# ============================================================================
+
+:LPXR "LPXR " RREl_R1 "," RREl_R2 is RREl_OP=0xB360 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD POSITIVE (extended HFP): R1(pair) = |R2|.
+    # TODO: R fields must designate valid FP register pairs (PoP 9-8,
+    #   over-accepted); only the high-order 64 bits are modeled; the
+    #   low-order sign/characteristic fixups of PoP 18-16 are not.
+    # HFP approx. PoP 18-16: CC 0=result zero, 2=result greater than zero.
+    local z:8;
+    RREl_R1 = abs(RREl_R2);
+    z = 0;
+    if (RREl_R1 f== z) goto <lpxr_zero>;
+    cc_set(2);
+    goto <lpxr_done>;
+<lpxr_zero>
+    cc_set(0);
+<lpxr_done>
+}
+
+:LNXR "LNXR " RREl_R1 "," RREl_R2 is RREl_OP=0xB361 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD NEGATIVE (extended HFP): R1(pair) = -|R2|.
+    # TODO: as for LPXR. HFP approx.
+    # PoP 18-16: CC 0=result zero, 1=result less than zero.
+    local z:8;
+    RREl_R1 = f- abs(RREl_R2);
+    z = 0;
+    if (RREl_R1 f== z) goto <lnxr_zero>;
+    cc_set(1);
+    goto <lnxr_done>;
+<lnxr_zero>
+    cc_set(0);
+<lnxr_done>
+}
+
+:LTXR "LTXR " RREl_R1 "," RREl_R2 is RREl_OP=0xB362 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD AND TEST (extended HFP): R1(pair) = R2, CC set.
+    # TODO: as for LPXR. HFP approx. PoP 18-13: CC 0=zero,1=neg,2=pos.
+    local z:8;
+    RREl_R1 = RREl_R2; z = 0;
+    fp_cc_hfp(RREl_R1, z);
+}
+
+:LCXR "LCXR " RREl_R1 "," RREl_R2 is RREl_OP=0xB363 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD COMPLEMENT (extended HFP): R1(pair) = -R2, CC set.
+    # TODO: as for LPXR. HFP approx. PoP 18-14: CC 0=zero,1=neg,2=pos.
+    local z:8;
+    RREl_R1 = f- RREl_R2; z = 0;
+    fp_cc_hfp(RREl_R1, z);
+}
+
+:LXR "LXR " RREl_R1 "," RREl_R2 is RREl_OP=0xB365 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD (extended): R1(pair) = R2(pair).
+    # TODO: R fields must designate valid FP register pairs (PoP 9-8,
+    #   over-accepted); only the high-order 64 bits are modeled.
+    # PoP 9-31: CC unchanged.
+    RREl_R1 = RREl_R2;
+}
+
+:LEXR "LEXR " RREls_R1 "," RREls_R2 is RREls_OP=0xB366 & RREls_IGN=0 & RREls_R1 & RREls_R2
+{
+    # LOAD ROUNDED (extended to short HFP): R1(high half) = round(R2 pair).
+    # TODO: R2 must designate a valid FP register pair (PoP 9-8,
+    #   over-accepted); only the high-order 64 bits of the source are
+    #   modeled; HFP rounding (PoP 18-17) approximated by round(); the low
+    #   32 bits of R1 are untouched, like hardware. CC unchanged.
+    local r:8;
+    r = round(RREls_R2);
+    RREls_R1 = float2float(r);
+}
+
+:FIXR "FIXR " RREl_R1 "," RREl_R2 is RREl_OP=0xB367 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # LOAD FP INTEGER (extended HFP): R1(pair) = trunc(R2) toward zero.
+    # TODO: R fields must designate valid FP register pairs (PoP 9-8,
+    #   over-accepted); only the high-order 64 bits are modeled.
+    # HFP approx. PoP 18-15: CC unchanged.
+    RREl_R1 = trunc(RREl_R2);
+}
+
+:CXR "CXR " RREl_R1 "," RREl_R2 is RREl_OP=0xB369 & RREl_IGN=0 & RREl_R1 & RREl_R2
+{
+    # COMPARE (extended HFP): CC set from R1 vs R2.
+    # TODO: only the high-order 64 bits of each operand are compared.
+    # HFP approx. PoP 18-10: CC 0=equal, 1=first low, 2=first high.
+    fp_cc_compare_hfp(RREl_R1, RREl_R2);
+}
+
+# ============================================================================
+# HFP RRD (32-bit): multiply-and-add/subtract, register form.
+# CC unchanged for all (PoP 18-19/18-20/18-22). Not fused: multiply-then-add.
+# ============================================================================
+
+:MAER "MAER " RRDs_R1 "," RRDs_R3 "," RRDs_R2 is RRDs_OP=0xB32E & RRDs_IGN=0 & RRDs_R1 & RRDs_R3 & RRDs_R2
+{
+    # MULTIPLY AND ADD (short HFP): R1 = R3 * R2 + R1.
+    # TODO: HFP approx, not fused. CC unchanged.
+    local p:4;
+    p = RRDs_R3 f* RRDs_R2;
+    RRDs_R1 = p f+ RRDs_R1;
+}
+
+:MSER "MSER " RRDs_R1 "," RRDs_R3 "," RRDs_R2 is RRDs_OP=0xB32F & RRDs_IGN=0 & RRDs_R1 & RRDs_R3 & RRDs_R2
+{
+    # MULTIPLY AND SUBTRACT (short HFP): R1 = R3 * R2 - R1.
+    # TODO: HFP approx, not fused. CC unchanged.
+    local p:4;
+    p = RRDs_R3 f* RRDs_R2;
+    RRDs_R1 = p f- RRDs_R1;
+}
+
+:MADR "MADR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB33E & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY AND ADD (long HFP): R1 = R3 * R2 + R1.
+    # TODO: HFP approx, not fused. CC unchanged.
+    local p:8;
+    p = RRDl_R3 f* RRDl_R2;
+    RRDl_R1 = p f+ RRDl_R1;
+}
+
+:MSDR "MSDR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB33F & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY AND SUBTRACT (long HFP): R1 = R3 * R2 - R1.
+    # TODO: HFP approx, not fused. CC unchanged.
+    local p:8;
+    p = RRDl_R3 f* RRDl_R2;
+    RRDl_R1 = p f- RRDl_R1;
+}
+
+:MAYLR "MAYLR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB338 & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY AND ADD UNNORMALIZED (long to ext. low HFP):
+    # R1 = R1 + R3 * R2, low-order 64 bits of the extended result.
+    # TODO: R1/R3/R2 designate extended pairs (over-accepted); the
+    #   architected result is the LOW-order 64 bits, modeled here into R1
+    #   (high-64 attach) as an approximation; unnormalized HFP product is
+    #   approximated by IEEE multiply. CC unchanged.
+    local p:8;
+    p = RRDl_R3 f* RRDl_R2;
+    RRDl_R1 = RRDl_R1 f+ p;
+}
+
+:MYLR "MYLR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB339 & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY UNNORMALIZED (long to ext. low HFP): R1 = R3 * R2,
+    # low-order 64 bits of the extended product.
+    # TODO: as for MAYLR. CC unchanged.
+    RRDl_R1 = RRDl_R3 f* RRDl_R2;
+}
+
+:MAYR "MAYR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB33A & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY AND ADD UNNORMALIZED (long to ext. HFP):
+    # R1(pair) = R1 + R3 * R2 (entire extended product).
+    # TODO: R1/R3/R2 designate extended pairs (over-accepted); only the
+    #   high-order 64 bits are modeled. HFP approx, not fused. CC unchanged.
+    local p:8;
+    p = RRDl_R3 f* RRDl_R2;
+    RRDl_R1 = RRDl_R1 f+ p;
+}
+
+:MYR "MYR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB33B & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY UNNORMALIZED (long to ext. HFP): R1(pair) = R3 * R2.
+    # TODO: as for MAYR. CC unchanged.
+    RRDl_R1 = RRDl_R3 f* RRDl_R2;
+}
+
+:MAYHR "MAYHR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB33C & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY AND ADD UNNORMALIZED (long to ext. high HFP):
+    # R1 = R1 + R3 * R2, high-order 64 bits of the extended product.
+    # TODO: as for MAYR. CC unchanged.
+    local p:8;
+    p = RRDl_R3 f* RRDl_R2;
+    RRDl_R1 = RRDl_R1 f+ p;
+}
+
+:MYHR "MYHR " RRDl_R1 "," RRDl_R3 "," RRDl_R2 is RRDl_OP=0xB33D & RRDl_IGN=0 & RRDl_R1 & RRDl_R3 & RRDl_R2
+{
+    # MULTIPLY UNNORMALIZED (long to ext. high HFP): R1 = R3 * R2.
+    # TODO: as for MAYR. CC unchanged.
+    RRDl_R1 = RRDl_R3 f* RRDl_R2;
+}
+
+# ============================================================================
+# HFP RXF (48-bit): multiply-and-add/subtract, memory form.
+# RXF has a 12-bit displacement (byte 5 is R1 + 4 unused bits, IGN=0).
+# CC unchanged for all (PoP 18-19/18-20/18-22). Not fused.
+# (MAYL/MYL/MY and MAYH/MYH/MAY already exist in s390x_fp.sinc.)
+# ============================================================================
+
+:MAE "MAE " RXFss_R1 "," RXFss_R3 "," RXFss_DL2 "(" RXFss_X2 "," RXFss_B2 ")" is RXFss_OP=0xED & RXFss_OP2=0x2E & RXFss_IGN=0 & RXFss_R1 & RXFss_R3 & RXFss_X2 & RXFss_B2 & RXFss_DL2
+{
+    # MULTIPLY AND ADD (short HFP): R1 = R3 * MEM[EA] + R1.
+    # TODO: HFP approx, not fused. CC unchanged.
+    local ea:8; local b:4; local p:4;
+    ea_D12(ea, RXFss_B2, RXFss_X2, RXFss_DL2);
+    b = *:4 ea;
+    p = RXFss_R3 f* b;
+    RXFss_R1 = p f+ RXFss_R1;
+}
+
+:MSE "MSE " RXFss_R1 "," RXFss_R3 "," RXFss_DL2 "(" RXFss_X2 "," RXFss_B2 ")" is RXFss_OP=0xED & RXFss_OP2=0x2F & RXFss_IGN=0 & RXFss_R1 & RXFss_R3 & RXFss_X2 & RXFss_B2 & RXFss_DL2
+{
+    # MULTIPLY AND SUBTRACT (short HFP): R1 = R3 * MEM[EA] - R1.
+    # TODO: HFP approx, not fused. CC unchanged.
+    local ea:8; local b:4; local p:4;
+    ea_D12(ea, RXFss_B2, RXFss_X2, RXFss_DL2);
+    b = *:4 ea;
+    p = RXFss_R3 f* b;
+    RXFss_R1 = p f- RXFss_R1;
+}
+
+
+
+
+:MAD "MAD " RXFl_R1 "," RXFl_R3 "," RXFl_DL2 "(" RXFl_X2 "," RXFl_B2 ")" is RXFl_OP=0xED & RXFl_OP2=0x3E & RXFl_IGN=0 & RXFl_R1 & RXFl_R3 & RXFl_X2 & RXFl_B2 & RXFl_DL2
+{
+    # MULTIPLY AND ADD (long HFP): R1 = R3 * MEM[EA] + R1.
+    # TODO: HFP approx, not fused. CC unchanged.
+    local ea:8; local b:8; local p:8;
+    ea_D12(ea, RXFl_B2, RXFl_X2, RXFl_DL2);
+    b = *:8 ea;
+    p = RXFl_R3 f* b;
+    RXFl_R1 = p f+ RXFl_R1;
+}
+
+:MSD "MSD " RXFl_R1 "," RXFl_R3 "," RXFl_DL2 "(" RXFl_X2 "," RXFl_B2 ")" is RXFl_OP=0xED & RXFl_OP2=0x3F & RXFl_IGN=0 & RXFl_R1 & RXFl_R3 & RXFl_X2 & RXFl_B2 & RXFl_DL2
+{
+    # MULTIPLY AND SUBTRACT (long HFP): R1 = R3 * MEM[EA] - R1.
+    # TODO: HFP approx, not fused. CC unchanged.
+    local ea:8; local b:8; local p:8;
+    ea_D12(ea, RXFl_B2, RXFl_X2, RXFl_DL2);
+    b = *:8 ea;
+    p = RXFl_R3 f* b;
+    RXFl_R1 = p f- RXFl_R1;
+}

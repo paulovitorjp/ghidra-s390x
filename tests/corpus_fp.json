@@ -1,0 +1,443 @@
+[
+  {
+    "bytes_hex": "78122034",
+    "capstone_mnemonic": "le",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-load",
+    "notes": "LE: short HFP load"
+  },
+  {
+    "bytes_hex": "7a122034",
+    "capstone_mnemonic": "ae",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-arith",
+    "notes": "AE: short HFP add"
+  },
+  {
+    "bytes_hex": "7b122034",
+    "capstone_mnemonic": "se",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-arith",
+    "notes": "SE: short HFP subtract"
+  },
+  {
+    "bytes_hex": "7c122034",
+    "capstone_mnemonic": "mde",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-arith",
+    "notes": "MDE: short->long HFP multiply"
+  },
+  {
+    "bytes_hex": "7d122034",
+    "capstone_mnemonic": "de",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-arith",
+    "notes": "DE: short HFP divide"
+  },
+  {
+    "bytes_hex": "79122034",
+    "capstone_mnemonic": "ce",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-compare",
+    "notes": "CE: short HFP compare"
+  },
+  {
+    "bytes_hex": "68122034",
+    "capstone_mnemonic": "ld",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-load",
+    "notes": "LD: long HFP load"
+  },
+  {
+    "bytes_hex": "6a122034",
+    "capstone_mnemonic": "ad",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-arith",
+    "notes": "AD: long HFP add"
+  },
+  {
+    "bytes_hex": "6b122034",
+    "capstone_mnemonic": "sd",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-arith",
+    "notes": "SD: long HFP subtract"
+  },
+  {
+    "bytes_hex": "6c122034",
+    "capstone_mnemonic": "md",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-arith",
+    "notes": "MD: long HFP multiply"
+  },
+  {
+    "bytes_hex": "6d122034",
+    "capstone_mnemonic": "dd",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-arith",
+    "notes": "DD: long HFP divide"
+  },
+  {
+    "bytes_hex": "69122034",
+    "capstone_mnemonic": "cd",
+    "capstone_op_str": "%f1, 0x34(%r2, %r2)",
+    "category": "fp-compare",
+    "notes": "CD: long HFP compare"
+  },
+  {
+    "bytes_hex": "3812",
+    "capstone_mnemonic": "ler",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-load",
+    "notes": "LER: short HFP load register"
+  },
+  {
+    "bytes_hex": "3a12",
+    "capstone_mnemonic": "aer",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "AER: short HFP add register"
+  },
+  {
+    "bytes_hex": "3b12",
+    "capstone_mnemonic": "ser",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "SER: short HFP subtract register"
+  },
+  {
+    "bytes_hex": "3c12",
+    "capstone_mnemonic": "mder",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "MDER: short->long HFP multiply register"
+  },
+  {
+    "bytes_hex": "3d12",
+    "capstone_mnemonic": "der",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "DER: short HFP divide register"
+  },
+  {
+    "bytes_hex": "3912",
+    "capstone_mnemonic": "cer",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-compare",
+    "notes": "CER: short HFP compare register"
+  },
+  {
+    "bytes_hex": "2823",
+    "capstone_mnemonic": "ldr",
+    "capstone_op_str": "%f2, %f3",
+    "category": "fp-load",
+    "notes": "LDR: long HFP load register"
+  },
+  {
+    "bytes_hex": "2a12",
+    "capstone_mnemonic": "adr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "ADR: long HFP add register"
+  },
+  {
+    "bytes_hex": "2b12",
+    "capstone_mnemonic": "sdr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "SDR: long HFP subtract register"
+  },
+  {
+    "bytes_hex": "2c12",
+    "capstone_mnemonic": "mdr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "MDR: long HFP multiply register"
+  },
+  {
+    "bytes_hex": "2d12",
+    "capstone_mnemonic": "ddr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "DDR: long HFP divide register"
+  },
+  {
+    "bytes_hex": "2912",
+    "capstone_mnemonic": "cdr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-compare",
+    "notes": "CDR: long HFP compare register"
+  },
+  {
+    "bytes_hex": "ed102034000a",
+    "capstone_mnemonic": "aeb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-arith",
+    "notes": "AEB: short BFP add"
+  },
+  {
+    "bytes_hex": "ed102034000b",
+    "capstone_mnemonic": "seb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-arith",
+    "notes": "SEB: short BFP subtract"
+  },
+  {
+    "bytes_hex": "ed102034000c",
+    "capstone_mnemonic": "mdeb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-arith",
+    "notes": "MDEB: short->long BFP multiply"
+  },
+  {
+    "bytes_hex": "ed102034000d",
+    "capstone_mnemonic": "deb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-arith",
+    "notes": "DEB: short BFP divide"
+  },
+  {
+    "bytes_hex": "ed1020340009",
+    "capstone_mnemonic": "ceb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-compare",
+    "notes": "CEB: short BFP compare"
+  },
+  {
+    "bytes_hex": "ed102034001a",
+    "capstone_mnemonic": "adb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-arith",
+    "notes": "ADB: long BFP add"
+  },
+  {
+    "bytes_hex": "ed102034001b",
+    "capstone_mnemonic": "sdb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-arith",
+    "notes": "SDB: long BFP subtract"
+  },
+  {
+    "bytes_hex": "ed102034001c",
+    "capstone_mnemonic": "mdb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-arith",
+    "notes": "MDB: long BFP multiply"
+  },
+  {
+    "bytes_hex": "ed102034001d",
+    "capstone_mnemonic": "ddb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-arith",
+    "notes": "DDB: long BFP divide"
+  },
+  {
+    "bytes_hex": "ed1020340019",
+    "capstone_mnemonic": "cdb",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-compare",
+    "notes": "CDB: long BFP compare"
+  },
+  {
+    "bytes_hex": "ed1020340024",
+    "capstone_mnemonic": "lde",
+    "capstone_op_str": "%f1, 0x34(%r2)",
+    "category": "fp-load",
+    "notes": "LDE: short->long HFP load lengthened"
+  },
+  {
+    "bytes_hex": "ed0020340025",
+    "capstone_mnemonic": "lxd",
+    "capstone_op_str": "%f0, 0x34(%r2)",
+    "category": "fp-load",
+    "notes": "LXD: long->extended HFP load lengthened (pair 0)"
+  },
+  {
+    "bytes_hex": "b3000012",
+    "capstone_mnemonic": "lpebr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "LPEBR: load positive short BFP"
+  },
+  {
+    "bytes_hex": "b3010012",
+    "capstone_mnemonic": "lnebr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "LNEBR: load negative short BFP"
+  },
+  {
+    "bytes_hex": "b3020012",
+    "capstone_mnemonic": "ltebr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-compare",
+    "notes": "LTEBR: load and test short BFP"
+  },
+  {
+    "bytes_hex": "b30a0012",
+    "capstone_mnemonic": "aebr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "AEBR: short BFP add register"
+  },
+  {
+    "bytes_hex": "b30b0012",
+    "capstone_mnemonic": "sebr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "SEBR: short BFP subtract register"
+  },
+  {
+    "bytes_hex": "b30c0012",
+    "capstone_mnemonic": "mdebr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "MDEBR: short->long BFP multiply register"
+  },
+  {
+    "bytes_hex": "b30d0012",
+    "capstone_mnemonic": "debr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "DEBR: short BFP divide register"
+  },
+  {
+    "bytes_hex": "b3090012",
+    "capstone_mnemonic": "cebr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-compare",
+    "notes": "CEBR: short BFP compare register"
+  },
+  {
+    "bytes_hex": "b3040012",
+    "capstone_mnemonic": "ldebr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-load",
+    "notes": "LDEBR: short->long BFP load lengthened register"
+  },
+  {
+    "bytes_hex": "b31a0012",
+    "capstone_mnemonic": "adbr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "ADBR: long BFP add register"
+  },
+  {
+    "bytes_hex": "b31b0012",
+    "capstone_mnemonic": "sdbr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "SDBR: long BFP subtract register"
+  },
+  {
+    "bytes_hex": "b31c0012",
+    "capstone_mnemonic": "mdbr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "MDBR: long BFP multiply register"
+  },
+  {
+    "bytes_hex": "b31d0012",
+    "capstone_mnemonic": "ddbr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-arith",
+    "notes": "DDBR: long BFP divide register"
+  },
+  {
+    "bytes_hex": "b3190012",
+    "capstone_mnemonic": "cdbr",
+    "capstone_op_str": "%f1, %f2",
+    "category": "fp-compare",
+    "notes": "CDBR: long BFP compare register"
+  },
+  {
+    "bytes_hex": "b3050002",
+    "capstone_mnemonic": "lxdbr",
+    "capstone_op_str": "%f0, %f2",
+    "category": "fp-load",
+    "notes": "LXDBR: long->extended BFP load lengthened (pair 0)"
+  },
+  {
+    "bytes_hex": "b3250042",
+    "capstone_mnemonic": "lxdr",
+    "capstone_op_str": "%f4, %f2",
+    "category": "fp-load",
+    "notes": "LXDR: long->extended HFP load lengthened (pair 4)"
+  },
+  {
+    "bytes_hex": "b3940012",
+    "capstone_mnemonic": "cefbr",
+    "capstone_op_str": "%f1, %r2",
+    "category": "fp-convert",
+    "notes": "CEFBR: 32-bit fixed -> short BFP"
+  },
+  {
+    "bytes_hex": "b3a40012",
+    "capstone_mnemonic": "cegbr",
+    "capstone_op_str": "%f1, %r2",
+    "category": "fp-convert",
+    "notes": "CEGBR: 64-bit fixed -> short BFP"
+  },
+  {
+    "bytes_hex": "b3c40012",
+    "capstone_mnemonic": "cegr",
+    "capstone_op_str": "%f1, %r2",
+    "category": "fp-convert",
+    "notes": "CEGR: 64-bit fixed -> short HFP"
+  },
+  {
+    "bytes_hex": "b3950012",
+    "capstone_mnemonic": "cdfbr",
+    "capstone_op_str": "%f1, %r2",
+    "category": "fp-convert",
+    "notes": "CDFBR: 32-bit fixed -> long BFP"
+  },
+  {
+    "bytes_hex": "b3a50012",
+    "capstone_mnemonic": "cdgbr",
+    "capstone_op_str": "%f1, %r2",
+    "category": "fp-convert",
+    "notes": "CDGBR: 64-bit fixed -> long BFP"
+  },
+  {
+    "bytes_hex": "b3c50012",
+    "capstone_mnemonic": "cdgr",
+    "capstone_op_str": "%f1, %r2",
+    "category": "fp-convert",
+    "notes": "CDGR: 64-bit fixed -> long HFP"
+  },
+  {
+    "bytes_hex": "b3570012",
+    "capstone_mnemonic": "fiebr",
+    "capstone_op_str": "%f1, 0, %f2",
+    "category": "fp-convert",
+    "notes": "FIEBR: load FP integer short BFP"
+  },
+  {
+    "bytes_hex": "b35f0012",
+    "capstone_mnemonic": "fidbr",
+    "capstone_op_str": "%f1, 0, %f2",
+    "category": "fp-convert",
+    "notes": "FIDBR: load FP integer long BFP"
+  },
+  {
+    "bytes_hex": "b3474004",
+    "capstone_mnemonic": "fixbr",
+    "capstone_op_str": "%f0, 4, %f4",
+    "category": "fp-convert",
+    "notes": "FIXBR: load FP integer extended BFP (pair 0 <- pair 4)"
+  },
+  {
+    "bytes_hex": "b3900012",
+    "capstone_mnemonic": "celfbr",
+    "capstone_op_str": "%f1, 0, %r2, 0",
+    "category": "fp-convert",
+    "notes": "CELFBR: 32-bit logical -> short BFP"
+  },
+  {
+    "bytes_hex": "b3910012",
+    "capstone_mnemonic": "cdlfbr",
+    "capstone_op_str": "%f1, 0, %r2, 0",
+    "category": "fp-convert",
+    "notes": "CDLFBR: 32-bit logical -> long BFP"
+  }
+]

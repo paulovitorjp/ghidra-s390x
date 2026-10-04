@@ -1,0 +1,20 @@
+# Build artifacts and backups
+__pycache__/
+*.pyc
+*.prebitfix
+*.bak
+*.bak_*
+*.log
+loaders/build/
+data/languages/test_decimal.sla
+data/languages/-n.sla
+data/languages/s390x.sla.bak
+tests/s390x_decode
+tests/ghidra_smoke_disasm.txt
+tests/ghidra_smoke_decompile.c
+tests/ghidra_cspec_dump.xml
+tests/ghidra_translator_dump.xml
+.DS_Store
+loaders/build-elfreloc/
+tests/s390x_pcode
+tests/listings_raw/
