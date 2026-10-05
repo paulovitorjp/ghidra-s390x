@@ -15,8 +15,7 @@ Licensed under the Apache License, Version 2.0. See `LICENSE`.
 - **HLASM validation on real z/OS:** 4,308 instruction encodings assembled
   with IBM HLASM R6.0 and validated against the SLEIGH decoder — every
   correctly-extracted byte sequence decodes (0 true SLEIGH gaps).
-  Plus 18 EBCDIC-sensitive vectors. See `tests/COVERAGE_REPORT.md`,
-  `tests/GAP_REPORT.md`, `tests/REGFIX_REPORT.md`.
+  Plus 18 EBCDIC-sensitive vectors. See `tests/VALIDATION.md`.
 - **Semantic validation:** 303/303 p-code vectors green (branches, TM,
   division, TRTT, FP, decimal, vector, load/store).
 - **Differential fuzzing:** 20,000 inputs, 0 crashes, 0 misdecodes.
@@ -28,8 +27,9 @@ Licensed under the Apache License, Version 2.0. See `LICENSE`.
   test files. Plus a z/OS Language Environment ABI compiler spec (`zos`)
   auto-selected by both loaders.
 
-See `INTEGRATION_REPORT.md` and `LOADERS.md` for the full reports, and
-`CONVENTIONS.md` for the authoring conventions used throughout the spec.
+See `LOADERS.md` for the loader design, `tests/VALIDATION.md` for validation
+results, `CHANGELOG.md` for history, and `CONVENTIONS.md` for the authoring
+conventions used throughout the spec.
 
 ## Layout
 
@@ -45,7 +45,7 @@ tests/               Differential corpora (4,326 validated encodings),
                      Ghidra smoke scripts
 hlasm_batches/       HLASM test batches (11 main + gap + EBCDIC + fix batches)
 CONVENTIONS.md       SLEIGH authoring conventions (read before editing the spec)
-INTEGRATION_REPORT.md End-to-end integration and validation report
+CHANGELOG.md         Dated history of fixes and milestones
 LOADERS.md           Loader design, formats, validation, honest boundaries
 ```
 
@@ -96,7 +96,7 @@ validated against real IBM HLASM R6.0 output on z/OS; the batch driver
   (SELECT family, MG/MGH, KMA, DFP convert variants) — validated against
   PoP text only until a higher-ARCH toolchain is available.
 - 29 confirmed SLEIGH gaps (privileged/system, DFP, unimplemented families)
-  documented in `tests/GAP_REPORT.md` with assembler ground-truth bytes.
+  documented in `tests/VALIDATION.md` with assembler ground-truth bytes.
 - Modern PM3+ program objects are detected but refused (IBM's binder layout is
   not publicly documented; no samples available to validate against).
 - CTL+RLD, overlay/scatter, and continued records are refused, not half-parsed.

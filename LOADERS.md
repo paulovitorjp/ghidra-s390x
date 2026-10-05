@@ -462,3 +462,27 @@ Note: the post-script directory must compile cleanly — Ghidra reports
 script compile failures misleadingly ("The class could not be found");
 when that happens, compile with `javac` against all Ghidra jars first to
 see the real error.
+
+## Real-module validation
+
+The loaders were also validated against a genuine assembler/link-editor
+produced load module (not just synthetic fixtures). The real IEWL bytes
+disagreed with the synthetic fixtures' guesses in six places — all fixed:
+
+1. **IDR record length off-by-one:** byte 1 is data byte count = record
+   length − 1, so skip is `1 + (img[pos+1] & 0xff)`.
+2. **RLD byte-count offset:** lives at record offset 6–7 (`RLDLEN`), not 4–5.
+3. **RLD item field order:** `R-pointer(2) P-pointer(2) flag(1) address(3)`,
+   not `flag P R addr`.
+4. **RLD continuation items:** when previous flag has `0x01` (`SAMERP`), next
+   item is 4 bytes (`flag + address`) reusing the same R&P.
+5. **RLD address is module-relative:** `imageBase + r.addr`, not
+   `imageBase + pItem.addr + r.addr`.
+6. **Text writes must clip to created blocks:** one memory block per CSECT,
+   but text records are module-contiguous with alignment gaps.
+
+Also implemented (not rejected): combined CTL+RLD records (`0x03`/`0x07`/
+`0x0F`), CESD `0x28` last-ESD marker, and flag-byte decode per the documented
+`TTTT LL S Tn` layout.
+
+Final result: 10/10 checks green against the real module in headless Ghidra.
