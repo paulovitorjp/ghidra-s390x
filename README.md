@@ -7,6 +7,23 @@ matters for real mainframe work — loaders for z/OS load modules.
 
 Licensed under the Apache License, Version 2.0. See `LICENSE`.
 
+## Why
+
+Companies run mainframe programs whose source code was lost long ago — the
+authors retired, the source libraries are gone, all that remains is a load
+module. Until now, you couldn't open that binary in a modern
+reverse-engineering tool.
+
+This module lets you import z/OS load modules and Linux s390x binaries into
+Ghidra and get back disassembly and decompiled C:
+
+- **Recover lost logic** — import a load module with no source and read what
+  it actually does, recovered as structured C.
+- **Audit undocumented code** — inspect third-party or legacy modules for
+  behavior the documentation never described.
+- **Analyze before migrating** — understand a legacy module's real behavior
+  before rewriting or moving it off the mainframe.
+
 ## Status
 
 - **Processor spec:** `data/languages/s390x.slaspec` + extension `.sinc` files,
