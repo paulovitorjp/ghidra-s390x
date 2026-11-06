@@ -40,8 +40,8 @@
 #     harness needs pcrel entries for brct/brctg/brxh/brxle/brxhg/brxlg.
 #  5. Base/index fields with value 0 attach to the 'zero' pseudo-
 #     register (shared convention). Cosmetic only; pcode is correct.
-#  6. 20-bit displacements display the low 12 bits only (existing RSY
-#     convention, e.g. SLLK); full value is used in the pcode EA.
+#  6. 20-bit displacements print the signed value (for example -0xa0),
+#     the same number the address calculation uses.
 #  7. This SLEIGH build rejects `if (cond) goto [computed];` (syntax
 #     error) even though bare `goto [computed];` is fine. All
 #     conditional computed branches are therefore written in the
@@ -112,6 +112,8 @@ attach variables [ RSYd_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14
 attach variables [ RSYd_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
 attach variables [ RSYd_R3c ] [ r1 r1 r3 r3 r5 r5 r7 r7 r9 r9 r11 r11 r13 r13 r15 r15 ];
 attach variables [ RSYd_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+RSYd_D20s: d is RSYd_DH2 & RSYd_DL2 [ d = (((RSYd_DH2 << 12) | RSYd_DL2) ^ 0x80000) - 0x80000; ] { export *[const]:8 d; }
 
 # RSId: RSI-format variant for BRANCH RELATIVE ON INDEX HIGH / LOW OR
 # EQUAL (BRXH/BRXLE). Same R3c trick. PoP RSI: OP(0-7) R1(8-11)
@@ -399,7 +401,7 @@ attach variables [ RIEd_R3c ] [ r1 r1 r3 r3 r5 r5 r7 r7 r9 r9 r11 r11 r13 r13 r1
 # existed yet). Full 64-bit subtract-1; branch iff result nonzero.
 # ---------------------------------------------------------------------------
 
-:bctg "bctg " RXYc_R1 "," RXYc_DXL2 "(" RXYc_X2 "," RXYc_B2 ")" is RXYc_OP=0xE3 & RXYc_OP2=0x46 & RXYc_R1 & RXYc_X2 & RXYc_B2 & RXYc_DXL2 & RXYc_DXH2
+:bctg "bctg " RXYc_R1 "," RXYc_D20s "(" RXYc_X2 "," RXYc_B2 ")" is RXYc_OP=0xE3 & RXYc_OP2=0x46 & RXYc_R1 & RXYc_X2 & RXYc_B2 & RXYc_DXL2 & RXYc_DXH2 & RXYc_D20s
 {
     local ea:8;
     ea_D20(ea, RXYc_B2, RXYc_X2, RXYc_DXH2, RXYc_DXL2);
@@ -540,7 +542,7 @@ RIEd_Target: RIEd_TargetLoc is RIEd_TargetLoc { export *:8 RIEd_TargetLoc; }
 # 64-bit operands and a 20-bit displacement EA.
 # ---------------------------------------------------------------------------
 
-:bxhg "bxhg " RSYd_R1 "," RSYd_R3 "," RSYd_DL2 "(" RSYd_B2 ")" is RSYd_OP=0xEB & RSYd_OP2=0x44 & RSYd_R1 & RSYd_R3 & RSYd_R3c & RSYd_B2 & RSYd_DL2 & RSYd_DH2
+:bxhg "bxhg " RSYd_R1 "," RSYd_R3 "," RSYd_D20s "(" RSYd_B2 ")" is RSYd_OP=0xEB & RSYd_OP2=0x44 & RSYd_R1 & RSYd_R3 & RSYd_R3c & RSYd_B2 & RSYd_DL2 & RSYd_DH2 & RSYd_D20s
 {
     local ea:8;
     local inc:8;
@@ -554,7 +556,7 @@ RIEd_Target: RIEd_TargetLoc is RIEd_TargetLoc { export *:8 RIEd_TargetLoc; }
     <bxhg_skip>
 }
 
-:bxleg "bxleg " RSYd_R1 "," RSYd_R3 "," RSYd_DL2 "(" RSYd_B2 ")" is RSYd_OP=0xEB & RSYd_OP2=0x45 & RSYd_R1 & RSYd_R3 & RSYd_R3c & RSYd_B2 & RSYd_DL2 & RSYd_DH2
+:bxleg "bxleg " RSYd_R1 "," RSYd_R3 "," RSYd_D20s "(" RSYd_B2 ")" is RSYd_OP=0xEB & RSYd_OP2=0x45 & RSYd_R1 & RSYd_R3 & RSYd_R3c & RSYd_B2 & RSYd_DL2 & RSYd_DH2 & RSYd_D20s
 {
     local ea:8;
     local inc:8;

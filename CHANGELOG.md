@@ -13,8 +13,12 @@
   and LARL use that signed target. A negative BRASL no longer wraps into
   the high half of the 64-bit address space.
 - LAY and XY print the signed 20-bit displacement and omit a zero index.
-  Other long-displacement forms already compute the signed address; their
-  listing text still shows the low 12 bits.
+  Other RXY, RSY, and SIY constructors that use that field print the same
+  signed value, for a positive displacement and for a negative one.
+  RXE constructors that require a zero high half print that field too;
+  with the high half clear, the signed value equals the low 12 bits.
+  LEY, LDY, STEY, and STDY reassemble their combined displacement so the
+  address matches the printed value.
 - The constant `zero` base/index is tracked as 0 and assigned at function
   entry so it is not a free decompiler input.
 

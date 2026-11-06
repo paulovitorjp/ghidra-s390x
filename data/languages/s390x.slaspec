@@ -423,6 +423,13 @@ macro rel_RI32(dest, RI) {
     dest = inst_start + dest * 2;
 }
 
+# Printed form of a 20-bit displacement (DH is the high byte, including the
+# sign). The pattern still carries the raw halves for ea_D20.
+RXYa_D20s: d is RXYa_DH2 & RXYa_DL2 [ d = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ] { export *[const]:8 d; }
+RXYc_D20s: d is RXYc_DXH2 & RXYc_DXL2 [ d = (((RXYc_DXH2 << 12) | RXYc_DXL2) ^ 0x80000) - 0x80000; ] { export *[const]:8 d; }
+RSYa_D20s: d is RSYa_DH2 & RSYa_DL2 [ d = (((RSYa_DH2 << 12) | RSYa_DL2) ^ 0x80000) - 0x80000; ] { export *[const]:8 d; }
+RSYb_D20s: d is RSYb_DH2 & RSYb_DL2 [ d = (((RSYb_DH2 << 12) | RSYb_DL2) ^ 0x80000) - 0x80000; ] { export *[const]:8 d; }
+
 # ---------------------------------------------------------------------------
 # Instruction constructors.
 # See CONVENTIONS.md for the recipe for adding one constructor.

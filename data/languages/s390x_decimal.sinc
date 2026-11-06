@@ -129,6 +129,8 @@ attach variables [ RSYan_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 attach variables [ RSYan_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
 attach variables [ RSYan_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
 
+RSYan_D20s: d is RSYan_DH2 & RSYan_DL2 [ d = (((RSYan_DH2 << 12) | RSYan_DL2) ^ 0x80000) - 0x80000; ] { export *[const]:8 d; }
+
 # ---------------------------------------------------------------------------
 # Packed-decimal digit access macros
 #
@@ -2974,9 +2976,8 @@ macro ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2) {
 # completion) approximated as run-to-completion, as for TRE. Odd R1/R3
 # or odd length: specification exception, modeled as a no-op. R1=R3:
 # the pair is updated once (PoP programming note).
-# Display shows DL2 only (core RSY convention); the harness maps it to
-# the full 20-bit displacement when comparing against Capstone.
-:CLCLU "CLCLU " RSYan_R1 "," RSYan_R3 "," RSYan_DL2 "(" RSYan_B2 ")" is RSYan_OP=0xEB & RSYan_R1 & RSYan_R3 & RSYan_B2 & RSYan_DL2 & RSYan_DH2 & RSYan_OP2=0x8F & RSYan_R1N & RSYan_R3N
+# The displacement operand prints the signed 20-bit value.
+:CLCLU "CLCLU " RSYan_R1 "," RSYan_R3 "," RSYan_D20s "(" RSYan_B2 ")" is RSYan_OP=0xEB & RSYan_R1 & RSYan_R3 & RSYan_B2 & RSYan_DL2 & RSYan_DH2 & RSYan_OP2=0x8F & RSYan_R1N & RSYan_R3N & RSYan_D20s
 {
     local r1v:8; local r3v:8;
     local ad1:8; local n1:8; local ad2:8; local n2:8;

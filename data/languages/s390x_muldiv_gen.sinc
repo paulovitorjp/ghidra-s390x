@@ -135,7 +135,7 @@
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
     }
 
-:MFY_0 "MFY " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_0 "MFY " "0" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -150,7 +150,7 @@
         r1 = (r1 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:MFY_2 "MFY " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_2 "MFY " "2" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -165,7 +165,7 @@
         r3 = (r3 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:MFY_4 "MFY " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_4 "MFY " "4" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -180,7 +180,7 @@
         r5 = (r5 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:MFY_6 "MFY " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_6 "MFY " "6" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -195,7 +195,7 @@
         r7 = (r7 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:MFY_8 "MFY " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_8 "MFY " "8" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -210,7 +210,7 @@
         r9 = (r9 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:MFY_10 "MFY " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_10 "MFY " "10" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -225,7 +225,7 @@
         r11 = (r11 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:MFY_12 "MFY " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_12 "MFY " "12" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -240,7 +240,7 @@
         r13 = (r13 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:MFY_14 "MFY " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_14 "MFY " "14" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -255,7 +255,7 @@
         r15 = (r15 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:MFY_odd "MFY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MFY_odd "MFY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x5C & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         # R1 is odd: the hardware raises a specification exception
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
@@ -363,7 +363,7 @@
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
     }
 
-:MG_0 "MG " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_0 "MG " "0" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -393,7 +393,7 @@
         r1 = lo;
     }
 
-:MG_2 "MG " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_2 "MG " "2" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -423,7 +423,7 @@
         r3 = lo;
     }
 
-:MG_4 "MG " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_4 "MG " "4" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -453,7 +453,7 @@
         r5 = lo;
     }
 
-:MG_6 "MG " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_6 "MG " "6" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -483,7 +483,7 @@
         r7 = lo;
     }
 
-:MG_8 "MG " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_8 "MG " "8" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -513,7 +513,7 @@
         r9 = lo;
     }
 
-:MG_10 "MG " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_10 "MG " "10" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -543,7 +543,7 @@
         r11 = lo;
     }
 
-:MG_12 "MG " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_12 "MG " "12" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -573,7 +573,7 @@
         r13 = lo;
     }
 
-:MG_14 "MG " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_14 "MG " "14" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -603,13 +603,13 @@
         r15 = lo;
     }
 
-:MG_odd "MG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MG_odd "MG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x84 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         # R1 is odd: the hardware raises a specification exception
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
     }
 
-:ML_0 "ML " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_0 "ML " "0" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -623,7 +623,7 @@
         r1 = (r1 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:ML_2 "ML " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_2 "ML " "2" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -637,7 +637,7 @@
         r3 = (r3 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:ML_4 "ML " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_4 "ML " "4" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -651,7 +651,7 @@
         r5 = (r5 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:ML_6 "ML " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_6 "ML " "6" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -665,7 +665,7 @@
         r7 = (r7 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:ML_8 "ML " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_8 "ML " "8" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -679,7 +679,7 @@
         r9 = (r9 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:ML_10 "ML " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_10 "ML " "10" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -693,7 +693,7 @@
         r11 = (r11 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:ML_12 "ML " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_12 "ML " "12" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -707,7 +707,7 @@
         r13 = (r13 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:ML_14 "ML " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_14 "ML " "14" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -721,7 +721,7 @@
         r15 = (r15 & (0xFFFFFFFF << 32)) | (p & 0xffffffff);
     }
 
-:ML_odd "ML " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:ML_odd "ML " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x96 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         # R1 is odd: the hardware raises a specification exception
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
@@ -813,7 +813,7 @@
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
     }
 
-:MLG_0 "MLG " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_0 "MLG " "0" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -824,7 +824,7 @@
         r1 = lo;
     }
 
-:MLG_2 "MLG " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_2 "MLG " "2" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -835,7 +835,7 @@
         r3 = lo;
     }
 
-:MLG_4 "MLG " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_4 "MLG " "4" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -846,7 +846,7 @@
         r5 = lo;
     }
 
-:MLG_6 "MLG " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_6 "MLG " "6" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -857,7 +857,7 @@
         r7 = lo;
     }
 
-:MLG_8 "MLG " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_8 "MLG " "8" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -868,7 +868,7 @@
         r9 = lo;
     }
 
-:MLG_10 "MLG " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_10 "MLG " "10" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -879,7 +879,7 @@
         r11 = lo;
     }
 
-:MLG_12 "MLG " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_12 "MLG " "12" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -890,7 +890,7 @@
         r13 = lo;
     }
 
-:MLG_14 "MLG " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_14 "MLG " "14" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -901,7 +901,7 @@
         r15 = lo;
     }
 
-:MLG_odd "MLG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:MLG_odd "MLG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x86 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         # R1 is odd: the hardware raises a specification exception
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
@@ -1197,7 +1197,7 @@
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
     }
 
-:DL_0 "DL " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_0 "DL " "0" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1213,7 +1213,7 @@
         r1 = (r1 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
     }
 
-:DL_2 "DL " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_2 "DL " "2" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1229,7 +1229,7 @@
         r3 = (r3 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
     }
 
-:DL_4 "DL " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_4 "DL " "4" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1245,7 +1245,7 @@
         r5 = (r5 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
     }
 
-:DL_6 "DL " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_6 "DL " "6" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1261,7 +1261,7 @@
         r7 = (r7 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
     }
 
-:DL_8 "DL " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_8 "DL " "8" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1277,7 +1277,7 @@
         r9 = (r9 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
     }
 
-:DL_10 "DL " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_10 "DL " "10" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1293,7 +1293,7 @@
         r11 = (r11 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
     }
 
-:DL_12 "DL " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_12 "DL " "12" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1309,7 +1309,7 @@
         r13 = (r13 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
     }
 
-:DL_14 "DL " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_14 "DL " "14" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1325,7 +1325,7 @@
         r15 = (r15 & (0xFFFFFFFF << 32)) | (q & 0xffffffff);
     }
 
-:DL_odd "DL " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DL_odd "DL " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x97 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         # R1 is odd: the hardware raises a specification exception
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
@@ -1433,7 +1433,7 @@
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
     }
 
-:DLG_0 "DLG " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_0 "DLG " "0" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1446,7 +1446,7 @@
         r1 = q;
     }
 
-:DLG_2 "DLG " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_2 "DLG " "2" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1459,7 +1459,7 @@
         r3 = q;
     }
 
-:DLG_4 "DLG " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_4 "DLG " "4" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1472,7 +1472,7 @@
         r5 = q;
     }
 
-:DLG_6 "DLG " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_6 "DLG " "6" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1485,7 +1485,7 @@
         r7 = q;
     }
 
-:DLG_8 "DLG " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_8 "DLG " "8" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1498,7 +1498,7 @@
         r9 = q;
     }
 
-:DLG_10 "DLG " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_10 "DLG " "10" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1511,7 +1511,7 @@
         r11 = q;
     }
 
-:DLG_12 "DLG " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_12 "DLG " "12" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1524,7 +1524,7 @@
         r13 = q;
     }
 
-:DLG_14 "DLG " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_14 "DLG " "14" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1537,7 +1537,7 @@
         r15 = q;
     }
 
-:DLG_odd "DLG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DLG_odd "DLG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x87 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         # R1 is odd: the hardware raises a specification exception
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
@@ -1637,7 +1637,7 @@
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
     }
 
-:DSG_0 "DSG " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_0 "DSG " "0" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1649,7 +1649,7 @@
         r1 = q;
     }
 
-:DSG_2 "DSG " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_2 "DSG " "2" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1661,7 +1661,7 @@
         r3 = q;
     }
 
-:DSG_4 "DSG " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_4 "DSG " "4" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1673,7 +1673,7 @@
         r5 = q;
     }
 
-:DSG_6 "DSG " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_6 "DSG " "6" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1685,7 +1685,7 @@
         r7 = q;
     }
 
-:DSG_8 "DSG " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_8 "DSG " "8" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1697,7 +1697,7 @@
         r9 = q;
     }
 
-:DSG_10 "DSG " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_10 "DSG " "10" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1709,7 +1709,7 @@
         r11 = q;
     }
 
-:DSG_12 "DSG " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_12 "DSG " "12" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1721,7 +1721,7 @@
         r13 = q;
     }
 
-:DSG_14 "DSG " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_14 "DSG " "14" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1733,7 +1733,7 @@
         r15 = q;
     }
 
-:DSG_odd "DSG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSG_odd "DSG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x0D & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         # R1 is odd: the hardware raises a specification exception
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
@@ -1825,7 +1825,7 @@
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.
     }
 
-:DSGF_0 "DSGF " "0" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_0 "DSGF " "0" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=0 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1839,7 +1839,7 @@
         r1 = q;
     }
 
-:DSGF_2 "DSGF " "2" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_2 "DSGF " "2" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=2 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1853,7 +1853,7 @@
         r3 = q;
     }
 
-:DSGF_4 "DSGF " "4" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_4 "DSGF " "4" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=4 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1867,7 +1867,7 @@
         r5 = q;
     }
 
-:DSGF_6 "DSGF " "6" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_6 "DSGF " "6" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=6 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1881,7 +1881,7 @@
         r7 = q;
     }
 
-:DSGF_8 "DSGF " "8" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_8 "DSGF " "8" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=8 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1895,7 +1895,7 @@
         r9 = q;
     }
 
-:DSGF_10 "DSGF " "10" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_10 "DSGF " "10" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=10 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1909,7 +1909,7 @@
         r11 = q;
     }
 
-:DSGF_12 "DSGF " "12" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_12 "DSGF " "12" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=12 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1923,7 +1923,7 @@
         r13 = q;
     }
 
-:DSGF_14 "DSGF " "14" "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_14 "DSGF " "14" "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1=14 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         local ea:8;
         ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -1937,7 +1937,7 @@
         r15 = q;
     }
 
-:DSGF_odd "DSGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2
+:DSGF_odd "DSGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_OP2=0x1D & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s
     {
         # R1 is odd: the hardware raises a specification exception
         # (PoP 7-290/7-291/7-345/7-347). Decode only; not modeled.

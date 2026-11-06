@@ -94,7 +94,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LY — LOAD (long displacement).
-:LY "LY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x58
+:LY "LY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x58 & RXYa_D20s
 {
     local ea:8;
     local w:4;
@@ -108,7 +108,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 # ---------------------------------------------------------------------------
 
 # LG — LOAD (64): 8-byte second operand -> bits 0-63.
-:LG "LG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x04
+:LG "LG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x04 & RXYa_D20s
 {
     local ea:8;
     ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -132,7 +132,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LHY — LOAD HALFWORD (long displacement).
-:LHY "LHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x78
+:LHY "LHY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x78 & RXYa_D20s
 {
     local ea:8;
     local h:2;
@@ -144,7 +144,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LB — LOAD BYTE: 8-bit operand sign-extended to 32 bits -> bits 32-63.
-:LB "LB " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x76
+:LB "LB " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x76 & RXYa_D20s
 {
     local ea:8;
     local b:1;
@@ -156,7 +156,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LGB — LOAD BYTE (64): 8-bit operand sign-extended to 64 bits.
-:LGB "LGB " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x77
+:LGB "LGB " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x77 & RXYa_D20s
 {
     local ea:8;
     local b:1;
@@ -166,7 +166,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LGH — LOAD HALFWORD (64): 16-bit operand sign-extended to 64 bits.
-:LGH "LGH " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x15
+:LGH "LGH " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x15 & RXYa_D20s
 {
     local ea:8;
     local h:2;
@@ -247,7 +247,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # STY — STORE (long displacement).
-:STY "STY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x50
+:STY "STY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x50 & RXYa_D20s
 {
     local ea:8;
     local w:4;
@@ -255,7 +255,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # STG — STORE (64): bits 0-63 of R1 -> 8-byte second operand.
-:STG "STG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x24
+:STG "STG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x24 & RXYa_D20s
 {
     local ea:8;
     ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -271,7 +271,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # STHY — STORE HALFWORD (long displacement).
-:STHY "STHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x70
+:STHY "STHY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x70 & RXYa_D20s
 {
     local ea:8;
     local h:2;
@@ -298,7 +298,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # STCY — STORE CHARACTER (long displacement).
-:STCY "STCY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x72
+:STCY "STCY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x72 & RXYa_D20s
 {
     local ea:8;
     local b:1;
