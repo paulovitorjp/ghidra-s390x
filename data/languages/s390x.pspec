@@ -6,7 +6,14 @@
 
   <programcounter register="pswia"/>
 
+  <context_data>
+    <tracked_set space="ram">
+      <set name="zero" val="0"/>
+    </tracked_set>
+  </context_data>
+
   <register_data>
+    <register name="zero" hidden="true"/>
     <register name="r0"/>
     <register name="r1"/>
     <register name="r2"/>

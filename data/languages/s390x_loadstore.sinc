@@ -210,7 +210,16 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LAY — LOAD ADDRESS (long displacement).
-:LAY "LAY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x71
+# The 20-bit displacement is signed (DH is the high byte, including the
+# sign). A zero index is omitted from the display. Address math is ea_D20.
+:LAY_nox "LAY " RXYa_R1 "," layD "(" RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x71 & RXYa_X2n=0 [ layD = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ]
+{
+    local ea:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    RXYa_R1 = ea;
+}
+
+:LAY "LAY " RXYa_R1 "," layD "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x71 & RXYa_X2n [ layD = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ]
 {
     local ea:8;
     ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -218,7 +227,9 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LARL — LOAD ADDRESS RELATIVE LONG: R1 = inst_start + 2*sign_extend(RI2).
-:LARL "LARL " RILb_R1 "," RILb_RI2 is RILb_OP=0xC0 & RILb_R1 & RILb_OPCD=0x0 & RILb_RI2
+# The printed operand is that signed absolute target. rel_RI32 is the value
+# written into the register (same arithmetic, independent of the display).
+:LARL "LARL " RILb_R1 "," larlTgt is RILb_OP=0xC0 & RILb_R1 & RILb_OPCD=0x0 & RILb_RI2 [ larlTgt = inst_start + (((RILb_RI2 ^ 0x80000000) - 0x80000000) * 2); ]
 {
     rel_RI32(RILb_R1, RILb_RI2);
 }

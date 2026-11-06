@@ -767,7 +767,19 @@ macro cc_tm16(field, r, mask) {
     cc_logic(r);
 }
 
-:XY "XY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x57
+:XY_nox "XY " RXYa_R1 "," xyD "(" RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x57 & RXYa_X2n=0 [ xyD = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ]
+{
+    local ea:8;
+    local m32:4;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m32 = *:4 ea;
+    r = (RXYa_R1 ^ zext(m32)) & 0xffffffff;
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:XY "XY " RXYa_R1 "," xyD "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x57 & RXYa_X2n [ xyD = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ]
 {
     local ea:8;
     local m32:4;

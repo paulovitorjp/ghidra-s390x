@@ -128,7 +128,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bhr "bhr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x2 & RRb_R2 & RRb_R2n
@@ -147,7 +151,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bnler "bnler " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x3 & RRb_R2 & RRb_R2n
@@ -166,7 +174,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :blr "blr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x4 & RRb_R2 & RRb_R2n
@@ -185,7 +197,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bnher "bnher " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x5 & RRb_R2 & RRb_R2n
@@ -204,7 +220,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :blhr "blhr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x6 & RRb_R2 & RRb_R2n
@@ -223,7 +243,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bner "bner " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x7 & RRb_R2 & RRb_R2n
@@ -242,7 +266,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :ber "ber " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x8 & RRb_R2 & RRb_R2n
@@ -261,7 +289,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bnlhr "bnlhr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0x9 & RRb_R2 & RRb_R2n
@@ -280,7 +312,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bher "bher " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xA & RRb_R2 & RRb_R2n
@@ -299,7 +335,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bnlr "bnlr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xB & RRb_R2 & RRb_R2n
@@ -318,7 +358,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bler "bler " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xC & RRb_R2 & RRb_R2n
@@ -337,7 +381,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bnhr "bnhr " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xD & RRb_R2 & RRb_R2n
@@ -356,7 +404,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :bnor "bnor " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xE & RRb_R2 & RRb_R2n
@@ -375,7 +427,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 :br_ret "br " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xF & RRb_R2 & RRb_R2n=14
@@ -394,7 +450,7 @@ macro rel_RI16(dest, RI) {
     # programming note 3). The condition is on the mask FIELD (=15), not
     # on the register value — the old "if (RRb_R2 != 0)" p-code tested
     # the register contents, which is wrong.
-    goto RRb_R2;
+    goto [RRb_R2];
 }
 
 :br_nop "br " RRb_R2 is RRb_OP=0x07 & RRb_M1=0xF & RRb_R2 & RRb_R2n=0
@@ -418,7 +474,11 @@ macro rel_RI16(dest, RI) {
     _b_ccval = cc;
     _b_bit = 8 >> _b_ccval;
     _b_r2n = RRb_R2n;
-    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto RRb_R2;
+    if (((_b_m & _b_bit) != 0) && (_b_r2n != 0)) goto <ind_go>;
+    goto <ind_skip>;
+<ind_go>
+    goto [RRb_R2];
+<ind_skip>
 }
 
 # ---------------------------------------------------------------------------
@@ -436,11 +496,11 @@ macro rel_RI16(dest, RI) {
 # ---------------------------------------------------------------------------
 RIc_TargetLoc: tgt is RIc_RI2 [ tgt = inst_start + RIc_RI2 * 2; ] { export *[const]:8 tgt; }
 RIc_Target: RIc_TargetLoc is RIc_TargetLoc { export *:8 RIc_TargetLoc; }
-RILc_TargetLoc: tgt is RILc_RI2 [ tgt = inst_start + RILc_RI2 * 2; ] { export *[const]:8 tgt; }
+RILc_TargetLoc: tgt is RILc_RI2 [ tgt = inst_start + (((RILc_RI2 ^ 0x80000000) - 0x80000000) * 2); ] { export *[const]:8 tgt; }
 RILc_Target: RILc_TargetLoc is RILc_TargetLoc { export *:8 RILc_TargetLoc; }
 RIb_TargetLoc: tgt is RIb_RI2 [ tgt = inst_start + RIb_RI2 * 2; ] { export *[const]:8 tgt; }
 RIb_Target: RIb_TargetLoc is RIb_TargetLoc { export *:8 RIb_TargetLoc; }
-RILb_TargetLoc: tgt is RILb_RI2 [ tgt = inst_start + RILb_RI2 * 2; ] { export *[const]:8 tgt; }
+RILb_TargetLoc: tgt is RILb_RI2 [ tgt = inst_start + (((RILb_RI2 ^ 0x80000000) - 0x80000000) * 2); ] { export *[const]:8 tgt; }
 RILb_Target: RILb_TargetLoc is RILb_TargetLoc { export *:8 RILb_TargetLoc; }
 
 :jnop "jnop " RIc_RI2 is RIc_OP=0xA7 & RIc_M1=0x0 & RIc_OP2=0x4 & RIc_RI2
@@ -754,22 +814,31 @@ RILb_Target: RILb_TargetLoc is RILb_TargetLoc { export *:8 RILb_TargetLoc; }
     call RILb_Target;
 }
 
-:basr "basr " RR_R1 "," RR_R2 is RR_OP=0x0D & RR_R1 & RR_R2
+:basr "basr " RR_R1 "," RR_R2 is RR_OP=0x0D & RR_R1 & RR_R2 & RR_R2n != 0
 {
-    # PoP 7-37: link always stored; when RR_R2=0 no branch occurs.
+    # Link is always stored. R2 field nonzero: indirect branch and link.
+    # RR_R2n is the field number, so R2=0 is a different constructor.
     RR_R1 = inst_next;
-    if (RR_R2 == 0) goto <call_skip_1>;
-    call RR_R2;
-    <call_skip_1>
+    call [RR_R2];
 }
 
-:balr "balr " RR_R1 "," RR_R2 is RR_OP=0x05 & RR_R1 & RR_R2
+:basr_link "basr " RR_R1 "," RR_R2 is RR_OP=0x0D & RR_R1 & RR_R2 & RR_R2n=0
 {
-    # PoP 7-36: as BASR (compatibility instruction; prefer BASR/BRASL).
+    # R2 field is zero: load the updated instruction address, do not branch.
     RR_R1 = inst_next;
-    if (RR_R2 == 0) goto <call_skip_2>;
-    call RR_R2;
-    <call_skip_2>
+}
+
+:balr "balr " RR_R1 "," RR_R2 is RR_OP=0x05 & RR_R1 & RR_R2 & RR_R2n != 0
+{
+    # Same rule as BASR. Indirect call through the register named by R2.
+    RR_R1 = inst_next;
+    call [RR_R2];
+}
+
+:balr_link "balr " RR_R1 "," RR_R2 is RR_OP=0x05 & RR_R1 & RR_R2 & RR_R2n=0
+{
+    # BALR R1,0: link only. This is the "address of the next instruction" idiom.
+    RR_R1 = inst_next;
 }
 
 :bal "bal " RXa_R1 "," RXa_D2 "(" RXa_X2 "," RXa_B2 ")" is RXa_OP=0x45 & RXa_R1 & RXa_X2 & RXa_B2 & RXa_D2
@@ -792,16 +861,19 @@ RILb_Target: RILb_TargetLoc is RILb_TargetLoc { export *:8 RILb_TargetLoc; }
     call [ea];
 }
 
-:bakr "bakr " RRE_R1 "," RRE_R2 is RRE_OP=0xB240 & RRE_IGN & RRE_R1 & RRE_R2
+:bakr "bakr " RRE_R1 "," RRE_R2 is RRE_OP=0xB240 & RRE_IGN & RRE_R1 & RRE_R2 & RRE_R2n != 0
 {
     # TODO: BAKR pushes a branch-state entry (PSW, registers, return
     # address) onto the linkage stack (PoP 10-11); the stack manipulation
     # is not modeled. RRE_R1 only selects return-address formation for the
-    # stacked entry, so no link register is written here. When RRE_R2=0 no
-    # branch occurs.
-    if (RRE_R2 == 0) goto <call_skip_3>;
-    call RRE_R2;
-    <call_skip_3>
+    # stacked entry, so no link register is written here. R2 field nonzero:
+    # indirect branch. The R2=0 case is a separate constructor.
+    call [RRE_R2];
+}
+
+:bakr_nobr "bakr " RRE_R1 "," RRE_R2 is RRE_OP=0xB240 & RRE_IGN & RRE_R1 & RRE_R2 & RRE_R2n=0
+{
+    # R2 field is zero: no branch. Linkage-stack push is not modeled.
 }
 
 :pr "pr" is E_OP=0x01 & E_OP2=0x01

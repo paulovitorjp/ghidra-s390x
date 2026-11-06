@@ -424,7 +424,7 @@ attach variables [ RIEd_R3c ] [ r1 r1 r3 r3 r5 r5 r7 r7 r9 r9 r11 r11 r13 r13 r1
     cnt = (RRd_R1 - 1) & 0xffffffff;
     RRd_R1 = (RRd_R1 & (0xFFFFFFFF << 32)) | cnt;
     if (cnt == 0) goto <bctr_skip>;
-    goto RRd_R2;
+    goto [RRd_R2];
     <bctr_skip>
 }
 
@@ -446,7 +446,7 @@ attach variables [ RIEd_R3c ] [ r1 r1 r3 r3 r5 r5 r7 r7 r9 r9 r11 r11 r13 r13 r1
     # R2 field != 0: decrement, branch to R2 iff result nonzero.
     RREd_R1 = RREd_R1 - 1;
     if (RREd_R1 == 0) goto <bctgr_skip>;
-    goto RREd_R2;
+    goto [RREd_R2];
     <bctgr_skip>
 }
 

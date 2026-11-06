@@ -88,6 +88,7 @@
         </pentry>
       </output>
       <unaffected>
+        <register name="zero"/>
         <register name="r2"/>
         <register name="r3"/>
         <register name="r4"/>
@@ -109,6 +110,11 @@
         <register name="f14"/>
         <register name="f15"/>
       </unaffected>
+      <pcode inject="uponentry">
+        <body><![CDATA[
+zero = 0:8;
+]]></body>
+      </pcode>
     </prototype>
   </default_proto>
 

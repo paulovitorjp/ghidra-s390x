@@ -34,6 +34,7 @@ import ghidra.program.model.lang.*;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
+import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.symbol.*;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -412,7 +413,9 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
             Address start = program.getAddressFactory().getDefaultAddressSpace()
                 .getAddress(cursor);
             try {
-                mem.createInitializedBlock(bn, start, e.length, (byte) 0, monitor, false);
+                MemoryBlock blk = mem.createInitializedBlock(bn, start, e.length, (byte) 0, monitor, false);
+                // Instructions and mutable working storage share the section.
+                blk.setPermissions(true, true, true);
                 baseByEsd.put(e.id, cursor);
             } catch (Exception ex) {
                 log.appendMsg("could not create block " + bn + ": " + ex.getMessage());

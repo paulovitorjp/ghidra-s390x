@@ -87,12 +87,14 @@ public:
 int main(int argc, char **argv)
 {
   using namespace ghidra;
-  if (argc != 3) {
-    cerr << "USAGE: " << argv[0] << " <s390x.sla> <hexbytes>" << endl;
+  if (argc != 3 && argc != 4) {
+    cerr << "USAGE: " << argv[0] << " <s390x.sla> <hexbytes> [baseaddr]" << endl;
     return 2;
   }
   std::string slafile(argv[1]);
   std::string hex(argv[2]);
+  uintb base = 0;
+  if (argc == 4) base = (uintb)strtoull(argv[3], 0, 0);
 
   std::vector<uint1> bytes;
   for (size_t i = 0; i + 1 < hex.size(); i += 2)
@@ -103,7 +105,7 @@ int main(int argc, char **argv)
   ElementId::initialize();
 
   try {
-    HexLoadImage loader(0x0, bytes);
+    HexLoadImage loader(base, bytes);
     ContextInternal context;
     std::ostringstream ss;
     ss << "<sleigh>" << slafile << "</sleigh>";
@@ -116,7 +118,7 @@ int main(int argc, char **argv)
     trans.initialize(docstorage);
 
     CaptureEmit emit;
-    Address addr(trans.getDefaultCodeSpace(), 0);
+    Address addr(trans.getDefaultCodeSpace(), base);
     int4 length = 0;
     try {
       length = trans.printAssembly(emit, addr);

@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-11-06 — Entry recovery, indirect register branches, signed relatives
+
+- Load-module and GOFF section blocks are readable, writable, and executable.
+  A non-executable section made entry-point analysis drop a subroutine whose
+  prologue ends in a register branch.
+- BCR/BR, BCTR, and BCTGR branch to the address held in the register.
+- BALR, BASR, and BAKR test the R2 field. R2=0 stores a link (BALR/BASR) or
+  performs no branch (BAKR) and does not emit a call. Any other R2 is an
+  indirect call or branch.
+- 32-bit PC-relative operands sign-extend the halfword count. BRASL/BRCL
+  and LARL use that signed target. A negative BRASL no longer wraps into
+  the high half of the 64-bit address space.
+- LAY and XY print the signed 20-bit displacement and omit a zero index.
+  Other long-displacement forms already compute the signed address; their
+  listing text still shows the low 12 bits.
+- The constant `zero` base/index is tracked as 0 and assigned at function
+  entry so it is not a free decompiler input.
+
+Not claimed: a full COBOL front end. Inline parameter lists that a callee
+skips before returning are still ordinary bytes. Invalid packed digit or
+sign codes still do not raise a data exception. PACK/UNPK placed every
+digit except the units digit in the wrong nibble, and CP treated equal
+nonzero magnitudes with opposite signs as equal; both are corrected.
+
 ## 2026-10-04 — HLASM exhaustive validation complete
 
 All 4,356 SLEIGH constructors validated against IBM HLASM R6.0 on z/OS:

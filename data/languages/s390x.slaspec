@@ -49,6 +49,7 @@ define token RR(16)
     RR_OP = (8,15)
     RR_R1 = (4,7)
     RR_R2 = (0,3)
+    RR_R2n = (0,3)
 ;
 
 # RRE: 4 bytes. OP(0-15), ignored byte (16-23), R1(24-27), R2(28-31).
@@ -57,6 +58,7 @@ define token RRE(32)
     RRE_IGN = (8,15)
     RRE_R1 = (4,7)
     RRE_R2 = (0,3)
+    RRE_R2n = (0,3)
 ;
 
 # RXa: 4 bytes. OP(0-7), R1(8-11), X2(12-15), B2(16-19), D2(20-31).
@@ -83,6 +85,7 @@ define token RXYa(48)
     RXYa_OP = (40,47)
     RXYa_R1 = (36,39)
     RXYa_X2 = (32,35)
+    RXYa_X2n = (32,35)
     RXYa_B2 = (28,31)
     RXYa_DL2 = (16,27)
     RXYa_DH2 = (8,15)

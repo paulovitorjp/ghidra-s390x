@@ -295,21 +295,28 @@ def _simulate(ops, cc_val, regs, mem=None):
             # SLEIGH CBRANCH: in0 = target, in1 = condition.
             # Intra-p-code labels print as a SIGNED relative const offset:
             # target op index = index of this op + offset.
+            # A register target is a direct branch into the register space,
+            # which is not an indirect branch.
             if v(1) != 0:
                 tgt = ins[0]
                 if tgt[0] == "const":
                     pc = pc + branch_offset(tgt)
                     continue
-                return (("branchind", tgt[1] if tgt[0] == "reg" else repr(tgt)), state)
+                if tgt[0] == "reg":
+                    return (("direct_reg", tgt[1]), state)
+                return (("branchind", repr(tgt)), state)
         elif name == "BRANCH":
-            # 'goto <register>' compiles to BRANCH with a register destination
-            # (indirect branch); a const destination is a signed relative
-            # intra-p-code label: target op index = this op index + offset.
+            # A const destination is a signed relative intra-p-code label.
+            # A register destination is a direct branch to that varnode
+            # (register space), not BRANCHIND. Indirect branches are
+            # 'goto [reg]' and arrive as BRANCHIND below.
             tgt = ins[0]
             if tgt[0] == "const":
                 pc = pc + branch_offset(tgt)
                 continue
-            return (("branchind", tgt[1] if tgt[0] == "reg" else repr(tgt)), state)
+            if tgt[0] == "reg":
+                return (("direct_reg", tgt[1]), state)
+            return (("branchind", repr(tgt)), state)
         elif name == "BRANCHIND":
             tgt = ins[0]
             return (("branchind", tgt[1] if tgt[0] == "reg" else repr(tgt)), state)
