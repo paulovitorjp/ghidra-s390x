@@ -5,11 +5,17 @@
 // (X'030000'), TXT (X'031000'), RLD (X'032000') and END (X'034000').
 // Supported ESD symbol types: SD (section definition), ED (element
 // definition), LD (label definition), PR (part reference), ER/WX (external
-// reference/weak external). RLD items support reference type 0 (R-address)
-// with referent types 0 (label) and 1 (element), action 0/1 (+/-), fetch
-// (add to stored value) and store (overwrite) modes, and target lengths
-// 2/4/8. External references are recorded as external symbols and left
-// unresolved. Continued records are chained per the PTV continuation bits
+// reference/weak external). A nonzero-length PR is placed inside its
+// parent ED block at the part offset when that range fits, and otherwise
+// in its own block. It is never given both. RLD items are flags(6) plus
+// two reserved bytes, then an optional 4-byte R pointer (omitted when
+// flags0 bit 0x80 is set), optional 4-byte P pointer (0x40), and optional
+// 4-byte offset (0x20). There is no tail after the offset. Applied items
+// use reference type 0, referent type 0 or 1, action add or subtract,
+// fetch or store, and target length 2, 4, or 8. Any other flag combination
+// is logged and left unchanged. External references are recorded as
+// external symbols and left unresolved. Continued records are chained per
+// the PTV continuation bits
 // (byte 1, low two bits: 01 = initial continued, 10/11 = continuation;
 // continuation records carry 77 payload bytes after the 3-byte PTV) before
 // parsing, so logical ESD/TXT/RLD/END records may span several physical
@@ -329,7 +335,6 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
                         int sameR = (ri.flags[0] >> 7) & 1;
                         int sameP = (ri.flags[0] >> 6) & 1;
                         int sameO = (ri.flags[0] >> 5) & 1;
-                        int offLen = (((ri.flags[0] >> 4) & 1) == 1) ? 2 : 4;
                         if (firstItem && (sameR == 1 || sameP == 1 || sameO == 1)) {
                             throw new LoadException("record " + r +
                                 ": first RLD item uses same-R/P/offset compression " +
@@ -352,15 +357,13 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
                             ri.pPtr = prevP;
                         }
                         if (sameO == 0) {
-                            if (p + offLen > end) throw new LoadException(
+                            if (p + 4 > end) throw new LoadException(
                                 "record " + r + ": truncated RLD offset");
-                            ri.off = offLen == 4 ? ZosUtil.u32(rec, p)
-                                : ZosUtil.u16(rec, p);
-                            p += offLen;
+                            ri.off = ZosUtil.u32(rec, p);
+                            p += 4;
                         } else {
                             ri.off = prevOff;
                         }
-                        p += 8; // reserved
                         prevR = ri.rPtr; prevP = ri.pPtr; prevOff = ri.off;
                         rlds.add(ri);
                     }
@@ -423,15 +426,59 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
             cursor += (e.length + 7) & ~7L;
         }
 
+        // A part lives inside its parent element when the range fits.
+        // Otherwise it gets one block of its own. Never both.
+        List<Esd> parts = new ArrayList<>();
+        for (Esd e : esdById.values()) {
+            if (e.type == T_PR) {
+                parts.add(e);
+            }
+        }
+        parts.sort(Comparator.comparingInt(pr -> pr.id));
+        for (Esd pr : parts) {
+            Esd parent = esdById.get(pr.parent);
+            Long parentBase = parent == null ? null : baseByEsd.get(parent.id);
+            boolean fits = pr.length > 0 && parentBase != null && parent.type == T_ED
+                && pr.offset >= 0 && pr.offset + pr.length <= parent.length;
+            if (fits) {
+                baseByEsd.put(pr.id, parentBase + pr.offset);
+                continue;
+            }
+            if (pr.length <= 0) {
+                if (parentBase != null && pr.offset >= 0 && pr.offset <= parent.length) {
+                    baseByEsd.put(pr.id, parentBase + pr.offset);
+                }
+                continue;
+            }
+            String bn = ZosUtil.sanitize(pr.name, "PR" + pr.id);
+            int k = 2;
+            while (!usedNames.add(bn)) bn = ZosUtil.sanitize(pr.name, "P") + "_" + (k++);
+            Address start = program.getAddressFactory().getDefaultAddressSpace()
+                .getAddress(cursor);
+            try {
+                MemoryBlock blk = mem.createInitializedBlock(bn, start, pr.length, (byte) 0, monitor, false);
+                blk.setPermissions(true, true, true);
+                baseByEsd.put(pr.id, cursor);
+            } catch (Exception ex) {
+                log.appendMsg("could not create block " + bn + ": " + ex.getMessage());
+            }
+            cursor += (pr.length + 7) & ~7L;
+        }
+
         // ---- write TXT data ----
         for (Txt t : texts) {
             Esd e = esdById.get(t.esdId);
-            if (e == null || e.type != T_ED) {
-                log.appendMsg("TXT for unknown/non-element ESD " + t.esdId);
+            if (e == null || (e.type != T_ED && e.type != T_PR)) {
+                log.appendMsg("TXT for unknown or non-addressable ESD " + t.esdId);
                 continue;
             }
-            Long base = baseByEsd.get(t.esdId);
+            Long base = baseByEsd.get(e.id);
             if (base == null) {
+                log.appendMsg("TXT for ESD " + t.esdId + " has no allocation");
+                continue;
+            }
+            if (t.offset < 0 || t.offset + t.data.length > e.length) {
+                log.appendMsg("TXT for ESD " + t.esdId + " exceeds its allocation");
                 continue;
             }
             Address a = program.getAddressFactory().getDefaultAddressSpace()
@@ -456,11 +503,10 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
         for (Esd e : esdById.values()) {
             try {
                 if (e.type == T_LD || e.type == T_PR) {
-                    Esd pe = esdById.get(e.parent);
-                    Long pb = pe != null ? baseByEsd.get(pe.id) : null;
-                    if (pb != null) {
+                    Long point = mappedPoint(e, esdById, baseByEsd);
+                    if (point != null) {
                         Address a = program.getAddressFactory().getDefaultAddressSpace()
-                            .getAddress(pb + e.offset);
+                            .getAddress(point);
                         st.createLabel(a, ZosUtil.sanitize(e.name, "LD" + e.id),
                             SourceType.IMPORTED);
                     }
@@ -487,37 +533,50 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
                 skipped++;
                 continue;
             }
-            Long pb = baseByEsd.get(pEsd.id);
-            if (pb == null) {
-                log.appendMsg("RLD skipped: P-element " + pEsd.id + " has no block");
+            if ((ri.flags[0] & 0x1F) != 0 || (action != 0 && action != 1)
+                    || (tlen != 2 && tlen != 4 && tlen != 8)
+                    || (referentType != 0 && referentType != 1)) {
+                log.appendMsg("RLD skipped: unsupported flags"
+                    + " flags0=" + (ri.flags[0] & 0xff)
+                    + " action=" + action + " tlen=" + tlen
+                    + " referent=" + referentType);
+                skipped++;
+                continue;
+            }
+            Long origin = null;
+            long room = -1;
+            if (pEsd.type == T_ED || pEsd.type == T_PR) {
+                origin = baseByEsd.get(pEsd.id);
+                room = pEsd.length;
+            } else if (pEsd.type == T_LD) {
+                origin = mappedPoint(pEsd, esdById, baseByEsd);
+                Esd parent = esdById.get(pEsd.parent);
+                Long parentBase = parent == null ? null : baseByEsd.get(parent.id);
+                if (origin != null && parentBase != null) {
+                    room = parentBase + parent.length - origin;
+                }
+            }
+            if (origin == null || ri.off < 0 || room < 0 || ri.off + tlen > room) {
+                log.appendMsg("RLD skipped: P-pointer " + pEsd.id + " is not addressable");
                 skipped++;
                 continue;
             }
             Address adconAddr = program.getAddressFactory().getDefaultAddressSpace()
-                .getAddress(pb + ri.off);
+                .getAddress(origin + ri.off);
             try {
                 if (rEsd.type == T_ER || rEsd.type == T_WX) {
                     addExternal(program, rEsd.name);
                     skipped++; // unresolved external: value left alone
                     continue;
                 }
-                long second;
-                if (referentType == 1) {
-                    Long rb = baseByEsd.get(rEsd.id);
-                    if (rb == null) { skipped++; continue; }
-                    second = rb;
-                } else if (referentType == 0) {
-                    Esd pe = esdById.get(rEsd.parent);
-                    Long rb = pe != null ? baseByEsd.get(pe.id) : null;
-                    if (rb == null) { skipped++; continue; }
-                    second = rb + rEsd.offset;
-                } else {
-                    log.appendMsg("RLD skipped: referentType=" + referentType);
-                    skipped++;
-                    continue;
+                Long second = null;
+                if (rEsd.type == T_ED || rEsd.type == T_PR) {
+                    second = baseByEsd.get(rEsd.id);
+                } else if (rEsd.type == T_LD) {
+                    second = mappedPoint(rEsd, esdById, baseByEsd);
                 }
-                if (tlen != 2 && tlen != 4 && tlen != 8) {
-                    log.appendMsg("RLD skipped: target length " + tlen);
+                if (second == null) {
+                    log.appendMsg("RLD skipped: R-pointer " + rEsd.id + " is not addressable");
                     skipped++;
                     continue;
                 }
@@ -527,7 +586,7 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
                 applied++;
             } catch (Exception ex) {
                 log.appendMsg("RLD apply failed at 0x" +
-                    Long.toHexString(pb + ri.off) + ": " + ex.getMessage());
+                    Long.toHexString(origin + ri.off) + ": " + ex.getMessage());
                 skipped++;
             }
         }
@@ -536,19 +595,19 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
         // ---- entry point ----
         Address entryAddr = null;
         if (entryEsd >= 0) {
-            Long b = baseByEsd.get((int) entryEsd);
-            if (b != null) {
+            Esd ee = esdById.get((int) entryEsd);
+            Long b = ee == null ? null : baseByEsd.get(ee.id);
+            if (b != null && (ee.type == T_ED || ee.type == T_PR)) {
                 entryAddr = program.getAddressFactory().getDefaultAddressSpace()
                     .getAddress(b + entryOff);
             }
         } else if (entryName != null) {
             for (Esd e : esdById.values()) {
                 if ((e.type == T_LD || e.type == T_PR) && e.name.equals(entryName)) {
-                    Esd pe = esdById.get(e.parent);
-                    Long b = pe != null ? baseByEsd.get(pe.id) : null;
-                    if (b != null) {
+                    Long point = mappedPoint(e, esdById, baseByEsd);
+                    if (point != null) {
                         entryAddr = program.getAddressFactory().getDefaultAddressSpace()
-                            .getAddress(b + e.offset);
+                            .getAddress(point);
                     }
                     break;
                 }
@@ -565,6 +624,26 @@ public class ZosGoffLoader extends AbstractLibrarySupportLoader {
             // disassembles the entry region and creates functions from the flow.
             log.appendMsg("entry point: " + entryAddr);
         }
+    }
+
+    /** Address of an element or part allocation, or of a label inside one. */
+    private static Long mappedPoint(Esd e, Map<Integer, Esd> esdById,
+            Map<Integer, Long> baseByEsd) {
+        if (e == null) {
+            return null;
+        }
+        if (e.type == T_ED || e.type == T_PR) {
+            return baseByEsd.get(e.id);
+        }
+        if (e.type == T_LD) {
+            Esd parent = esdById.get(e.parent);
+            Long parentBase = parent == null ? null : baseByEsd.get(parent.id);
+            if (parentBase == null) {
+                return null;
+            }
+            return parentBase + e.offset;
+        }
+        return null;
     }
 
     private static long readMem(Memory mem, Address a, int len) throws Exception {

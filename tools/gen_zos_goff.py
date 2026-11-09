@@ -124,13 +124,20 @@ def txt_record(esdid, offset, data):
     return pad80(r)
 
 def rld_item(flags6, rptr, pptr, offset):
+    """flags(6) + reserved(2), then optional 4-byte R, P, and offset.
+
+    Bit 0x80 omits R, bit 0x40 omits P, bit 0x20 omits the offset.
+    """
     it = bytearray()
-    it += bytes(flags6)            # 0-5
-    it += b'\x00\x00'              # reserved 6-7
-    it += struct.pack('>I',rptr)   # R pointer 8-11
-    it += struct.pack('>I',pptr)   # P pointer 12-15
-    it += struct.pack('>I',offset) # offset 16-19
-    it += b'\x00'*8                # reserved 20-27
+    it += bytes(flags6)
+    it += b'\x00\x00'
+    same = flags6[0]
+    if (same & 0x80) == 0:
+        it += struct.pack('>I', rptr)
+    if (same & 0x40) == 0:
+        it += struct.pack('>I', pptr)
+    if (same & 0x20) == 0:
+        it += struct.pack('>I', offset)
     return bytes(it)
 
 def rld_record(items):

@@ -28,6 +28,14 @@ sign codes still do not raise a data exception. PACK/UNPK placed every
 digit except the units digit in the wrong nibble, and CP treated equal
 nonzero magnitudes with opposite signs as equal; both are corrected.
 
+- A GOFF relocation item is flags, two reserved bytes, then optional
+  4-byte R, P, and offset fields. Items that reuse R and P are applied.
+  Flag combinations outside the supported set are logged and skipped.
+- Text owned by a part is written into the parent element at the part
+  offset when the part fits there, and into one block of its own otherwise.
+  A relocation that names the part uses that same address.
+- Program-object members remain unsupported and are still refused.
+
 ## 2026-10-04 — HLASM exhaustive validation complete
 
 All 4,356 SLEIGH constructors validated against IBM HLASM R6.0 on z/OS:

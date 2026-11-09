@@ -8,8 +8,8 @@ after the 3-byte PTV.
 
 Logical records that overflow one physical record:
   TXT : 100 bytes of data -> initial (56 bytes) + 1 continuation (44 bytes)
-  RLD : 3 items (84 bytes) -> initial (74 bytes) + 1 continuation (10 bytes);
-        item 3 straddles the physical-record boundary
+  RLD : 76 bytes -> initial (74 bytes) + 1 continuation (2 bytes);
+        the last item straddles the physical-record boundary
   ESD : LD "VERYLONGENTRYNAME" (17 chars) -> initial (8 chars) + 1
         continuation (9 chars)
   END : entry by ESDID+offset (not continued)
@@ -18,8 +18,9 @@ TXT payload layout (100 bytes): the same hand-assembled program as
 gen_zos_goff.py (34 bytes, verified against Capstone mnemonic-for-mnemonic
 there), then 0xAA padding, then adcon1 (offset 92, A-type -> SUBR) and
 adcon2 (offset 96, Q-type -> EXTFN, unresolved).
-RLD items: A-type (elem 2, off 92 -> elem 2 base), Q-type (elem 2, off 96
--> EXTFN), A-type (elem 2, off 40 -> elem 2 base; tests a split item).
+RLD items: A-type (elem 2, off 92), Q-type (elem 2, off 96 -> EXTFN),
+a same-R item at an unchecked pad offset, then A-type (elem 2, off 40)
+which crosses the initial record boundary.
 
 Output: tests/zos_smoke_cont.goff
 """
@@ -146,13 +147,17 @@ def txt_record_cont(esdid, offset, data):
     return recs
 
 def rld_item(flags6, rptr, pptr, offset):
+    """flags(6) + reserved(2), then optional 4-byte R, P, and offset."""
     it = bytearray()
     it += bytes(flags6)
     it += b'\x00\x00'
-    it += struct.pack('>I',rptr)
-    it += struct.pack('>I',pptr)
-    it += struct.pack('>I',offset)
-    it += b'\x00'*8
+    same = flags6[0]
+    if (same & 0x80) == 0:
+        it += struct.pack('>I', rptr)
+    if (same & 0x40) == 0:
+        it += struct.pack('>I', pptr)
+    if (same & 0x20) == 0:
+        it += struct.pack('>I', offset)
     return bytes(it)
 
 def rld_record_cont(items):
@@ -208,11 +213,17 @@ def build():
     recs += txt_record_cont(2,0,payload)
     a_flags = [0x00,0x01,0x00,0x00,0x04,0x00]  # A-type, element, +, fetch, len 4
     q_flags = [0x00,0x01,0x00,0x00,0x04,0x00]  # Q-type -> ER: left unresolved
-    recs += rld_record_cont([
+    same_r = [0x80,0x01,0x00,0x00,0x04,0x00]   # reuse the previous R pointer
+    # 20 + 20 + 16 + 20 = 76. The initial record holds 74 bytes, so the
+    # last item (offset 40) starts at byte 56 and continues for 2 bytes.
+    items = [
         rld_item(a_flags,2,2,adcon1_off),
         rld_item(q_flags,5,2,adcon2_off),
-        rld_item(a_flags,2,2,40),   # split across the boundary (74 = 2*28+18)
-    ])
+        rld_item(same_r,0,2,48),
+        rld_item(a_flags,2,2,40),
+    ]
+    assert sum(len(it) for it in items) == 76
+    recs += rld_record_cont(items)
     recs += end_record(2,0,len(recs)+1)
     img = b''.join(recs)
     assert len(img) % 80 == 0

@@ -79,8 +79,8 @@ public class ZosLoadersSmoke extends GhidraScript {
             long adcon2 = readU32(base + 44);
             check(adcon2 == 0, "Q-type adcon left unresolved (0)");
         } else if (mode.equals("goffcont")) {
-            // continued-record GOFF: TXT split 56+44, RLD split 74+10
-            // (item 3 straddles the boundary), ESD long name split 8+9
+            // continued-record GOFF: TXT split 56+44, RLD split 74+2
+            // (the last item straddles the boundary), ESD long name split 8+9
             check(findBlock("C_CODE") != null, "block C_CODE exists");
             Symbol entry = findSymbol("ENTRY");
             check(entry != null && entry.getAddress().getOffset() == base,
@@ -102,7 +102,35 @@ public class ZosLoadersSmoke extends GhidraScript {
             long splitWord = readU32(base + 40);
             // fetch mode adds to the stored value: 0xAAAAAAAA (pad) + base
             check(splitWord == 0xAAAAAAAAL + base,
-                "split RLD item 3 (across boundary) relocated to " + hex(splitWord));
+                "split RLD item (across boundary) relocated to " + hex(splitWord));
+        } else if (mode.equals("goffrld")) {
+            check(findBlock("CODE") != null && findBlock("CODE").getSize() == 16,
+                "block CODE length 16");
+            Symbol label = findSymbol("LABEL");
+            check(label != null && label.getAddress().getOffset() == base,
+                "LABEL at " + hex(base));
+            check(readU32(base) == base, "RLD item 1 applied");
+            check(readU32(base + 4) == base, "RLD item 2 reuses R and P");
+            check(readU32(base + 8) == base, "RLD item 3 reuses R and P");
+            println(failures == 0 ? "ALL CHECKS PASSED" : failures + " CHECKS FAILED");
+            if (failures > 0) {
+                throw new RuntimeException(failures + " smoke checks failed");
+            }
+            return;
+        } else if (mode.equals("goffpr")) {
+            check(findBlock("CODE") != null && findBlock("CODE").getSize() == 32,
+                "block CODE length 32");
+            check(findBlock("PART") == null, "part has no separate block");
+            Symbol part = findSymbol("PART");
+            check(part != null && part.getAddress().getOffset() == base + 16,
+                "PART at " + hex(base + 16));
+            check(readU32(base + 16) == base + 16, "RLD target is the part");
+            check(readU8(base + 20) == 0x5A, "part text marker loaded");
+            println(failures == 0 ? "ALL CHECKS PASSED" : failures + " CHECKS FAILED");
+            if (failures > 0) {
+                throw new RuntimeException(failures + " smoke checks failed");
+            }
+            return;
         } else {
             check(findBlock("C_CODE") != null, "block C_CODE exists");
             Symbol entry = findSymbol("ENTRY");
