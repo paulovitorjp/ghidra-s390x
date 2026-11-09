@@ -3,6 +3,9 @@
 // function counts and whether the code section is executable.
 // Pass "measure" to print only. The default mode fails the script when
 // the entry was not recovered.
+// Pass "entrybranch" for tests/entry_branch.lmod. That mode fails when
+// analysis stops on the entry branch and never defines the instruction
+// at entry+0x14. No register value is seeded by this script.
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -18,9 +21,12 @@ public class StockEntryProbe extends GhidraScript {
     @Override
     public void run() throws Exception {
         boolean measure = false;
+        boolean entryBranch = false;
         for (String a : getScriptArgs()) {
             if ("measure".equals(a)) {
                 measure = true;
+            } else if ("entrybranch".equals(a)) {
+                entryBranch = true;
             }
         }
         int instructions = 0;
@@ -80,6 +86,10 @@ public class StockEntryProbe extends GhidraScript {
             println("MODE measure");
             return;
         }
+        if (entryBranch) {
+            checkEntryBranch(entry, instructions);
+            return;
+        }
         if (execBlocks < 1) {
             throw new RuntimeException("code section is not executable");
         }
@@ -91,5 +101,39 @@ public class StockEntryProbe extends GhidraScript {
             throw new RuntimeException("expected a function at the entry, functions=" + functions);
         }
         println("STOCK ENTRY CHECK PASSED");
+    }
+
+    /**
+     * The entry instruction is an unconditional branch through r15 that
+     * skips 16 bytes of header. Recovering only that one instruction is
+     * the failing baseline.
+     */
+    private void checkEntryBranch(Address entry, int instructions) throws Exception {
+        if (entry == null) {
+            throw new RuntimeException("no entry point");
+        }
+        Address landed = entry.add(0x14);
+        Address after = entry.add(0x18);
+        Address header = entry.add(4);
+        Instruction atEntry = currentProgram.getListing().getInstructionAt(entry);
+        Instruction pad = currentProgram.getListing().getInstructionContaining(header);
+        Instruction atLanded = currentProgram.getListing().getInstructionAt(landed);
+        Instruction atAfter = currentProgram.getListing().getInstructionAt(after);
+        Function func = currentProgram.getFunctionManager().getFunctionAt(entry);
+        println("entrybranch atEntry=" + atEntry + " landed=" + atLanded + " after=" + atAfter);
+        // A regression that stops after the entry branch leaves no instruction
+        // at entry+0x14. That result must fail.
+        if (atEntry == null || instructions < 3 || atLanded == null || atAfter == null
+                || func == null || !func.getBody().contains(landed)
+                || !"LHI".equalsIgnoreCase(atLanded.getMnemonicString())
+                || !atAfter.getFlowType().isTerminal()) {
+            throw new RuntimeException(
+                "entry branch was not followed (only the entry instruction is the failing baseline), instructions="
+                    + instructions);
+        }
+        if (pad != null && !pad.getMinAddress().equals(entry)) {
+            throw new RuntimeException("header padding at " + header + " was disassembled: " + pad);
+        }
+        println("ENTRY BRANCH CHECK PASSED");
     }
 }

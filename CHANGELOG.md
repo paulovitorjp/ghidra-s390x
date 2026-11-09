@@ -40,6 +40,10 @@ nonzero magnitudes with opposite signs as equal; both are corrected.
   immediate. LHR and LLH update bits 32-63 and leave bits 0-31 unchanged.
 - Still absent, and not part of this change: XIHF, ALFI, LLC, and the
   other siblings of those four.
+- At a function entry, r15 is that entry address. Default analysis can
+  follow an unconditional branch through r15 that skips a short header.
+  Program-object members remain unsupported. This does not recover an
+  entire program by itself.
 
 ## 2026-10-04 — HLASM exhaustive validation complete
 

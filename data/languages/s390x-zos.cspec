@@ -113,6 +113,8 @@
       <pcode inject="uponentry">
         <body><![CDATA[
 zero = 0:8;
+# r15 holds this function's entry address.
+r15 = inst_start;
 ]]></body>
       </pcode>
     </prototype>
