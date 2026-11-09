@@ -57,13 +57,13 @@ def disp_for(dfmt, m, T, r1):
     if dfmt == "RX":
         return f'"{m} " {r1d} "," {T}_D2 "(" {T}_X2 "," {T}_B2 ")"'
     if dfmt == "RXY":
-        return f'"{m} " {r1d} "," {T}_DL2 "(" {T}_X2 "," {T}_B2 ")"'
+        return f'"{m} " {r1d} "," {T}_D20s "(" {T}_X2 "," {T}_B2 ")"'
     return f'"{m} " {r1d} "," {T}_R2'
 
 # {r1} is either "=N" (even, constrained) or "" (fallback, free)
 PATF = {
     "RX":  "{T}_R1{r1} & {T}_X2 & {T}_B2 & {T}_D2",
-    "RXY": "{T}_R1{r1} & {T}_X2 & {T}_B2 & {T}_DL2 & {T}_DH2",
+    "RXY": "{T}_R1{r1} & {T}_X2 & {T}_B2 & {T}_DL2 & {T}_DH2 & {T}_D20s",
     "RR":  "{T}_R1{r1} & {T}_R2",
     "RRE": "{T}_R1{r1} & {T}_R2",
 }

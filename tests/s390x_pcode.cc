@@ -65,9 +65,21 @@ public:
       snprintf(buf, sizeof(buf), "const:%llu:%u", (unsigned long long)v.offset, v.size);
       return std::string(buf);
     }
+    std::string exact;
+    try { exact = trans->getExactRegisterName(v.space, v.offset, v.size); } catch (...) {}
+    if (!exact.empty()) return exact;
+    // A slice of a register (for example the low halfword of r2) is not the
+    // whole register. Print name:size@byteOffset/parentSize so a reader can
+    // take that slice instead of the full value. Exact names stay bare.
     std::string rn;
     try { rn = trans->getRegisterName(v.space, v.offset, v.size); } catch (...) {}
-    if (!rn.empty()) return rn;
+    if (!rn.empty()) {
+      const VarnodeData &reg = trans->getRegister(rn);
+      char buf[128];
+      snprintf(buf, sizeof(buf), "%s:%u@%llu/%u", rn.c_str(), v.size,
+               (unsigned long long)(v.offset - reg.offset), reg.size);
+      return std::string(buf);
+    }
     char buf[128];
     snprintf(buf, sizeof(buf), "%s:0x%llx:%u", sp.c_str(),
              (unsigned long long)v.offset, v.size);
@@ -87,12 +99,14 @@ public:
 int main(int argc, char **argv)
 {
   using namespace ghidra;
-  if (argc != 3) {
-    cerr << "USAGE: " << argv[0] << " <s390x.sla> <hexbytes>" << endl;
+  if (argc != 3 && argc != 4) {
+    cerr << "USAGE: " << argv[0] << " <s390x.sla> <hexbytes> [baseaddr]" << endl;
     return 2;
   }
   std::string slafile(argv[1]);
   std::string hex(argv[2]);
+  uintb base = 0;
+  if (argc == 4) base = (uintb)strtoull(argv[3], 0, 0);
 
   std::vector<uint1> bytes;
   for (size_t i = 0; i + 1 < hex.size(); i += 2)
@@ -103,7 +117,7 @@ int main(int argc, char **argv)
   ElementId::initialize();
 
   try {
-    HexLoadImage loader(0x0, bytes);
+    HexLoadImage loader(base, bytes);
     ContextInternal context;
     std::ostringstream ss;
     ss << "<sleigh>" << slafile << "</sleigh>";
@@ -116,7 +130,7 @@ int main(int argc, char **argv)
     trans.initialize(docstorage);
 
     CaptureEmit emit;
-    Address addr(trans.getDefaultCodeSpace(), 0);
+    Address addr(trans.getDefaultCodeSpace(), base);
     int4 length = 0;
     try {
       length = trans.printAssembly(emit, addr);

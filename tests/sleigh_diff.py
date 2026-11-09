@@ -250,27 +250,6 @@ def decimal_operands_ok(body, co, mnem):
             return f'trailing: ours={ot} capstone={ct}'
     return None
 
-# RXY-form mul/div mnemonics (display shows DL2 only; Capstone shows the
-# full signed 20-bit displacement).
-MULDIV_DISP20 = {'dl','dlg','dsg','dsgf','mfy','mg','ml','mlg','msy'}
-
-def disp20_from_encoding(hx):
-    """Signed 20-bit displacement for 6-byte E3/EB (RXY/RSY/SIY) encodings.
-
-    Our display follows the core convention of printing only the low 12
-    bits (DL2); Capstone prints the full signed 20-bit displacement.
-    Returns (dl2_unsigned, full_signed)."""
-    b = bytes.fromhex(hx)
-    dl2 = ((b[2] & 0xF) << 8) | b[3]
-    dh2 = b[4]
-    raw = (dh2 << 12) | dl2
-    full = raw - 0x100000 if raw & 0x80000 else raw
-    return dl2, full
-
-def is_disp20_form(hx):
-    b = bytes.fromhex(hx)
-    return len(b) == 6 and b[0] in (0xE3, 0xEB)
-
 def main():
     corpus = normalize_corpus(json.load(open(CORPUS)))
     spec = spec_mnemonics()
@@ -382,18 +361,6 @@ def main():
             else:
                 passed.append(hx)
             continue
-        if eff_mnem == 'clclu' and is_disp20_form(hx):
-            # CLCLU displays only DL2 (core RSY convention); Capstone
-            # prints the full 20-bit displacement.
-            dl2, full = disp20_from_encoding(hx)
-            ours = [('num', full) if t == ('num', dl2) else t for t in ours]
-        if eff_mnem in MULDIV_DISP20 and is_disp20_form(hx):
-            # RXY-form mul/div displays only DL2; Capstone prints the
-            # full signed 20-bit displacement.
-            dl2, full = disp20_from_encoding(hx)
-            if full != dl2:
-                ours = [('num', full) if t == ('num', dl2) else t
-                        for t in ours]
         pc = pcrel_info(eff_mnem)
         if pc:
             # Our spec prints the absolute target (like Capstone).

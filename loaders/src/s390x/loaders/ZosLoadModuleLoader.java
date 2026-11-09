@@ -445,7 +445,9 @@ public class ZosLoadModuleLoader extends AbstractLibrarySupportLoader {
                 Address start = program.getAddressFactory().getDefaultAddressSpace()
                     .getAddress(imageBase + it.addr);
                 try {
-                    mem.createInitializedBlock(bn, start, it.len, (byte) 0, monitor, false);
+                    MemoryBlock blk = mem.createInitializedBlock(bn, start, it.len, (byte) 0, monitor, false);
+                    // Instructions and mutable working storage share the section.
+                    blk.setPermissions(true, true, true);
                 } catch (Exception e) {
                     log.appendMsg("could not create block " + bn + ": " + e.getMessage());
                 }

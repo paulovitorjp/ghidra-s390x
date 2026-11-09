@@ -694,12 +694,12 @@ macro cc_lttest(v, signbit) {
 
 # ===========================================================================
 # RXYa format (E3): second bytes verified against PoP Figure B-3 and the
-# chapter-7 section figures. Display follows the core convention (DL2 only;
-# all corpus vectors have DH2=0).
+# chapter-7 section figures. The displacement operand prints the signed
+# 20-bit value.
 # ===========================================================================
 
 # LTG: LOAD AND TEST (64). R1 = *(64-bit mem). CC: 0/1/2 signed (PoP 7-310).
-:LTG "LTG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x02
+:LTG "LTG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x02 & RXYa_D20s
 {
     local ea:8;
     local a:8;
@@ -710,7 +710,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # ALG: ADD LOGICAL (64). R1 = R1 + *(64-bit mem) (unsigned).
-:ALG "ALG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x0A
+:ALG "ALG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x0A & RXYa_D20s
 {
     local ea:8;
     local a:8;
@@ -725,7 +725,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # SLG: SUBTRACT LOGICAL (64). R1 = R1 - *(64-bit mem) (unsigned).
-:SLG "SLG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x0B
+:SLG "SLG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x0B & RXYa_D20s
 {
     local ea:8;
     local a:8;
@@ -741,7 +741,7 @@ macro cc_lttest(v, signbit) {
 
 # LT: LOAD AND TEST (32). R1[32:63] = *(32-bit mem); high 32 preserved.
 # CC: 0/1/2 from signed 32-bit value (PoP 7-310).
-:LT "LT " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x12
+:LT "LT " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x12 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -754,7 +754,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # AGF: ADD (64<-32). R1 = R1 + sign_extend(*(32-bit mem)) (signed).
-:AGF "AGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x18
+:AGF "AGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x18 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -774,7 +774,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # SGF: SUBTRACT (64<-32). R1 = R1 - sign_extend(*(32-bit mem)) (signed).
-:SGF "SGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x19
+:SGF "SGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x19 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -794,7 +794,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # ALGF: ADD LOGICAL (64<-32). R1 = R1 + zero_extend(*(32-bit mem)).
-:ALGF "ALGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x1A
+:ALGF "ALGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x1A & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -811,7 +811,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # SLGF: SUBTRACT LOGICAL (64<-32). R1 = R1 - zero_extend(*(32-bit mem)).
-:SLGF "SLGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x1B
+:SLGF "SLGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x1B & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -829,7 +829,7 @@ macro cc_lttest(v, signbit) {
 
 # CGF: COMPARE (64<-32). Signed compare R1 vs sign_extend(*(32-bit mem)).
 # CC: 0=equal, 1=first low, 2=first high.
-:CGF "CGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x30
+:CGF "CGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x30 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -844,7 +844,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # CLGF: COMPARE LOGICAL (64<-32). Unsigned R1 vs zero_extend(*(32-bit)).
-:CLGF "CLGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x31
+:CLGF "CLGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x31 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -857,7 +857,7 @@ macro cc_lttest(v, signbit) {
 
 # LTGF: LOAD AND TEST (64<-32). R1 = sign_extend(*(32-bit mem)).
 # CC: 0/1/2 from signed 64-bit result (PoP 7-310).
-:LTGF "LTGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x32
+:LTGF "LTGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x32 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -873,7 +873,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # LGF: LOAD (64<-32). R1 = sign_extend(*(32-bit mem)). CC unchanged.
-:LGF "LGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x14
+:LGF "LGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x14 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -888,7 +888,7 @@ macro cc_lttest(v, signbit) {
 }
 
 # LLGF: LOAD LOGICAL (64<-32). R1 = zero_extend(*(32-bit mem)). CC unchanged.
-:LLGF "LLGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x16
+:LLGF "LLGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x16 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -899,7 +899,7 @@ macro cc_lttest(v, signbit) {
 
 # LLGC: LOAD LOGICAL CHARACTER (E3/90). R1 = zero_extend(*(8-bit mem)).
 # CC unchanged (PoP 7-318).
-:LLGC "LLGC " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x90
+:LLGC "LLGC " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x90 & RXYa_D20s
 {
     local ea:8;
     local m8:1;
@@ -910,7 +910,7 @@ macro cc_lttest(v, signbit) {
 
 # LLGH: LOAD LOGICAL HALFWORD (E3/91). R1 = zero_extend(*(16-bit mem)).
 # CC unchanged.
-:LLGH "LLGH " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x91
+:LLGH "LLGH " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x91 & RXYa_D20s
 {
     local ea:8;
     local m16:2;
@@ -1117,7 +1117,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_0 "CLMY " RSYb_R1 "," "0" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=0 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_0 "CLMY " RSYb_R1 "," "0" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=0 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local dummy:1;
@@ -1126,7 +1126,7 @@ macro cc_lttest(v, signbit) {
     cc_set(0);
 }
 
-:CLMY_1 "CLMY " RSYb_R1 "," "1" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=1 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_1 "CLMY " RSYb_R1 "," "1" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=1 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1137,7 +1137,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_2 "CLMY " RSYb_R1 "," "2" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_2 "CLMY " RSYb_R1 "," "2" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=2 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1148,7 +1148,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_3 "CLMY " RSYb_R1 "," "3" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_3 "CLMY " RSYb_R1 "," "3" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1159,7 +1159,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_4 "CLMY " RSYb_R1 "," "4" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_4 "CLMY " RSYb_R1 "," "4" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=4 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1170,7 +1170,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_5 "CLMY " RSYb_R1 "," "5" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=5 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_5 "CLMY " RSYb_R1 "," "5" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=5 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1181,7 +1181,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_6 "CLMY " RSYb_R1 "," "6" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_6 "CLMY " RSYb_R1 "," "6" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=6 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1192,7 +1192,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_7 "CLMY " RSYb_R1 "," "7" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=7 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_7 "CLMY " RSYb_R1 "," "7" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=7 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1203,7 +1203,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_8 "CLMY " RSYb_R1 "," "8" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_8 "CLMY " RSYb_R1 "," "8" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=8 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1214,7 +1214,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_9 "CLMY " RSYb_R1 "," "9" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=9 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_9 "CLMY " RSYb_R1 "," "9" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=9 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1225,7 +1225,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_10 "CLMY " RSYb_R1 "," "10" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_10 "CLMY " RSYb_R1 "," "10" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=10 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1236,7 +1236,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_11 "CLMY " RSYb_R1 "," "11" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=11 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_11 "CLMY " RSYb_R1 "," "11" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=11 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1247,7 +1247,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_12 "CLMY " RSYb_R1 "," "12" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_12 "CLMY " RSYb_R1 "," "12" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=12 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1258,7 +1258,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_13 "CLMY " RSYb_R1 "," "13" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=13 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_13 "CLMY " RSYb_R1 "," "13" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=13 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1269,7 +1269,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_14 "CLMY " RSYb_R1 "," "14" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=14 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_14 "CLMY " RSYb_R1 "," "14" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=14 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1280,7 +1280,7 @@ macro cc_lttest(v, signbit) {
     cc_ucmp(cv1, cv2);
 }
 
-:CLMY_15 "CLMY " RSYb_R1 "," "15" "," RSYb_DL2 "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=15 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21
+:CLMY_15 "CLMY " RSYb_R1 "," "15" "," RSYb_D20s "(" RSYb_B2 ")" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3=15 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x21 & RSYb_D20s
 {
     local ea:8;
     local cv1:8;
@@ -1299,14 +1299,14 @@ macro cc_lttest(v, signbit) {
 # tests/sleigh_diff.py maps them back to r-names for 'stmy'.
 # ===========================================================================
 
-:STMY_0_0 "STMY " "0" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_0 "STMY " "0" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_0_1 "STMY " "0" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_1 "STMY " "0" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1315,7 +1315,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_0_2 "STMY " "0" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_2 "STMY " "0" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1326,7 +1326,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_0_3 "STMY " "0" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_3 "STMY " "0" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1339,7 +1339,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_0_4 "STMY " "0" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_4 "STMY " "0" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1354,7 +1354,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_0_5 "STMY " "0" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_5 "STMY " "0" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1371,7 +1371,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_0_6 "STMY " "0" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_6 "STMY " "0" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1390,7 +1390,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_0_7 "STMY " "0" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_7 "STMY " "0" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1411,7 +1411,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_0_8 "STMY " "0" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_8 "STMY " "0" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1434,7 +1434,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_0_9 "STMY " "0" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_9 "STMY " "0" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1459,7 +1459,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_0_10 "STMY " "0" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_10 "STMY " "0" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1486,7 +1486,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_0_11 "STMY " "0" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_11 "STMY " "0" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1515,7 +1515,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_0_12 "STMY " "0" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_12 "STMY " "0" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1546,7 +1546,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_0_13 "STMY " "0" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_13 "STMY " "0" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1579,7 +1579,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_0_14 "STMY " "0" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_14 "STMY " "0" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1614,7 +1614,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_0_15 "STMY " "0" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_0_15 "STMY " "0" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=0 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1651,7 +1651,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_1_0 "STMY " "1" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_0 "STMY " "1" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1688,14 +1688,14 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_1_1 "STMY " "1" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_1 "STMY " "1" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_1_2 "STMY " "1" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_2 "STMY " "1" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1704,7 +1704,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_1_3 "STMY " "1" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_3 "STMY " "1" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1715,7 +1715,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_1_4 "STMY " "1" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_4 "STMY " "1" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1728,7 +1728,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_1_5 "STMY " "1" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_5 "STMY " "1" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1743,7 +1743,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_1_6 "STMY " "1" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_6 "STMY " "1" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1760,7 +1760,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_1_7 "STMY " "1" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_7 "STMY " "1" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1779,7 +1779,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_1_8 "STMY " "1" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_8 "STMY " "1" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1800,7 +1800,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_1_9 "STMY " "1" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_9 "STMY " "1" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1823,7 +1823,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_1_10 "STMY " "1" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_10 "STMY " "1" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1848,7 +1848,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_1_11 "STMY " "1" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_11 "STMY " "1" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1875,7 +1875,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_1_12 "STMY " "1" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_12 "STMY " "1" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1904,7 +1904,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_1_13 "STMY " "1" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_13 "STMY " "1" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1935,7 +1935,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_1_14 "STMY " "1" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_14 "STMY " "1" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -1968,7 +1968,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_1_15 "STMY " "1" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_1_15 "STMY " "1" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=1 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2003,7 +2003,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_2_0 "STMY " "2" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_0 "STMY " "2" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2038,7 +2038,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_2_1 "STMY " "2" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_1 "STMY " "2" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2075,14 +2075,14 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_2_2 "STMY " "2" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_2 "STMY " "2" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_2_3 "STMY " "2" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_3 "STMY " "2" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2091,7 +2091,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_2_4 "STMY " "2" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_4 "STMY " "2" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2102,7 +2102,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_2_5 "STMY " "2" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_5 "STMY " "2" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2115,7 +2115,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_2_6 "STMY " "2" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_6 "STMY " "2" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2130,7 +2130,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_2_7 "STMY " "2" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_7 "STMY " "2" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2147,7 +2147,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_2_8 "STMY " "2" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_8 "STMY " "2" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2166,7 +2166,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_2_9 "STMY " "2" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_9 "STMY " "2" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2187,7 +2187,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_2_10 "STMY " "2" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_10 "STMY " "2" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2210,7 +2210,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_2_11 "STMY " "2" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_11 "STMY " "2" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2235,7 +2235,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_2_12 "STMY " "2" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_12 "STMY " "2" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2262,7 +2262,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_2_13 "STMY " "2" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_13 "STMY " "2" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2291,7 +2291,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_2_14 "STMY " "2" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_14 "STMY " "2" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2322,7 +2322,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_2_15 "STMY " "2" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_2_15 "STMY " "2" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=2 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2355,7 +2355,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_3_0 "STMY " "3" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_0 "STMY " "3" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2388,7 +2388,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_3_1 "STMY " "3" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_1 "STMY " "3" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2423,7 +2423,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_3_2 "STMY " "3" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_2 "STMY " "3" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2460,14 +2460,14 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_3_3 "STMY " "3" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_3 "STMY " "3" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_3_4 "STMY " "3" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_4 "STMY " "3" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2476,7 +2476,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_3_5 "STMY " "3" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_5 "STMY " "3" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2487,7 +2487,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_3_6 "STMY " "3" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_6 "STMY " "3" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2500,7 +2500,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_3_7 "STMY " "3" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_7 "STMY " "3" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2515,7 +2515,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_3_8 "STMY " "3" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_8 "STMY " "3" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2532,7 +2532,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_3_9 "STMY " "3" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_9 "STMY " "3" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2551,7 +2551,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_3_10 "STMY " "3" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_10 "STMY " "3" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2572,7 +2572,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_3_11 "STMY " "3" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_11 "STMY " "3" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2595,7 +2595,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_3_12 "STMY " "3" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_12 "STMY " "3" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2620,7 +2620,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_3_13 "STMY " "3" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_13 "STMY " "3" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2647,7 +2647,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_3_14 "STMY " "3" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_14 "STMY " "3" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2676,7 +2676,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_3_15 "STMY " "3" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_3_15 "STMY " "3" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=3 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2707,7 +2707,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_4_0 "STMY " "4" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_0 "STMY " "4" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2738,7 +2738,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_4_1 "STMY " "4" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_1 "STMY " "4" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2771,7 +2771,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_4_2 "STMY " "4" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_2 "STMY " "4" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2806,7 +2806,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_4_3 "STMY " "4" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_3 "STMY " "4" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2843,14 +2843,14 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_4_4 "STMY " "4" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_4 "STMY " "4" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_4_5 "STMY " "4" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_5 "STMY " "4" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2859,7 +2859,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_4_6 "STMY " "4" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_6 "STMY " "4" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2870,7 +2870,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_4_7 "STMY " "4" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_7 "STMY " "4" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2883,7 +2883,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_4_8 "STMY " "4" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_8 "STMY " "4" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2898,7 +2898,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_4_9 "STMY " "4" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_9 "STMY " "4" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2915,7 +2915,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_4_10 "STMY " "4" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_10 "STMY " "4" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2934,7 +2934,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_4_11 "STMY " "4" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_11 "STMY " "4" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2955,7 +2955,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_4_12 "STMY " "4" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_12 "STMY " "4" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -2978,7 +2978,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_4_13 "STMY " "4" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_13 "STMY " "4" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3003,7 +3003,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_4_14 "STMY " "4" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_14 "STMY " "4" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3030,7 +3030,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_4_15 "STMY " "4" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_4_15 "STMY " "4" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=4 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3059,7 +3059,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_5_0 "STMY " "5" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_0 "STMY " "5" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3088,7 +3088,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_5_1 "STMY " "5" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_1 "STMY " "5" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3119,7 +3119,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_5_2 "STMY " "5" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_2 "STMY " "5" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3152,7 +3152,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_5_3 "STMY " "5" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_3 "STMY " "5" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3187,7 +3187,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_5_4 "STMY " "5" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_4 "STMY " "5" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3224,14 +3224,14 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_5_5 "STMY " "5" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_5 "STMY " "5" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_5_6 "STMY " "5" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_6 "STMY " "5" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3240,7 +3240,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_5_7 "STMY " "5" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_7 "STMY " "5" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3251,7 +3251,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_5_8 "STMY " "5" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_8 "STMY " "5" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3264,7 +3264,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_5_9 "STMY " "5" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_9 "STMY " "5" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3279,7 +3279,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_5_10 "STMY " "5" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_10 "STMY " "5" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3296,7 +3296,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_5_11 "STMY " "5" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_11 "STMY " "5" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3315,7 +3315,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_5_12 "STMY " "5" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_12 "STMY " "5" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3336,7 +3336,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_5_13 "STMY " "5" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_13 "STMY " "5" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3359,7 +3359,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_5_14 "STMY " "5" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_14 "STMY " "5" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3384,7 +3384,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_5_15 "STMY " "5" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_5_15 "STMY " "5" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=5 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3411,7 +3411,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_6_0 "STMY " "6" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_0 "STMY " "6" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3438,7 +3438,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_6_1 "STMY " "6" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_1 "STMY " "6" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3467,7 +3467,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_6_2 "STMY " "6" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_2 "STMY " "6" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3498,7 +3498,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_6_3 "STMY " "6" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_3 "STMY " "6" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3531,7 +3531,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_6_4 "STMY " "6" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_4 "STMY " "6" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3566,7 +3566,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_6_5 "STMY " "6" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_5 "STMY " "6" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3603,14 +3603,14 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_6_6 "STMY " "6" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_6 "STMY " "6" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_6_7 "STMY " "6" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_7 "STMY " "6" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3619,7 +3619,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_6_8 "STMY " "6" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_8 "STMY " "6" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3630,7 +3630,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_6_9 "STMY " "6" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_9 "STMY " "6" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3643,7 +3643,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_6_10 "STMY " "6" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_10 "STMY " "6" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3658,7 +3658,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_6_11 "STMY " "6" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_11 "STMY " "6" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3675,7 +3675,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_6_12 "STMY " "6" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_12 "STMY " "6" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3694,7 +3694,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_6_13 "STMY " "6" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_13 "STMY " "6" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3715,7 +3715,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_6_14 "STMY " "6" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_14 "STMY " "6" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3738,7 +3738,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_6_15 "STMY " "6" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_6_15 "STMY " "6" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=6 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3763,7 +3763,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_7_0 "STMY " "7" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_0 "STMY " "7" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3788,7 +3788,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_7_1 "STMY " "7" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_1 "STMY " "7" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3815,7 +3815,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_7_2 "STMY " "7" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_2 "STMY " "7" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3844,7 +3844,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_7_3 "STMY " "7" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_3 "STMY " "7" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3875,7 +3875,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_7_4 "STMY " "7" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_4 "STMY " "7" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3908,7 +3908,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_7_5 "STMY " "7" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_5 "STMY " "7" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3943,7 +3943,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_7_6 "STMY " "7" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_6 "STMY " "7" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3980,14 +3980,14 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_7_7 "STMY " "7" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_7 "STMY " "7" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_7_8 "STMY " "7" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_8 "STMY " "7" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -3996,7 +3996,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_7_9 "STMY " "7" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_9 "STMY " "7" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4007,7 +4007,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_7_10 "STMY " "7" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_10 "STMY " "7" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4020,7 +4020,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_7_11 "STMY " "7" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_11 "STMY " "7" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4035,7 +4035,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_7_12 "STMY " "7" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_12 "STMY " "7" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4052,7 +4052,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_7_13 "STMY " "7" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_13 "STMY " "7" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4071,7 +4071,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_7_14 "STMY " "7" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_14 "STMY " "7" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4092,7 +4092,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_7_15 "STMY " "7" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_7_15 "STMY " "7" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=7 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4115,7 +4115,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_8_0 "STMY " "8" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_0 "STMY " "8" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4138,7 +4138,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_8_1 "STMY " "8" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_1 "STMY " "8" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4163,7 +4163,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_8_2 "STMY " "8" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_2 "STMY " "8" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4190,7 +4190,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_8_3 "STMY " "8" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_3 "STMY " "8" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4219,7 +4219,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_8_4 "STMY " "8" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_4 "STMY " "8" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4250,7 +4250,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_8_5 "STMY " "8" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_5 "STMY " "8" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4283,7 +4283,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_8_6 "STMY " "8" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_6 "STMY " "8" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4318,7 +4318,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_8_7 "STMY " "8" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_7 "STMY " "8" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4355,14 +4355,14 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_8_8 "STMY " "8" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_8 "STMY " "8" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_8_9 "STMY " "8" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_9 "STMY " "8" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4371,7 +4371,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_8_10 "STMY " "8" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_10 "STMY " "8" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4382,7 +4382,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_8_11 "STMY " "8" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_11 "STMY " "8" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4395,7 +4395,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_8_12 "STMY " "8" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_12 "STMY " "8" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4410,7 +4410,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_8_13 "STMY " "8" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_13 "STMY " "8" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4427,7 +4427,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_8_14 "STMY " "8" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_14 "STMY " "8" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4446,7 +4446,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_8_15 "STMY " "8" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_8_15 "STMY " "8" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=8 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4467,7 +4467,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_9_0 "STMY " "9" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_0 "STMY " "9" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4488,7 +4488,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_9_1 "STMY " "9" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_1 "STMY " "9" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4511,7 +4511,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_9_2 "STMY " "9" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_2 "STMY " "9" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4536,7 +4536,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_9_3 "STMY " "9" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_3 "STMY " "9" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4563,7 +4563,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_9_4 "STMY " "9" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_4 "STMY " "9" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4592,7 +4592,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_9_5 "STMY " "9" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_5 "STMY " "9" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4623,7 +4623,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_9_6 "STMY " "9" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_6 "STMY " "9" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4656,7 +4656,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_9_7 "STMY " "9" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_7 "STMY " "9" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4691,7 +4691,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_9_8 "STMY " "9" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_8 "STMY " "9" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4728,14 +4728,14 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_9_9 "STMY " "9" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_9 "STMY " "9" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_9_10 "STMY " "9" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_10 "STMY " "9" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4744,7 +4744,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_9_11 "STMY " "9" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_11 "STMY " "9" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4755,7 +4755,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_9_12 "STMY " "9" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_12 "STMY " "9" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4768,7 +4768,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_9_13 "STMY " "9" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_13 "STMY " "9" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4783,7 +4783,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_9_14 "STMY " "9" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_14 "STMY " "9" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4800,7 +4800,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_9_15 "STMY " "9" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_9_15 "STMY " "9" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=9 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4819,7 +4819,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_10_0 "STMY " "10" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_0 "STMY " "10" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4838,7 +4838,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_10_1 "STMY " "10" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_1 "STMY " "10" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4859,7 +4859,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_10_2 "STMY " "10" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_2 "STMY " "10" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4882,7 +4882,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_10_3 "STMY " "10" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_3 "STMY " "10" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4907,7 +4907,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_10_4 "STMY " "10" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_4 "STMY " "10" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4934,7 +4934,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_10_5 "STMY " "10" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_5 "STMY " "10" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4963,7 +4963,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_10_6 "STMY " "10" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_6 "STMY " "10" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -4994,7 +4994,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_10_7 "STMY " "10" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_7 "STMY " "10" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5027,7 +5027,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_10_8 "STMY " "10" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_8 "STMY " "10" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5062,7 +5062,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_10_9 "STMY " "10" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_9 "STMY " "10" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5099,14 +5099,14 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_10_10 "STMY " "10" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_10 "STMY " "10" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_10_11 "STMY " "10" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_11 "STMY " "10" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5115,7 +5115,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_10_12 "STMY " "10" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_12 "STMY " "10" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5126,7 +5126,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_10_13 "STMY " "10" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_13 "STMY " "10" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5139,7 +5139,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_10_14 "STMY " "10" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_14 "STMY " "10" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5154,7 +5154,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_10_15 "STMY " "10" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_10_15 "STMY " "10" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=10 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5171,7 +5171,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_11_0 "STMY " "11" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_0 "STMY " "11" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5188,7 +5188,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_11_1 "STMY " "11" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_1 "STMY " "11" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5207,7 +5207,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_11_2 "STMY " "11" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_2 "STMY " "11" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5228,7 +5228,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_11_3 "STMY " "11" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_3 "STMY " "11" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5251,7 +5251,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_11_4 "STMY " "11" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_4 "STMY " "11" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5276,7 +5276,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_11_5 "STMY " "11" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_5 "STMY " "11" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5303,7 +5303,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_11_6 "STMY " "11" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_6 "STMY " "11" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5332,7 +5332,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_11_7 "STMY " "11" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_7 "STMY " "11" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5363,7 +5363,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_11_8 "STMY " "11" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_8 "STMY " "11" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5396,7 +5396,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_11_9 "STMY " "11" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_9 "STMY " "11" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5431,7 +5431,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_11_10 "STMY " "11" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_10 "STMY " "11" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5468,14 +5468,14 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_11_11 "STMY " "11" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_11 "STMY " "11" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_11_12 "STMY " "11" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_12 "STMY " "11" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5484,7 +5484,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_11_13 "STMY " "11" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_13 "STMY " "11" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5495,7 +5495,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_11_14 "STMY " "11" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_14 "STMY " "11" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5508,7 +5508,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_11_15 "STMY " "11" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_11_15 "STMY " "11" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=11 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5523,7 +5523,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_12_0 "STMY " "12" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_0 "STMY " "12" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5538,7 +5538,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_12_1 "STMY " "12" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_1 "STMY " "12" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5555,7 +5555,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_12_2 "STMY " "12" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_2 "STMY " "12" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5574,7 +5574,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_12_3 "STMY " "12" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_3 "STMY " "12" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5595,7 +5595,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_12_4 "STMY " "12" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_4 "STMY " "12" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5618,7 +5618,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_12_5 "STMY " "12" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_5 "STMY " "12" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5643,7 +5643,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_12_6 "STMY " "12" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_6 "STMY " "12" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5670,7 +5670,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_12_7 "STMY " "12" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_7 "STMY " "12" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5699,7 +5699,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_12_8 "STMY " "12" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_8 "STMY " "12" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5730,7 +5730,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_12_9 "STMY " "12" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_9 "STMY " "12" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5763,7 +5763,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_12_10 "STMY " "12" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_10 "STMY " "12" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5798,7 +5798,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_12_11 "STMY " "12" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_11 "STMY " "12" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5835,14 +5835,14 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_12_12 "STMY " "12" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_12 "STMY " "12" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_12_13 "STMY " "12" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_13 "STMY " "12" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5851,7 +5851,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_12_14 "STMY " "12" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_14 "STMY " "12" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5862,7 +5862,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_12_15 "STMY " "12" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_12_15 "STMY " "12" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=12 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5875,7 +5875,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_13_0 "STMY " "13" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_0 "STMY " "13" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5888,7 +5888,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_13_1 "STMY " "13" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_1 "STMY " "13" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5903,7 +5903,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_13_2 "STMY " "13" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_2 "STMY " "13" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5920,7 +5920,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_13_3 "STMY " "13" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_3 "STMY " "13" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5939,7 +5939,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_13_4 "STMY " "13" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_4 "STMY " "13" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5960,7 +5960,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_13_5 "STMY " "13" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_5 "STMY " "13" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -5983,7 +5983,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_13_6 "STMY " "13" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_6 "STMY " "13" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6008,7 +6008,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_13_7 "STMY " "13" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_7 "STMY " "13" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6035,7 +6035,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_13_8 "STMY " "13" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_8 "STMY " "13" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6064,7 +6064,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_13_9 "STMY " "13" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_9 "STMY " "13" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6095,7 +6095,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_13_10 "STMY " "13" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_10 "STMY " "13" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6128,7 +6128,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_13_11 "STMY " "13" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_11 "STMY " "13" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6163,7 +6163,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_13_12 "STMY " "13" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_12 "STMY " "13" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6200,14 +6200,14 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_13_13 "STMY " "13" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_13 "STMY " "13" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_13_14 "STMY " "13" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_14 "STMY " "13" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6216,7 +6216,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_13_15 "STMY " "13" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_13_15 "STMY " "13" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=13 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6227,7 +6227,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_14_0 "STMY " "14" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_0 "STMY " "14" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6238,7 +6238,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_14_1 "STMY " "14" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_1 "STMY " "14" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6251,7 +6251,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_14_2 "STMY " "14" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_2 "STMY " "14" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6266,7 +6266,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_14_3 "STMY " "14" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_3 "STMY " "14" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6283,7 +6283,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_14_4 "STMY " "14" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_4 "STMY " "14" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6302,7 +6302,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_14_5 "STMY " "14" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_5 "STMY " "14" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6323,7 +6323,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_14_6 "STMY " "14" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_6 "STMY " "14" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6346,7 +6346,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_14_7 "STMY " "14" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_7 "STMY " "14" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6371,7 +6371,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_14_8 "STMY " "14" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_8 "STMY " "14" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6398,7 +6398,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_14_9 "STMY " "14" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_9 "STMY " "14" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6427,7 +6427,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_14_10 "STMY " "14" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_10 "STMY " "14" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6458,7 +6458,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_14_11 "STMY " "14" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_11 "STMY " "14" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6491,7 +6491,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_14_12 "STMY " "14" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_12 "STMY " "14" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6526,7 +6526,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_14_13 "STMY " "14" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_13 "STMY " "14" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6563,14 +6563,14 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_14_14 "STMY " "14" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_14 "STMY " "14" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_14_15 "STMY " "14" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_14_15 "STMY " "14" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=14 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6579,7 +6579,7 @@ macro cc_lttest(v, signbit) {
     w = r15:4; *:4 ea = w;
 }
 
-:STMY_15_0 "STMY " "15" "," "0" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_0 "STMY " "15" "," "0" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=0 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6588,7 +6588,7 @@ macro cc_lttest(v, signbit) {
     w = r0:4; *:4 ea = w;
 }
 
-:STMY_15_1 "STMY " "15" "," "1" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_1 "STMY " "15" "," "1" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=1 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6599,7 +6599,7 @@ macro cc_lttest(v, signbit) {
     w = r1:4; *:4 ea = w;
 }
 
-:STMY_15_2 "STMY " "15" "," "2" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_2 "STMY " "15" "," "2" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=2 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6612,7 +6612,7 @@ macro cc_lttest(v, signbit) {
     w = r2:4; *:4 ea = w;
 }
 
-:STMY_15_3 "STMY " "15" "," "3" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_3 "STMY " "15" "," "3" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6627,7 +6627,7 @@ macro cc_lttest(v, signbit) {
     w = r3:4; *:4 ea = w;
 }
 
-:STMY_15_4 "STMY " "15" "," "4" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_4 "STMY " "15" "," "4" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=4 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6644,7 +6644,7 @@ macro cc_lttest(v, signbit) {
     w = r4:4; *:4 ea = w;
 }
 
-:STMY_15_5 "STMY " "15" "," "5" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_5 "STMY " "15" "," "5" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=5 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6663,7 +6663,7 @@ macro cc_lttest(v, signbit) {
     w = r5:4; *:4 ea = w;
 }
 
-:STMY_15_6 "STMY " "15" "," "6" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_6 "STMY " "15" "," "6" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=6 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6684,7 +6684,7 @@ macro cc_lttest(v, signbit) {
     w = r6:4; *:4 ea = w;
 }
 
-:STMY_15_7 "STMY " "15" "," "7" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_7 "STMY " "15" "," "7" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=7 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6707,7 +6707,7 @@ macro cc_lttest(v, signbit) {
     w = r7:4; *:4 ea = w;
 }
 
-:STMY_15_8 "STMY " "15" "," "8" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_8 "STMY " "15" "," "8" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=8 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6732,7 +6732,7 @@ macro cc_lttest(v, signbit) {
     w = r8:4; *:4 ea = w;
 }
 
-:STMY_15_9 "STMY " "15" "," "9" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_9 "STMY " "15" "," "9" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=9 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6759,7 +6759,7 @@ macro cc_lttest(v, signbit) {
     w = r9:4; *:4 ea = w;
 }
 
-:STMY_15_10 "STMY " "15" "," "10" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_10 "STMY " "15" "," "10" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=10 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6788,7 +6788,7 @@ macro cc_lttest(v, signbit) {
     w = r10:4; *:4 ea = w;
 }
 
-:STMY_15_11 "STMY " "15" "," "11" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_11 "STMY " "15" "," "11" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=11 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6819,7 +6819,7 @@ macro cc_lttest(v, signbit) {
     w = r11:4; *:4 ea = w;
 }
 
-:STMY_15_12 "STMY " "15" "," "12" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_12 "STMY " "15" "," "12" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=12 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6852,7 +6852,7 @@ macro cc_lttest(v, signbit) {
     w = r12:4; *:4 ea = w;
 }
 
-:STMY_15_13 "STMY " "15" "," "13" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_13 "STMY " "15" "," "13" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=13 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6887,7 +6887,7 @@ macro cc_lttest(v, signbit) {
     w = r13:4; *:4 ea = w;
 }
 
-:STMY_15_14 "STMY " "15" "," "14" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_14 "STMY " "15" "," "14" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=14 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);
@@ -6924,7 +6924,7 @@ macro cc_lttest(v, signbit) {
     w = r14:4; *:4 ea = w;
 }
 
-:STMY_15_15 "STMY " "15" "," "15" "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90
+:STMY_15_15 "STMY " "15" "," "15" "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1=15 & RSYa_R3=15 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90 & RSYa_D20s
 {
     local ea:8; local w:4;
     ea_D20(ea, RSYa_B2, zero, RSYa_DH2, RSYa_DL2);

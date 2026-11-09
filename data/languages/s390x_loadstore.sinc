@@ -79,6 +79,18 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
     RRE_R1 = RRE_R2;
 }
 
+# LHR — LOAD HALFWORD (register). Bits 32-63 of R1 become the sign
+# extension of bits 48-63 of R2. Bits 0-31 of R1 are unchanged. CC unchanged.
+# R2=0 is the real r0 register.
+:LHR "LHR " RRE_R1 "," RRE_R2 is RRE_OP=0xB927 & RRE_R1 & RRE_R2
+{
+    local h:2;
+    local w:4;
+    h = RRE_R2:2;
+    w = sext(h);
+    RRE_R1 = (RRE_R1 & (0xFFFFFFFF << 32)) | zext(w);
+}
+
 # ---------------------------------------------------------------------------
 # 32-bit loads (bits 32-63 replaced, bits 0-31 unchanged; CC unchanged)
 # ---------------------------------------------------------------------------
@@ -94,7 +106,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LY — LOAD (long displacement).
-:LY "LY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x58
+:LY "LY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x58 & RXYa_D20s
 {
     local ea:8;
     local w:4;
@@ -108,7 +120,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 # ---------------------------------------------------------------------------
 
 # LG — LOAD (64): 8-byte second operand -> bits 0-63.
-:LG "LG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x04
+:LG "LG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x04 & RXYa_D20s
 {
     local ea:8;
     ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -132,7 +144,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LHY — LOAD HALFWORD (long displacement).
-:LHY "LHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x78
+:LHY "LHY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x78 & RXYa_D20s
 {
     local ea:8;
     local h:2;
@@ -143,8 +155,21 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
     RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | zext(w);
 }
 
+# LLH — LOAD LOGICAL HALFWORD. Bits 32-63 of R1 become the zero extension
+# of the 16-bit operand. Bits 0-31 are unchanged. CC unchanged.
+:LLH "LLH " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x95 & RXYa_D20s
+{
+    local ea:8;
+    local h:2;
+    local w:4;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    h = *:2 ea;
+    w = zext(h);
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | zext(w);
+}
+
 # LB — LOAD BYTE: 8-bit operand sign-extended to 32 bits -> bits 32-63.
-:LB "LB " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x76
+:LB "LB " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x76 & RXYa_D20s
 {
     local ea:8;
     local b:1;
@@ -156,7 +181,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LGB — LOAD BYTE (64): 8-bit operand sign-extended to 64 bits.
-:LGB "LGB " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x77
+:LGB "LGB " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x77 & RXYa_D20s
 {
     local ea:8;
     local b:1;
@@ -166,7 +191,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LGH — LOAD HALFWORD (64): 16-bit operand sign-extended to 64 bits.
-:LGH "LGH " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x15
+:LGH "LGH " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x15 & RXYa_D20s
 {
     local ea:8;
     local h:2;
@@ -197,6 +222,14 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
     RIa_R1 = sext(_ext_ria_i2);
 }
 
+# LGFI — LOAD IMMEDIATE (64). R1 = sign_extend(I2). CC unchanged.
+:LGFI "LGFI " RILa_R1 "," RILa_I2 is RILa_OP=0xC0 & RILa_R1 & RILa_OPCD=0x1 & RILa_I2
+{
+    local _ext_rila_i2:4;
+    _ext_rila_i2 = RILa_I2;
+    RILa_R1 = sext(_ext_rila_i2);
+}
+
 # ---------------------------------------------------------------------------
 # Address loads (CC unchanged; 64-bit addressing mode assumed)
 # ---------------------------------------------------------------------------
@@ -210,7 +243,16 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LAY — LOAD ADDRESS (long displacement).
-:LAY "LAY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x71
+# The 20-bit displacement is signed (DH is the high byte, including the
+# sign). A zero index is omitted from the display. Address math is ea_D20.
+:LAY_nox "LAY " RXYa_R1 "," layD "(" RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x71 & RXYa_X2n=0 [ layD = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ]
+{
+    local ea:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    RXYa_R1 = ea;
+}
+
+:LAY "LAY " RXYa_R1 "," layD "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x71 & RXYa_X2n [ layD = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ]
 {
     local ea:8;
     ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -218,7 +260,9 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # LARL — LOAD ADDRESS RELATIVE LONG: R1 = inst_start + 2*sign_extend(RI2).
-:LARL "LARL " RILb_R1 "," RILb_RI2 is RILb_OP=0xC0 & RILb_R1 & RILb_OPCD=0x0 & RILb_RI2
+# The printed operand is that signed absolute target. rel_RI32 is the value
+# written into the register (same arithmetic, independent of the display).
+:LARL "LARL " RILb_R1 "," larlTgt is RILb_OP=0xC0 & RILb_R1 & RILb_OPCD=0x0 & RILb_RI2 [ larlTgt = inst_start + (((RILb_RI2 ^ 0x80000000) - 0x80000000) * 2); ]
 {
     rel_RI32(RILb_R1, RILb_RI2);
 }
@@ -236,7 +280,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # STY — STORE (long displacement).
-:STY "STY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x50
+:STY "STY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x50 & RXYa_D20s
 {
     local ea:8;
     local w:4;
@@ -244,7 +288,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # STG — STORE (64): bits 0-63 of R1 -> 8-byte second operand.
-:STG "STG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x24
+:STG "STG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x24 & RXYa_D20s
 {
     local ea:8;
     ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
@@ -260,7 +304,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # STHY — STORE HALFWORD (long displacement).
-:STHY "STHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x70
+:STHY "STHY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x70 & RXYa_D20s
 {
     local ea:8;
     local h:2;
@@ -287,7 +331,7 @@ attach variables [ SIL_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 }
 
 # STCY — STORE CHARACTER (long displacement).
-:STCY "STCY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x72
+:STCY "STCY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x72 & RXYa_D20s
 {
     local ea:8;
     local b:1;

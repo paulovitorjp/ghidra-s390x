@@ -42,8 +42,11 @@ def build_test_sla(tmp):
     spec = open(os.path.join(LANGDIR, "s390x.slaspec")).read()
     anchor = '@include "s390x_branch.sinc"'
     assert anchor in spec, "include anchor moved; update validate_muldiv.py"
-    extra = "\n".join(f'@include "{f}"' for f in MULDIV_INCLUDES)
-    spec = spec.replace(anchor, anchor + "\n" + extra)
+    # The language spec already includes the multiply/divide files. Adding
+    # them again makes the compiler reject duplicate symbols.
+    if '@include "s390x_muldiv.sinc"' not in spec:
+        extra = "\n".join('@include "%s"' % f for f in MULDIV_INCLUDES)
+        spec = spec.replace(anchor, anchor + "\n" + extra)
     spec_path = os.path.join(tmp, "s390x.slaspec")
     with open(spec_path, "w") as f:
         f.write(spec)
@@ -81,9 +84,8 @@ def expected_ops(hx, category):
     verified the byte encoding itself when the corpus was built.)
     Known display limitations, shared with the core spec:
       * RXa D2 prints as unsigned 12-bit (Capstone prints signed);
-      * RXYa prints only DL2 (low 12 bits), unsigned; DH2 is not rendered;
-      * RILa I2 prints as unsigned 32-bit (RILa_I2 is not declared signed
-        in s390x.slaspec; recommended one-line fix noted in the report).
+      * RXYa prints the signed 20-bit displacement;
+      * RILa I2 is a signed field, so MSFI and MSGFI print a signed immediate.
     """
     b = bytes.fromhex(hx)
     n = len(b)
@@ -110,14 +112,17 @@ def expected_ops(hx, category):
         if b2:
             ops.append(("sym", f"r{b2}"))
         return ops
-    if n == 6 and b[0] == 0xC2:  # RILa: unsigned 32-bit immediate (display)
+    if n == 6 and b[0] == 0xC2:  # RILa: signed 32-bit immediate
         r1 = b[1] >> 4
-        i2 = int.from_bytes(b[2:6], "big", signed=False)
+        i2 = int.from_bytes(b[2:6], "big", signed=True)
         return [("sym", f"r{r1}"), ("num", i2)]
-    if n == 6:  # RXYa: display renders DL2 only (unsigned)
+    if n == 6:  # RXYa: signed 20-bit displacement
         r1, x2 = b[1] >> 4, b[1] & 0xF
-        b2, dl2 = b[2] >> 4, ((b[2] & 0xF) << 8) | b[3]
-        ops = [("sym", f"r{r1}"), ("num", dl2)]
+        b2 = b[2] >> 4
+        dl2 = ((b[2] & 0xF) << 8) | b[3]
+        raw = (b[4] << 12) | dl2
+        full = raw - 0x100000 if raw & 0x80000 else raw
+        ops = [("sym", f"r{r1}"), ("num", full)]
         if x2:
             ops.append(("sym", f"r{x2}"))
         if b2:

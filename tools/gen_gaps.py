@@ -621,12 +621,12 @@ RI_SECTION = """\
 RXY_SECTION = """\
 # ===========================================================================
 # RXYa format (E3): second bytes verified against PoP Figure B-3 and the
-# chapter-7 section figures. Display follows the core convention (DL2 only;
-# all corpus vectors have DH2=0).
+# chapter-7 section figures. The displacement operand prints the signed
+# 20-bit value.
 # ===========================================================================
 
 # LTG: LOAD AND TEST (64). R1 = *(64-bit mem). CC: 0/1/2 signed (PoP 7-310).
-:LTG "LTG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x02
+:LTG "LTG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x02 & RXYa_D20s
 {
     local ea:8;
     local a:8;
@@ -637,7 +637,7 @@ RXY_SECTION = """\
 }
 
 # ALG: ADD LOGICAL (64). R1 = R1 + *(64-bit mem) (unsigned).
-:ALG "ALG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x0A
+:ALG "ALG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x0A & RXYa_D20s
 {
     local ea:8;
     local a:8;
@@ -652,7 +652,7 @@ RXY_SECTION = """\
 }
 
 # SLG: SUBTRACT LOGICAL (64). R1 = R1 - *(64-bit mem) (unsigned).
-:SLG "SLG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x0B
+:SLG "SLG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x0B & RXYa_D20s
 {
     local ea:8;
     local a:8;
@@ -668,7 +668,7 @@ RXY_SECTION = """\
 
 # LT: LOAD AND TEST (32). R1[32:63] = *(32-bit mem); high 32 preserved.
 # CC: 0/1/2 from signed 32-bit value (PoP 7-310).
-:LT "LT " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x12
+:LT "LT " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x12 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -681,7 +681,7 @@ RXY_SECTION = """\
 }
 
 # AGF: ADD (64<-32). R1 = R1 + sign_extend(*(32-bit mem)) (signed).
-:AGF "AGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x18
+:AGF "AGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x18 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -701,7 +701,7 @@ RXY_SECTION = """\
 }
 
 # SGF: SUBTRACT (64<-32). R1 = R1 - sign_extend(*(32-bit mem)) (signed).
-:SGF "SGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x19
+:SGF "SGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x19 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -721,7 +721,7 @@ RXY_SECTION = """\
 }
 
 # ALGF: ADD LOGICAL (64<-32). R1 = R1 + zero_extend(*(32-bit mem)).
-:ALGF "ALGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x1A
+:ALGF "ALGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x1A & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -738,7 +738,7 @@ RXY_SECTION = """\
 }
 
 # SLGF: SUBTRACT LOGICAL (64<-32). R1 = R1 - zero_extend(*(32-bit mem)).
-:SLGF "SLGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x1B
+:SLGF "SLGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x1B & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -756,7 +756,7 @@ RXY_SECTION = """\
 
 # CGF: COMPARE (64<-32). Signed compare R1 vs sign_extend(*(32-bit mem)).
 # CC: 0=equal, 1=first low, 2=first high.
-:CGF "CGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x30
+:CGF "CGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x30 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -771,7 +771,7 @@ RXY_SECTION = """\
 }
 
 # CLGF: COMPARE LOGICAL (64<-32). Unsigned R1 vs zero_extend(*(32-bit)).
-:CLGF "CLGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x31
+:CLGF "CLGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x31 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -784,7 +784,7 @@ RXY_SECTION = """\
 
 # LTGF: LOAD AND TEST (64<-32). R1 = sign_extend(*(32-bit mem)).
 # CC: 0/1/2 from signed 64-bit result (PoP 7-310).
-:LTGF "LTGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x32
+:LTGF "LTGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x32 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -800,7 +800,7 @@ RXY_SECTION = """\
 }
 
 # LGF: LOAD (64<-32). R1 = sign_extend(*(32-bit mem)). CC unchanged.
-:LGF "LGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x14
+:LGF "LGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x14 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -815,7 +815,7 @@ RXY_SECTION = """\
 }
 
 # LLGF: LOAD LOGICAL (64<-32). R1 = zero_extend(*(32-bit mem)). CC unchanged.
-:LLGF "LLGF " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x16
+:LLGF "LLGF " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x16 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -826,7 +826,7 @@ RXY_SECTION = """\
 
 # LLGC: LOAD LOGICAL CHARACTER (E3/90). R1 = zero_extend(*(8-bit mem)).
 # CC unchanged (PoP 7-318).
-:LLGC "LLGC " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x90
+:LLGC "LLGC " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x90 & RXYa_D20s
 {
     local ea:8;
     local m8:1;
@@ -837,7 +837,7 @@ RXY_SECTION = """\
 
 # LLGH: LOAD LOGICAL HALFWORD (E3/91). R1 = zero_extend(*(16-bit mem)).
 # CC unchanged.
-:LLGH "LLGH " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x91
+:LLGH "LLGH " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x91 & RXYa_D20s
 {
     local ea:8;
     local m16:2;
@@ -941,9 +941,9 @@ def gen_clm():
             m_lit = f'"{mask}"'
             if is_rsy:
                 isc = (f"{token}_OP=0x{op:02X} & {token}_R1 & {token}_M3={mask} & "
-                       f"{token}_B2 & {token}_DL2 & {token}_DH2 & {token}_OP2=0x{op2:02X}")
+                       f"{token}_B2 & {token}_DL2 & {token}_DH2 & {token}_D20s & {token}_OP2=0x{op2:02X}")
                 disp = (f'"{name} " {token}_R1 "," {m_lit} "," '
-                        f'{token}_DL2 "(" {token}_B2 ")"')
+                        f'{token}_D20s "(" {token}_B2 ")"')
             else:
                 isc = (f"{token}_OP=0x{op:02X} & {token}_R1 & {token}_M3={mask} & "
                        f"{token}_B2 & {token}_D2")
@@ -982,9 +982,9 @@ def gen_stmy():
         for r3 in range(16):
             seq = reg_seq(r1, r3)
             isc = (f"RSYa_OP=0xEB & RSYa_R1={r1} & RSYa_R3={r3} & RSYa_B2 & "
-                   f"RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x90")
+                   f"RSYa_DL2 & RSYa_DH2 & RSYa_D20s & RSYa_OP2=0x90")
             # Constrained R1/R3 print as literals (like gen_lmstm.py).
-            disp = (f'"STMY " "{r1}" "," "{r3}" "," RSYa_DL2 "(" RSYa_B2 ")"')
+            disp = (f'"STMY " "{r1}" "," "{r3}" "," RSYa_D20s "(" RSYa_B2 ")"')
             out.append(f":STMY_{r1}_{r3} {disp} is {isc}")
             out.append("{")
             out.append("    local ea:8; local w:4;")

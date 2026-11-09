@@ -129,6 +129,8 @@ attach variables [ RSYan_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r1
 attach variables [ RSYan_R3 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
 attach variables [ RSYan_B2 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
 
+RSYan_D20s: d is RSYan_DH2 & RSYan_DL2 [ d = (((RSYan_DH2 << 12) | RSYan_DL2) ^ 0x80000) - 0x80000; ] { export *[const]:8 d; }
+
 # ---------------------------------------------------------------------------
 # Packed-decimal digit access macros
 #
@@ -155,9 +157,10 @@ macro dec_digit(ea, n, k, dig) {
     b = *:1 (ea + n - 1 - i);
     dhi = (b >> 4) & 0xf;
     dlo = b & 0xf;
-    # k=0 -> high nibble; odd k -> high nibble; even k>0 -> low nibble
+    # Even k, including the units digit k=0, is the high nibble.
+    # Odd k is the low nibble of the preceding byte (tens, thousands, ...).
     kodd = ((k & 1) == 1);
-    hi = isz | kodd;
+    hi = 1 - kodd;
     dig = dhi * hi + dlo * (1 - hi);
 }
 
@@ -176,8 +179,10 @@ macro dec_stdig(ea, n, k, dig, sgn) {
     isz8 = zext(isz);
     i = ((k + 1) / 2) * (1 - isz8);
     b = *:1 (ea + n - 1 - i);
+    # Same nibble placement as dec_digit. k=0 still overwrites the
+    # low nibble with the sign below.
     kodd = ((k & 1) == 1);
-    hi = isz | kodd;
+    hi = 1 - kodd;
     nb = ((dig << 4) | (b & 0xf)) * hi + ((b & 0xf0) | dig) * (1 - hi);
     nb = nb * (1 - isz) + ((dig << 4) | sgn) * isz;
     *:1 (ea + n - 1 - i) = nb;
@@ -445,7 +450,9 @@ macro ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2) {
     local d1:1; local d2:1;
     local in1:1; local in2:1; local gtm:1;
     local gt:1; local lt:1; local diff:1;
+    local nz1:1; local nz2:1;
     local eq:1; local slt:1; local sgt:1; local samesgn:1;
+    local mageq:1; local bothz:1;
     ea_D12(ea1, SSb_B1, zero, SSb_D1);
     ea_D12(ea2, SSb_B2, zero, SSb_D2);
     n1 = SSb_L1 + 1;
@@ -460,7 +467,7 @@ macro ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2) {
     nd2 = 2 * n2 - 1;
     gtm = (nd2 > nd1);
     ndm = nd1 + zext(gtm) * (nd2 - nd1);
-    k = 0; gt = 0; lt = 0;
+    k = 0; gt = 0; lt = 0; nz1 = 0; nz2 = 0;
 <cp_mag>
     if (k == ndm) goto <cp_mag_end>;
     in1 = (k < nd1);
@@ -471,15 +478,21 @@ macro ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2) {
     kk = k * zext(in2);
     dec_digit(ea2, n2, kk, d2);
     d2 = d2 * in2;
+    nz1 = nz1 | (d1 != 0);
+    nz2 = nz2 | (d2 != 0);
     diff = (d1 != d2);
     gt = ((d1 > d2) & diff) | (gt & (1 - diff));
     lt = ((d1 < d2) & diff) | (lt & (1 - diff));
     k = k + 1;
     goto <cp_mag>;
 <cp_mag_end>
-    # signed comparison: zeros compare equal regardless of sign
-    eq = (gt == 0) & (lt == 0);
+    # Equal magnitudes compare equal when the signs match, and also when
+    # both values are zero (sign is ignored for zeros). A nonzero value
+    # with a minus sign is less than the same magnitude with a plus sign.
+    mageq = (gt == 0) & (lt == 0);
+    bothz = (nz1 == 0) & (nz2 == 0);
     samesgn = (neg1 == neg2);
+    eq = mageq & (samesgn | bothz);
     slt = (1 - eq) & ((neg1 & (1 - neg2)) |
           (samesgn & ((lt & (1 - neg1)) | (gt & neg1))));
     sgt = (1 - eq) & ((neg2 & (1 - neg1)) |
@@ -2963,9 +2976,8 @@ macro ed_digit(ea2, sb, ul, d, hs, sgn, sb2, ul2) {
 # completion) approximated as run-to-completion, as for TRE. Odd R1/R3
 # or odd length: specification exception, modeled as a no-op. R1=R3:
 # the pair is updated once (PoP programming note).
-# Display shows DL2 only (core RSY convention); the harness maps it to
-# the full 20-bit displacement when comparing against Capstone.
-:CLCLU "CLCLU " RSYan_R1 "," RSYan_R3 "," RSYan_DL2 "(" RSYan_B2 ")" is RSYan_OP=0xEB & RSYan_R1 & RSYan_R3 & RSYan_B2 & RSYan_DL2 & RSYan_DH2 & RSYan_OP2=0x8F & RSYan_R1N & RSYan_R3N
+# The displacement operand prints the signed 20-bit value.
+:CLCLU "CLCLU " RSYan_R1 "," RSYan_R3 "," RSYan_D20s "(" RSYan_B2 ")" is RSYan_OP=0xEB & RSYan_R1 & RSYan_R3 & RSYan_B2 & RSYan_DL2 & RSYan_DH2 & RSYan_OP2=0x8F & RSYan_R1N & RSYan_R3N & RSYan_D20s
 {
     local r1v:8; local r3v:8;
     local ad1:8; local n1:8; local ad2:8; local n2:8;

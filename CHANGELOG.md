@@ -1,5 +1,50 @@
 # Changelog
 
+## 2026-11-06 — Entry recovery, indirect register branches, signed relatives
+
+- Load-module and GOFF section blocks are readable, writable, and executable.
+  A non-executable section made entry-point analysis drop a subroutine whose
+  prologue ends in a register branch.
+- BCR/BR, BCTR, and BCTGR branch to the address held in the register.
+- BALR, BASR, and BAKR test the R2 field. R2=0 stores a link (BALR/BASR) or
+  performs no branch (BAKR) and does not emit a call. Any other R2 is an
+  indirect call or branch.
+- 32-bit PC-relative operands sign-extend the halfword count. BRASL/BRCL
+  and LARL use that signed target. A negative BRASL no longer wraps into
+  the high half of the 64-bit address space.
+- LAY and XY print the signed 20-bit displacement and omit a zero index.
+  Other RXY, RSY, and SIY constructors that use that field print the same
+  signed value, for a positive displacement and for a negative one.
+  RXE constructors that require a zero high half print that field too;
+  with the high half clear, the signed value equals the low 12 bits.
+  LEY, LDY, STEY, and STDY reassemble their combined displacement so the
+  address matches the printed value.
+- The constant `zero` base/index is tracked as 0 and assigned at function
+  entry so it is not a free decompiler input.
+
+Not claimed: a full COBOL front end. Inline parameter lists that a callee
+skips before returning are still ordinary bytes. Invalid packed digit or
+sign codes still do not raise a data exception. PACK/UNPK placed every
+digit except the units digit in the wrong nibble, and CP treated equal
+nonzero magnitudes with opposite signs as equal; both are corrected.
+
+- A GOFF relocation item is flags, two reserved bytes, then optional
+  4-byte R, P, and offset fields. Items that reuse R and P are applied.
+  Flag combinations outside the supported set are logged and skipped.
+- Text owned by a part is written into the parent element at the part
+  offset when the part fits there, and into one block of its own otherwise.
+  A relocation that names the part uses that same address.
+- Program-object members remain unsupported and are still refused.
+- LGFI, CLGFI, LHR, and LLH are defined. LGFI sign-extends a 32-bit
+  immediate to 64 bits. CLGFI compares a register with the zero-extended
+  immediate. LHR and LLH update bits 32-63 and leave bits 0-31 unchanged.
+- Still absent, and not part of this change: XIHF, ALFI, LLC, and the
+  other siblings of those four.
+- At a function entry, r15 is that entry address. Default analysis can
+  follow an unconditional branch through r15 that skips a short header.
+  Program-object members remain unsupported. This does not recover an
+  entire program by itself.
+
 ## 2026-10-04 — HLASM exhaustive validation complete
 
 All 4,356 SLEIGH constructors validated against IBM HLASM R6.0 on z/OS:

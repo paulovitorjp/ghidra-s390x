@@ -277,7 +277,7 @@ for base, op2, kind, pre, action, comment in rsyb:
         action = "sh = 32;\n    tmp = RSYb_R1 >> sh;\n    *:4 ea = tmp;"
     for mask in sorted(LOC_SUFFIX):
         suf = LOC_SUFFIX[mask]
-        w(f":{base}{suf} \"{base}{suf} \" RSYb_R1 \",\" RSYb_DL2 \"(\" RSYb_B2 \")\" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3={mask} & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x{op2:02X}")
+        w(f":{base}{suf} \"{base}{suf} \" RSYb_R1 \",\" RSYb_D20s \"(\" RSYb_B2 \")\" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3={mask} & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_D20s & RSYb_OP2=0x{op2:02X}")
         w("{")
         w("    local ea:8;")
         if pre and "w = " in pre:
@@ -296,7 +296,7 @@ for base, op2, kind, pre, action, comment in rsyb:
         w("<c_done>")
         w("}")
         w("")
-    w(f":{base} \"{base} \" RSYb_R1 \",\" RSYb_DL2 \"(\" RSYb_B2 \"),\" RSYb_M3 is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x{op2:02X}")
+    w(f":{base} \"{base} \" RSYb_R1 \",\" RSYb_D20s \"(\" RSYb_B2 \"),\" RSYb_M3 is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_D20s & RSYb_OP2=0x{op2:02X}")
     w("{")
     w("    local ea:8;")
     if pre and "w = " in pre:
@@ -327,7 +327,7 @@ for base, op2, ccmacro, sz in [("CLT", 0x23, "cc_ucmp", 4), ("CLGT", 0x2B, "cc_u
     w(f"# {base}: unsigned {sz*8}-bit compare against storage operand.")
     for mask in sorted(TRAP_SUFFIX):
         suf = TRAP_SUFFIX[mask]
-        w(f":{base}{suf} \"{base}{suf} \" RSYb_R1 \",\" RSYb_DL2 \"(\" RSYb_B2 \")\" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3={mask} & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x{op2:02X}")
+        w(f":{base}{suf} \"{base}{suf} \" RSYb_R1 \",\" RSYb_D20s \"(\" RSYb_B2 \")\" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3={mask} & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_D20s & RSYb_OP2=0x{op2:02X}")
         w("{")
         w("    local ea:8;")
         w("    local a:8;")
@@ -346,7 +346,7 @@ for base, op2, ccmacro, sz in [("CLT", 0x23, "cc_ucmp", 4), ("CLGT", 0x2B, "cc_u
             w(line)
         w("}")
         w("")
-    w(f":{base} \"{base} \" RSYb_R1 \",\" RSYb_M3 \",\" RSYb_DL2 \"(\" RSYb_B2 \")\" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_OP2=0x{op2:02X}")
+    w(f":{base} \"{base} \" RSYb_R1 \",\" RSYb_M3 \",\" RSYb_D20s \"(\" RSYb_B2 \")\" is RSYb_OP=0xEB & RSYb_R1 & RSYb_M3 & RSYb_B2 & RSYb_DL2 & RSYb_DH2 & RSYb_D20s & RSYb_OP2=0x{op2:02X}")
     w("{")
     w("    local ea:8;")
     w("    local a:8;")
@@ -568,7 +568,7 @@ lats = [
      "w"),
 ]
 for base, op2, body, zero_test in lats:
-    w(f":{base} \"{base} \" RXYa_R1 \",\" RXYa_DL2 \"(\" RXYa_X2 \",\" RXYa_B2 \")\" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x{op2:02X}")
+    w(f":{base} \"{base} \" RXYa_R1 \",\" RXYa_D20s \"(\" RXYa_X2 \",\" RXYa_B2 \")\" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_D20s & RXYa_OP2=0x{op2:02X}")
     w("{")
     w("    local ea:8;")
     if "local w:4;" in body:

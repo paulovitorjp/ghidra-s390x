@@ -21,10 +21,8 @@
 #     32-bit shifts exist as RS-a (88-8B: SRL/SLL/SRA/SLA) AND as RSY-a
 #     K-variants (EB DC/DD/DE/DF, distinct-operands facility, R1=dest/R3=src).
 #
-# DISPLAYLIMIT (cosmetic only — decode and pcode use the full fields):
-#   RXY/RSY/SIY constructors print only the low 12 displacement bits
-#   ($(DL2)); the high 8 bits ($(DH2)) are omitted from the listing text.
-#   B2=0/X2=0 print as the pseudo-register name "zero".
+# DISPLAY: RXY/RSY/SIY constructors print the signed 20-bit displacement
+# (DH concatenated with DL). B2=0/X2=0 print as the pseudo-register name "zero".
 # (RIa token is defined once in s390x_loadstore.sinc; do not redefine it here.)
 
 define token SIYd(48)
@@ -36,6 +34,8 @@ define token SIYd(48)
     SIYd_OP2 = (0,7)
 ;
 attach variables [ SIYd_B1 ] [ zero r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 ];
+
+SIYd_D20s: d is SIYd_DH1 & SIYd_DL1 [ d = (((SIYd_DH1 << 12) | SIYd_DL1) ^ 0x80000) - 0x80000; ] { export *[const]:8 d; }
 
 # ---------------------------------------------------------------------------
 # Condition-code helper macros.
@@ -340,7 +340,7 @@ macro cc_tm16(field, r, mask) {
     cc_add32(r, (a >> 31) & 1, (b >> 31) & 1);
 }
 
-:AHY "AHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x7A
+:AHY "AHY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x7A & RXYa_D20s
 {
     local ea:8;
     local m16:2;
@@ -400,7 +400,7 @@ macro cc_tm16(field, r, mask) {
     cc_add64(r, (a >> 63) & 1, (b >> 63) & 1);
 }
 
-:AG "AG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x08
+:AG "AG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x08 & RXYa_D20s
 {
     local ea:8;
     local m64:8;
@@ -493,7 +493,7 @@ macro cc_tm16(field, r, mask) {
     cc_sub32(r, (a >> 31) & 1, (b >> 31) & 1);
 }
 
-:SHY "SHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x7B
+:SHY "SHY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x7B & RXYa_D20s
 {
     local ea:8;
     local m16:2;
@@ -521,7 +521,7 @@ macro cc_tm16(field, r, mask) {
     cc_sub64(r, (a >> 63) & 1, (b >> 63) & 1);
 }
 
-:SG "SG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x09
+:SG "SG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x09 & RXYa_D20s
 {
     local ea:8;
     local m64:8;
@@ -561,7 +561,7 @@ macro cc_tm16(field, r, mask) {
     cc_logic(r);
 }
 
-:NY "NY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x54
+:NY "NY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x54 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -579,7 +579,7 @@ macro cc_tm16(field, r, mask) {
     cc_logic(RRE_R1);
 }
 
-:NG "NG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x80
+:NG "NG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x80 & RXYa_D20s
 {
     local ea:8;
     local m64:8;
@@ -664,7 +664,7 @@ macro cc_tm16(field, r, mask) {
     cc_logic(r);
 }
 
-:OY "OY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x56
+:OY "OY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x56 & RXYa_D20s
 {
     local ea:8;
     local m32:4;
@@ -682,7 +682,7 @@ macro cc_tm16(field, r, mask) {
     cc_logic(RRE_R1);
 }
 
-:OG "OG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x81
+:OG "OG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x81 & RXYa_D20s
 {
     local ea:8;
     local m64:8;
@@ -767,7 +767,19 @@ macro cc_tm16(field, r, mask) {
     cc_logic(r);
 }
 
-:XY "XY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x57
+:XY_nox "XY " RXYa_R1 "," xyD "(" RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x57 & RXYa_X2n=0 [ xyD = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ]
+{
+    local ea:8;
+    local m32:4;
+    local r:8;
+    ea_D20(ea, RXYa_B2, RXYa_X2, RXYa_DH2, RXYa_DL2);
+    m32 = *:4 ea;
+    r = (RXYa_R1 ^ zext(m32)) & 0xffffffff;
+    RXYa_R1 = (RXYa_R1 & (0xFFFFFFFF << 32)) | r;
+    cc_logic(r);
+}
+
+:XY "XY " RXYa_R1 "," xyD "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x57 & RXYa_X2n [ xyD = (((RXYa_DH2 << 12) | RXYa_DL2) ^ 0x80000) - 0x80000; ]
 {
     local ea:8;
     local m32:4;
@@ -785,7 +797,7 @@ macro cc_tm16(field, r, mask) {
     cc_logic(RRE_R1);
 }
 
-:XG "XG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x82
+:XG "XG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x82 & RXYa_D20s
 {
     local ea:8;
     local m64:8;
@@ -1200,7 +1212,7 @@ macro sra_core64(a, amt, r, ncc) {
 # facility; assemblers also accept the classic mnemonics for these encodings.
 # ===========================================================================
 
-:SLLK "SLLK " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDF
+:SLLK "SLLK " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDF & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1213,7 +1225,7 @@ macro sra_core64(a, amt, r, ncc) {
     RSYa_R1 = (RSYa_R1 & (0xFFFFFFFF << 32)) | r;
 }
 
-:SRLK "SRLK " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDE
+:SRLK "SRLK " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDE & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1226,7 +1238,7 @@ macro sra_core64(a, amt, r, ncc) {
     RSYa_R1 = (RSYa_R1 & (0xFFFFFFFF << 32)) | r;
 }
 
-:SLAK "SLAK " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDD
+:SLAK "SLAK " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDD & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1241,7 +1253,7 @@ macro sra_core64(a, amt, r, ncc) {
     cc_set(ncc);
 }
 
-:SRAK "SRAK " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDC
+:SRAK "SRAK " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0xDC & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1261,7 +1273,7 @@ macro sra_core64(a, amt, r, ncc) {
 # CC: SLLG/SRLG unchanged; SLAG 0/1/2/3; SRAG 0/1/2 (PoP 7-438..7-442).
 # ===========================================================================
 
-:SLLG "SLLG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0D
+:SLLG "SLLG " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0D & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1270,7 +1282,7 @@ macro sra_core64(a, amt, r, ncc) {
     RSYa_R1 = RSYa_R3 << amt;
 }
 
-:SRLG "SRLG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0C
+:SRLG "SRLG " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0C & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1279,7 +1291,7 @@ macro sra_core64(a, amt, r, ncc) {
     RSYa_R1 = RSYa_R3 >> amt;
 }
 
-:SLAG "SLAG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0B
+:SLAG "SLAG " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0B & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1292,7 +1304,7 @@ macro sra_core64(a, amt, r, ncc) {
     cc_set(ncc);
 }
 
-:SRAG "SRAG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0A
+:SRAG "SRAG " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x0A & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1310,7 +1322,7 @@ macro sra_core64(a, amt, r, ncc) {
 # CC unchanged.
 # ===========================================================================
 
-:RLL "RLL " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x1D
+:RLL "RLL " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x1D & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1332,7 +1344,7 @@ macro sra_core64(a, amt, r, ncc) {
     RSYa_R1 = (RSYa_R1 & (0xFFFFFFFF << 32)) | r;
 }
 
-:RLLG "RLLG " RSYa_R1 "," RSYa_R3 "," RSYa_DL2 "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x1C
+:RLLG "RLLG " RSYa_R1 "," RSYa_R3 "," RSYa_D20s "(" RSYa_B2 ")" is RSYa_OP=0xEB & RSYa_R1 & RSYa_R3 & RSYa_B2 & RSYa_DL2 & RSYa_DH2 & RSYa_OP2=0x1C & RSYa_D20s
 {
     local sh:8;
     local amt:8;
@@ -1391,7 +1403,7 @@ macro sra_core64(a, amt, r, ncc) {
     cc_scmp32(a, b);
 }
 
-:CHY "CHY " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x79
+:CHY "CHY " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x79 & RXYa_D20s
 {
     local ea:8;
     local m16:2;
@@ -1409,7 +1421,7 @@ macro sra_core64(a, amt, r, ncc) {
     cc_scmp64(RRE_R1, RRE_R2);
 }
 
-:CG "CG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x20
+:CG "CG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x20 & RXYa_D20s
 {
     local ea:8;
     local m64:8;
@@ -1456,6 +1468,18 @@ macro sra_core64(a, amt, r, ncc) {
     cc_scmp64(RILa_R1, b);
 }
 
+# Printed CLGFI immediate is the zero-extended 32-bit field.
+clgfiImm: i is RILa_I2 [ i = RILa_I2 & 0xffffffff; ] { export *[const]:8 i; }
+
+# CLGFI — COMPARE LOGICAL IMMEDIATE (64). Unsigned compare of R1 with
+# zero_extend(I2). CC: 0 equal, 1 first low, 2 first high. No register write.
+:CLGFI "CLGFI " RILa_R1 "," clgfiImm is RILa_OP=0xC2 & RILa_R1 & RILa_OPCD=0xE & RILa_I2 & clgfiImm
+{
+    local imm:8;
+    imm = RILa_I2 & 0xffffffff;
+    cc_ucmp(RILa_R1, imm);
+}
+
 # ===========================================================================
 # COMPARE LOGICAL (unsigned). CC: 0 = equal, 1 = first low, 2 = first high
 # (PoP 7-146).
@@ -1483,7 +1507,7 @@ macro sra_core64(a, amt, r, ncc) {
     cc_ucmp(a, b);
 }
 
-:CLG "CLG " RXYa_R1 "," RXYa_DL2 "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x21
+:CLG "CLG " RXYa_R1 "," RXYa_D20s "(" RXYa_X2 "," RXYa_B2 ")" is RXYa_OP=0xE3 & RXYa_R1 & RXYa_X2 & RXYa_B2 & RXYa_DL2 & RXYa_DH2 & RXYa_OP2=0x21 & RXYa_D20s
 {
     local ea:8;
     local m64:8;
@@ -1633,7 +1657,7 @@ attach variables [ RIM_R1 ] [ r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 
     cc_tm(r, mask);
 }
 
-:TMY "TMY " SIYd_DL1 "(" SIYd_B1 ")" "," SIYd_I2 is SIYd_OP=0xEB & SIYd_I2 & SIYd_B1 & SIYd_DL1 & SIYd_DH1 & SIYd_OP2=0x51
+:TMY "TMY " SIYd_D20s "(" SIYd_B1 ")" "," SIYd_I2 is SIYd_OP=0xEB & SIYd_I2 & SIYd_B1 & SIYd_DL1 & SIYd_DH1 & SIYd_OP2=0x51 & SIYd_D20s
 {
     local ea:8;
     local m1:1;
