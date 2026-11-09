@@ -65,9 +65,21 @@ public:
       snprintf(buf, sizeof(buf), "const:%llu:%u", (unsigned long long)v.offset, v.size);
       return std::string(buf);
     }
+    std::string exact;
+    try { exact = trans->getExactRegisterName(v.space, v.offset, v.size); } catch (...) {}
+    if (!exact.empty()) return exact;
+    // A slice of a register (for example the low halfword of r2) is not the
+    // whole register. Print name:size@byteOffset/parentSize so a reader can
+    // take that slice instead of the full value. Exact names stay bare.
     std::string rn;
     try { rn = trans->getRegisterName(v.space, v.offset, v.size); } catch (...) {}
-    if (!rn.empty()) return rn;
+    if (!rn.empty()) {
+      const VarnodeData &reg = trans->getRegister(rn);
+      char buf[128];
+      snprintf(buf, sizeof(buf), "%s:%u@%llu/%u", rn.c_str(), v.size,
+               (unsigned long long)(v.offset - reg.offset), reg.size);
+      return std::string(buf);
+    }
     char buf[128];
     snprintf(buf, sizeof(buf), "%s:0x%llx:%u", sp.c_str(),
              (unsigned long long)v.offset, v.size);

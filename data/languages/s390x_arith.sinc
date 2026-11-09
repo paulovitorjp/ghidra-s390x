@@ -1468,6 +1468,18 @@ macro sra_core64(a, amt, r, ncc) {
     cc_scmp64(RILa_R1, b);
 }
 
+# Printed CLGFI immediate is the zero-extended 32-bit field.
+clgfiImm: i is RILa_I2 [ i = RILa_I2 & 0xffffffff; ] { export *[const]:8 i; }
+
+# CLGFI — COMPARE LOGICAL IMMEDIATE (64). Unsigned compare of R1 with
+# zero_extend(I2). CC: 0 equal, 1 first low, 2 first high. No register write.
+:CLGFI "CLGFI " RILa_R1 "," clgfiImm is RILa_OP=0xC2 & RILa_R1 & RILa_OPCD=0xE & RILa_I2 & clgfiImm
+{
+    local imm:8;
+    imm = RILa_I2 & 0xffffffff;
+    cc_ucmp(RILa_R1, imm);
+}
+
 # ===========================================================================
 # COMPARE LOGICAL (unsigned). CC: 0 = equal, 1 = first low, 2 = first high
 # (PoP 7-146).

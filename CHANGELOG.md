@@ -35,6 +35,11 @@ nonzero magnitudes with opposite signs as equal; both are corrected.
   offset when the part fits there, and into one block of its own otherwise.
   A relocation that names the part uses that same address.
 - Program-object members remain unsupported and are still refused.
+- LGFI, CLGFI, LHR, and LLH are defined. LGFI sign-extends a 32-bit
+  immediate to 64 bits. CLGFI compares a register with the zero-extended
+  immediate. LHR and LLH update bits 32-63 and leave bits 0-31 unchanged.
+- Still absent, and not part of this change: XIHF, ALFI, LLC, and the
+  other siblings of those four.
 
 ## 2026-10-04 — HLASM exhaustive validation complete
 

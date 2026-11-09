@@ -78,6 +78,12 @@ def parse_vn(tok):
         val = int(parts[1])
         size = int(parts[2]) if len(parts) > 2 else 8
         return ("const", val, size)
+    # Slice of a named register: name:size@byteOffset/parentSize.
+    # byteOffset is from the most-significant byte (big-endian).
+    piece = re.fullmatch(r"([a-z][a-z0-9]*):(\d+)@(\d+)/(\d+)", tok)
+    if piece:
+        return ("regpiece", piece.group(1), int(piece.group(2)),
+                int(piece.group(3)), int(piece.group(4)))
     if re.fullmatch(r"[a-z][a-z0-9]*", tok):
         return ("reg", tok)
     return ("tmp", tok)  # unique:/ram:/... space:off:size
@@ -103,6 +109,8 @@ def parse_pcode(text):
 
 def vn_size(vn):
     """Byte size of a parsed varnode (regs are 8; tmps carry :size)."""
+    if vn[0] == "regpiece":
+        return vn[2]
     if vn[0] == "tmp":
         try:
             return int(vn[1].rsplit(":", 1)[1])
@@ -116,6 +124,12 @@ def mask_for(vn, state):
     kind = vn[0]
     if kind == "const":
         return 0xFFFFFFFFFFFFFFFF, vn[1]
+    if kind == "regpiece":
+        name, size, delta, parent = vn[1], vn[2], vn[3], vn[4]
+        full = state.get(name, 0) & ((1 << (8 * parent)) - 1)
+        shift = (parent - delta - size) * 8
+        val = (full >> shift) & ((1 << (8 * size)) - 1)
+        return (1 << (8 * size)) - 1, val
     key = vn[1] if kind == "reg" else vn[1]
     size = 8
     if kind == "tmp":
@@ -133,6 +147,13 @@ def set_vn(vn, val, state):
     key = vn[1]
     if kind == "const":
         raise RuntimeError("write to const")
+    if kind == "regpiece":
+        name, size, delta, parent = vn[1], vn[2], vn[3], vn[4]
+        full = state.get(name, 0) & ((1 << (8 * parent)) - 1)
+        shift = (parent - delta - size) * 8
+        mask = ((1 << (8 * size)) - 1) << shift
+        state[name] = (full & ~mask) | ((val & ((1 << (8 * size)) - 1)) << shift)
+        return
     size = 8
     if kind == "tmp":
         parts = vn[1].rsplit(":", 1)
@@ -262,8 +283,15 @@ def _simulate(ops, cc_val, regs, mem=None):
         elif name == "INT_ZEXT":
             set_vn(out, v(0), state)
         elif name == "INT_SEXT":
-            m0, a = vals[0]
-            bits = m0.bit_length()
+            src = ins[0]
+            if src[0] == "const":
+                bits = 8 * (src[2] if len(src) > 2 else 8)
+                a = src[1]
+            else:
+                m0, a = vals[0]
+                bits = m0.bit_length()
+            if bits < 1:
+                bits = 1
             if a & (1 << (bits - 1)):
                 a -= (1 << bits)
             set_vn(out, a, state)
